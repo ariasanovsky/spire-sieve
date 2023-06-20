@@ -1,4 +1,4 @@
-use super::{Seed, BASE, SeedString};
+use super::{Seed, BASE, SeedString, ALPHABET};
 
 fn letter_index(letter: u8) -> u8 {
     match letter {
@@ -47,6 +47,20 @@ impl From<SeedString> for Seed {
             seed = seed.wrapping_add(c as i64);
         });
         Self { seed }
+    }
+}
+
+impl From<Seed> for SeedString {
+    fn from(value: Seed) -> Self {
+        let mut seed = value.seed;
+        let mut s = String::with_capacity(13);
+        while seed != 0 {
+            let c = seed % BASE;
+            seed /= BASE;
+            let c = ALPHABET[c as usize];
+            s = format!("{}{s}", (c as char));
+        }
+        Self { seed:s }
     }
 }
 

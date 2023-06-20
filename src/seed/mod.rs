@@ -6,11 +6,11 @@ const BASE: i64 = N_LETTERS as i64;
 static ALPHABET: &[u8; N_LETTERS] = b"0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ";
 
 #[derive(Debug)]
-struct Seed {
-    seed: i64,
+pub(crate) struct Seed {
+    pub(crate) seed: i64,
 }
 
 #[derive(Debug)]
-struct SeedString {
+pub(crate) struct SeedString {
     seed: String,
 }
