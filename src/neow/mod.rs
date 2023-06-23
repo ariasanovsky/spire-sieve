@@ -76,55 +76,51 @@ impl NeowBonuses {
         };
 
         let third_bonus = match &drawback {
-            Drawback::TenPercentHpLoss => {
-                match rng.next_capped_u64(6) {
-                    0 => ThirdBonus::RandomColorlessChoice,
-                    1 => ThirdBonus::RemoveTwo,
-                    2 => ThirdBonus::OneRareRelic,
-                    3 => ThirdBonus::ThreeRareCards,
-                    4 => ThirdBonus::TwoFiftyGold,
-                    5 => ThirdBonus::TransformTwoCards,
-                    _ => unreachable!(),
-                }
-            }
-            Drawback::NoGold => {
-                match rng.next_capped_u64(6) {
-                    0 => ThirdBonus::RandomColorlessChoice,
-                    1 => ThirdBonus::RemoveTwo,
-                    2 => ThirdBonus::OneRareRelic,
-                    3 => ThirdBonus::ThreeRareCards,
-                    4 => ThirdBonus::TransformTwoCards,
-                    5 => ThirdBonus::TwentyPercentHpBonus,
-                    _ => unreachable!(),
-                }
-            }
-            Drawback::Curse => {
-                match rng.next_capped_u64(6) {
-                    0 => ThirdBonus::RandomColorlessChoice,
-                    1 => ThirdBonus::OneRareRelic,
-                    2 => ThirdBonus::ThreeRareCards,
-                    3 => ThirdBonus::TwoFiftyGold,
-                    4 => ThirdBonus::TransformTwoCards,
-                    5 => ThirdBonus::TwentyPercentHpBonus,
-                    _ => unreachable!(),
-                }
-            }
-            Drawback::PercentDamage => {
-                match rng.next_capped_u64(7) {
-                    0 => ThirdBonus::RandomColorlessChoice,
-                    1 => ThirdBonus::RemoveTwo,
-                    2 => ThirdBonus::OneRareRelic,
-                    3 => ThirdBonus::ThreeRareCards,
-                    4 => ThirdBonus::TwoFiftyGold,
-                    5 => ThirdBonus::TransformTwoCards,
-                    6 => ThirdBonus::TwentyPercentHpBonus,
-                    _ => unreachable!(),
-                }
-            }
+            Drawback::TenPercentHpLoss => match rng.next_capped_u64(6) {
+                0 => ThirdBonus::RandomColorlessChoice,
+                1 => ThirdBonus::RemoveTwo,
+                2 => ThirdBonus::OneRareRelic,
+                3 => ThirdBonus::ThreeRareCards,
+                4 => ThirdBonus::TwoFiftyGold,
+                5 => ThirdBonus::TransformTwoCards,
+                _ => unreachable!(),
+            },
+            Drawback::NoGold => match rng.next_capped_u64(6) {
+                0 => ThirdBonus::RandomColorlessChoice,
+                1 => ThirdBonus::RemoveTwo,
+                2 => ThirdBonus::OneRareRelic,
+                3 => ThirdBonus::ThreeRareCards,
+                4 => ThirdBonus::TransformTwoCards,
+                5 => ThirdBonus::TwentyPercentHpBonus,
+                _ => unreachable!(),
+            },
+            Drawback::Curse => match rng.next_capped_u64(6) {
+                0 => ThirdBonus::RandomColorlessChoice,
+                1 => ThirdBonus::OneRareRelic,
+                2 => ThirdBonus::ThreeRareCards,
+                3 => ThirdBonus::TwoFiftyGold,
+                4 => ThirdBonus::TransformTwoCards,
+                5 => ThirdBonus::TwentyPercentHpBonus,
+                _ => unreachable!(),
+            },
+            Drawback::PercentDamage => match rng.next_capped_u64(7) {
+                0 => ThirdBonus::RandomColorlessChoice,
+                1 => ThirdBonus::RemoveTwo,
+                2 => ThirdBonus::OneRareRelic,
+                3 => ThirdBonus::ThreeRareCards,
+                4 => ThirdBonus::TwoFiftyGold,
+                5 => ThirdBonus::TransformTwoCards,
+                6 => ThirdBonus::TwentyPercentHpBonus,
+                _ => unreachable!(),
+            },
         };
 
         let third = (drawback, third_bonus);
 
-        Self { first, second, third }
+        Self {
+            first,
+            second,
+            third,
+        }
     }
 }

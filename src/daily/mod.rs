@@ -1,6 +1,10 @@
-use crate::{seed::{Seed, SeedString}, neow::NeowBonuses, character::Character};
+use crate::{
+    character::Character,
+    neow::NeowBonuses,
+    seed::{Seed, SeedString},
+};
 
-use self::modifier::{StarterMod, GenericMod, DifficultyMod};
+use self::modifier::{DifficultyMod, GenericMod, StarterMod};
 
 pub mod modifier;
 pub mod parse;
@@ -21,7 +25,7 @@ pub struct Daily {
 
 #[cfg(test)]
 mod test_daily_parser {
-    use crate::neow::{FirstBonus, SecondBonus, Drawback, ThirdBonus};
+    use crate::neow::{Drawback, FirstBonus, SecondBonus, ThirdBonus};
 
     use super::*;
 
@@ -147,7 +151,8 @@ mod test_daily_parser {
 
     #[test]
     fn test_parse_starter_mod() {
-        for (true_starter_mod, &daily_string) in FIRST_STARTER_MODS.iter().zip(FIRST_DAILIES.iter()) {
+        for (true_starter_mod, &daily_string) in FIRST_STARTER_MODS.iter().zip(FIRST_DAILIES.iter())
+        {
             let daily: Daily = daily_string.parse().unwrap();
             assert_eq!(true_starter_mod, &daily.starter_mod);
         }
@@ -155,7 +160,8 @@ mod test_daily_parser {
 
     #[test]
     fn test_parse_generic_mod() {
-        for (true_generic_mod, &daily_string) in FIRST_GENERIC_MODS.iter().zip(FIRST_DAILIES.iter()) {
+        for (true_generic_mod, &daily_string) in FIRST_GENERIC_MODS.iter().zip(FIRST_DAILIES.iter())
+        {
             let daily: Daily = daily_string.parse().unwrap();
             assert_eq!(true_generic_mod, &daily.generic_mod);
         }
@@ -163,15 +169,19 @@ mod test_daily_parser {
 
     #[test]
     fn test_parse_difficulty_mod() {
-        for (true_difficulty_mod, &daily_string) in FIRST_DIFFICULTY_MODS.iter().zip(FIRST_DAILIES.iter()) {
+        for (true_difficulty_mod, &daily_string) in
+            FIRST_DIFFICULTY_MODS.iter().zip(FIRST_DAILIES.iter())
+        {
             let daily: Daily = daily_string.parse().unwrap();
             assert_eq!(true_difficulty_mod, &daily.difficulty_mod);
         }
     }
-    
+
     #[test]
     fn test_parse_seed_string() {
-        for (&true_string_seed, &daily_string) in FIRST_STRING_SEEDS.iter().zip(FIRST_DAILIES.iter()) {
+        for (&true_string_seed, &daily_string) in
+            FIRST_STRING_SEEDS.iter().zip(FIRST_DAILIES.iter())
+        {
             let daily: Daily = daily_string.parse().unwrap();
             assert_eq!(true_string_seed, &daily.seed_string.seed);
         }

@@ -12,7 +12,7 @@ impl Seed {
                 // todo!("implement f32 for libgdx-xs128, c.f. https://github.com/gamerpuppy/sts_seed_search/blob/d475a098ba65faf66dc7a64fcd30d6937f69e10e/sts_impl.h#L66")
                 let random = rng.next_u64() >> 40;
                 let random = random as f64;
-                let random = random * 5.960_464_477_539_063E-8;     // 5.9604644775390625E-8;
+                let random = random * 5.960_464_477_539_063E-8; // 5.9604644775390625E-8;
                 let random = random as f32;
                 if random < combat_threshold {
                     return false;

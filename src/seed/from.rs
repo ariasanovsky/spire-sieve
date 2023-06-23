@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use super::{Seed, BASE, SeedString, ALPHABET};
+use super::{Seed, SeedString, ALPHABET, BASE};
 
 fn letter_index(letter: u8) -> u8 {
     match letter {
@@ -41,7 +41,9 @@ impl FromStr for SeedString {
 impl From<SeedString> for Seed {
     fn from(value: SeedString) -> Self {
         let mut seed: i64 = 0;
-        value.seed.as_bytes()
+        value
+        .seed
+        .as_bytes()
         .iter()
         .map(|c| letter_index(*c))
         .for_each(|c| {
@@ -62,14 +64,15 @@ impl From<Seed> for SeedString {
             let c = ALPHABET[c as usize];
             s = format!("{}{s}", (c as char));
         }
-        Self { seed:s }
+        Self { seed: s }
     }
 }
 
 impl From<[u8; 13]> for Seed {
     fn from(value: [u8; 13]) -> Self {
         let mut seed: i64 = 0;
-        value.into_iter()
+        value
+        .into_iter()
         .skip_while(|c| *c == b' ')
         .map(letter_index)
         .for_each(|c| {
@@ -83,7 +86,8 @@ impl From<[u8; 13]> for Seed {
 impl From<&[u8; 13]> for Seed {
     fn from(value: &[u8; 13]) -> Self {
         let mut seed: i64 = 0;
-        value.iter()
+        value
+        .iter()
         .skip_while(|c| **c == b' ')
         .map(|c| letter_index(*c))
         .for_each(|c| {
@@ -108,9 +112,9 @@ impl From<u64> for Seed {
 
 #[cfg(test)]
 mod test_seed_conversions {
-    
+
     use super::super::{Seed, SeedString};
-    
+
     #[test]
     fn seed_zero() {
         let seed = Seed::from(0i64);
@@ -118,7 +122,7 @@ mod test_seed_conversions {
 
         let seed = Seed::from(0u64);
         assert_eq!(seed.seed, 0);
-        
+
         let seed = Seed::from(b"            0");
         assert_eq!(seed.seed, 0);
 
@@ -133,11 +137,14 @@ mod test_seed_conversions {
 
         let seed = Seed::from(3218453378341624389u64);
         assert_eq!(seed.seed, 3218453378341624389);
-        
+
         let seed = Seed::from(b" YBQ7FPFZSX1U");
         assert_eq!(seed.seed, 3218453378341624389);
 
-        let seed: Seed = String::from("YBQ7FPFZSX1U").parse::<SeedString>().unwrap().into();
+        let seed: Seed = String::from("YBQ7FPFZSX1U")
+        .parse::<SeedString>()
+        .unwrap()
+        .into();
         assert_eq!(seed.seed, 3218453378341624389);
     }
 
@@ -148,11 +155,14 @@ mod test_seed_conversions {
 
         let seed = Seed::from(-706882697283956955i64 as u64);
         assert_eq!(seed.seed, -706882697283956955);
-        
+
         let seed = Seed::from(b"58QVGLNE8PU3W");
         assert_eq!(seed.seed, -706882697283956955);
 
-        let seed: Seed = String::from("58QVGLNE8PU3W").parse::<SeedString>().unwrap().into();
+        let seed: Seed = String::from("58QVGLNE8PU3W")
+        .parse::<SeedString>()
+        .unwrap()
+        .into();
         assert_eq!(seed.seed, -706882697283956955);
     }
 }

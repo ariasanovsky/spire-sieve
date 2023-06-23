@@ -21,7 +21,7 @@ pub enum Error {
     ParseCharacter(crate::character::Error),
     ParseDailyModifier(crate::daily::modifier::Error),
     ParseSeedString(crate::seed::from::Error),
-    InconsistentSeeds(Seed, SeedString)
+    InconsistentSeeds(Seed, SeedString),
 }
 
 impl FromStr for Daily {
@@ -30,18 +30,33 @@ impl FromStr for Daily {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut splits = s.split(',');
         let date = splits.next().ok_or(Error::NoDate)?;
-        let character = splits.next().ok_or(Error::NoCharacter)?
-        .parse().map_err(Error::ParseCharacter)?;
-        
-        let starter_mod = splits.next().ok_or(Error::NoStarterMod)?
-        .parse().map_err(Error::ParseDailyModifier)?;
-        let generic_mod = splits.next().ok_or(Error::NoGenericMod)?
-        .parse().map_err(Error::ParseDailyModifier)?;
-        let difficulty_mod = splits.next().ok_or(Error::NoDifficultyMod)?
-        .parse().map_err(Error::ParseDailyModifier)?;
-        
-        let seed_string: SeedString = splits.next().ok_or(Error::NoSeedString)?
-        .parse().map_err(Error::ParseSeedString)?;
+        let character = splits
+        .next()
+        .ok_or(Error::NoCharacter)?
+        .parse()
+        .map_err(Error::ParseCharacter)?;
+
+        let starter_mod = splits
+        .next()
+        .ok_or(Error::NoStarterMod)?
+        .parse()
+        .map_err(Error::ParseDailyModifier)?;
+        let generic_mod = splits
+        .next()
+        .ok_or(Error::NoGenericMod)?
+        .parse()
+        .map_err(Error::ParseDailyModifier)?;
+        let difficulty_mod = splits
+        .next()
+        .ok_or(Error::NoDifficultyMod)?
+        .parse()
+        .map_err(Error::ParseDailyModifier)?;
+
+        let seed_string: SeedString = splits
+        .next()
+        .ok_or(Error::NoSeedString)?
+        .parse()
+        .map_err(Error::ParseSeedString)?;
         let seed: Seed = match splits.next() {
             Some(seed) => {
                 let seed: i64 = seed.parse().map_err(Error::ParseSeed)?;
@@ -54,8 +69,7 @@ impl FromStr for Daily {
             }
             None => seed_string.clone().into(),
         };
-        
-        
+
         let no_combat_paths = splits.next();
         let no_combat_paths_ascension = splits.next();
 
