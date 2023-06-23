@@ -1,11 +1,9 @@
 use std::str::FromStr;
 
 use libgdx_xs128::rng::Random;
-use libgdx_xs128::RandomXS128;
 use libgdx_xs128::SeedInitializer;
 
 use crate::neow::NeowBonuses;
-use crate::seed;
 use crate::seed::Seed;
 use crate::seed::SeedString;
 
@@ -72,7 +70,7 @@ impl FromStr for Daily {
             generic_mod,
             difficulty_mod,
             seed_string,
-            seed: seed,
+            seed,
             no_combat_paths: no_combat_paths.map(Into::into),
             no_combat_paths_ascension: no_combat_paths_ascension.map(Into::into),
             neow_bonuses,

@@ -42,7 +42,7 @@ impl From<SeedString> for Seed {
     fn from(value: SeedString) -> Self {
         let mut seed: i64 = 0;
         value.seed.as_bytes()
-        .into_iter()
+        .iter()
         .map(|c| letter_index(*c))
         .for_each(|c| {
             seed = seed.wrapping_mul(BASE);
