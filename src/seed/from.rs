@@ -42,14 +42,14 @@ impl From<SeedString> for Seed {
     fn from(value: SeedString) -> Self {
         let mut seed: i64 = 0;
         value
-        .seed
-        .as_bytes()
-        .iter()
-        .map(|c| letter_index(*c))
-        .for_each(|c| {
-            seed = seed.wrapping_mul(BASE);
-            seed = seed.wrapping_add(c as i64);
-        });
+            .seed
+            .as_bytes()
+            .iter()
+            .map(|c| letter_index(*c))
+            .for_each(|c| {
+                seed = seed.wrapping_mul(BASE);
+                seed = seed.wrapping_add(c as i64);
+            });
         Self { seed }
     }
 }
@@ -72,13 +72,13 @@ impl From<[u8; 13]> for Seed {
     fn from(value: [u8; 13]) -> Self {
         let mut seed: i64 = 0;
         value
-        .into_iter()
-        .skip_while(|c| *c == b' ')
-        .map(letter_index)
-        .for_each(|c| {
-            seed = seed.wrapping_mul(BASE);
-            seed = seed.wrapping_add(c as i64);
-        });
+            .into_iter()
+            .skip_while(|c| *c == b' ')
+            .map(letter_index)
+            .for_each(|c| {
+                seed = seed.wrapping_mul(BASE);
+                seed = seed.wrapping_add(c as i64);
+            });
         Self { seed }
     }
 }
@@ -87,13 +87,13 @@ impl From<&[u8; 13]> for Seed {
     fn from(value: &[u8; 13]) -> Self {
         let mut seed: i64 = 0;
         value
-        .iter()
-        .skip_while(|c| **c == b' ')
-        .map(|c| letter_index(*c))
-        .for_each(|c| {
-            seed = seed.wrapping_mul(BASE);
-            seed = seed.wrapping_add(c as i64);
-        });
+            .iter()
+            .skip_while(|c| **c == b' ')
+            .map(|c| letter_index(*c))
+            .for_each(|c| {
+                seed = seed.wrapping_mul(BASE);
+                seed = seed.wrapping_add(c as i64);
+            });
         Self { seed }
     }
 }
@@ -142,9 +142,9 @@ mod test_seed_conversions {
         assert_eq!(seed.seed, 3218453378341624389);
 
         let seed: Seed = String::from("YBQ7FPFZSX1U")
-        .parse::<SeedString>()
-        .unwrap()
-        .into();
+            .parse::<SeedString>()
+            .unwrap()
+            .into();
         assert_eq!(seed.seed, 3218453378341624389);
     }
 
@@ -160,9 +160,9 @@ mod test_seed_conversions {
         assert_eq!(seed.seed, -706882697283956955);
 
         let seed: Seed = String::from("58QVGLNE8PU3W")
-        .parse::<SeedString>()
-        .unwrap()
-        .into();
+            .parse::<SeedString>()
+            .unwrap()
+            .into();
         assert_eq!(seed.seed, -706882697283956955);
     }
 }

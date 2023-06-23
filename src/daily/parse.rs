@@ -31,32 +31,32 @@ impl FromStr for Daily {
         let mut splits = s.split(',');
         let date = splits.next().ok_or(Error::NoDate)?;
         let character = splits
-        .next()
-        .ok_or(Error::NoCharacter)?
-        .parse()
-        .map_err(Error::ParseCharacter)?;
+            .next()
+            .ok_or(Error::NoCharacter)?
+            .parse()
+            .map_err(Error::ParseCharacter)?;
 
         let starter_mod = splits
-        .next()
-        .ok_or(Error::NoStarterMod)?
-        .parse()
-        .map_err(Error::ParseDailyModifier)?;
+            .next()
+            .ok_or(Error::NoStarterMod)?
+            .parse()
+            .map_err(Error::ParseDailyModifier)?;
         let generic_mod = splits
-        .next()
-        .ok_or(Error::NoGenericMod)?
-        .parse()
-        .map_err(Error::ParseDailyModifier)?;
+            .next()
+            .ok_or(Error::NoGenericMod)?
+            .parse()
+            .map_err(Error::ParseDailyModifier)?;
         let difficulty_mod = splits
-        .next()
-        .ok_or(Error::NoDifficultyMod)?
-        .parse()
-        .map_err(Error::ParseDailyModifier)?;
+            .next()
+            .ok_or(Error::NoDifficultyMod)?
+            .parse()
+            .map_err(Error::ParseDailyModifier)?;
 
         let seed_string: SeedString = splits
-        .next()
-        .ok_or(Error::NoSeedString)?
-        .parse()
-        .map_err(Error::ParseSeedString)?;
+            .next()
+            .ok_or(Error::NoSeedString)?
+            .parse()
+            .map_err(Error::ParseSeedString)?;
         let seed: Seed = match splits.next() {
             Some(seed) => {
                 let seed: i64 = seed.parse().map_err(Error::ParseSeed)?;
