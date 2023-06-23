@@ -10,7 +10,7 @@ checksum = "e3ebd6b2ba977b6b04738ea2945b8f0eec5bb8292ca50307be22f92b44cc5c65"
 
 [[package]]
 name = "spire-sieve"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "libgdx-xs128",
 ]

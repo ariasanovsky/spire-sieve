@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use super::{Seed, BASE, SeedString, ALPHABET};
 
 fn letter_index(letter: u8) -> u8 {
@@ -14,7 +16,7 @@ pub enum Error {
     InvalidLength(usize),
 }
 
-impl std::str::FromStr for SeedString {
+impl FromStr for SeedString {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
