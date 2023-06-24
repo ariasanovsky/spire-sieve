@@ -15,7 +15,9 @@ It is planned to be a mostly `no_std` for compatibility with `CUDA` or other env
 
 ## Planned features
 
+- **unlock levels**: control the number of unlocks $0$ through $5$ of each character
 - **overflow toggling**: control overflow checking during random number generation
+- **fast hash**: skip one call to the murmur hash function by starting with `seed0` instead of the run seed
 - **filter heuristics**: for constraints which sacrifice correctness for throughput
 
 ## Contributing
