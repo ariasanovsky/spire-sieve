@@ -41,10 +41,10 @@ impl Map {
     }
 
     fn create_first_path(&mut self, rng: &mut Random) -> usize {
-        let first_position = rng.next_capped_u64(WIDTH as u64) as usize;
+        let first_position = rng.next_capped_u64(WIDTH) as usize;
         let mut position = first_position;
-        
-        for row in 0..HEIGHT as usize - 1 {
+
+        for row in 0..HEIGHT - 1 {
             if row <= 6 {
                 dbg!(row, position);
             }
@@ -64,14 +64,24 @@ impl Map {
 
     fn next_position(&self, rng: &mut Random, row: usize, position: usize) -> usize {
         let min_position = if position == 0 { 0 } else { position - 1 };
-        let n_possible_positions = if position == 0 || position == WIDTH as usize - 1 { 2 } else { 3 };
+        let n_possible_positions = if position == 0 || position == WIDTH as usize - 1 {
+            2
+        } else {
+            3
+        };
         let adjustment = rng.next_capped_u64(n_possible_positions) as usize;
         let mut next_position = adjustment + min_position;
         next_position = self.cpplr(rng, row, position, next_position);
         self.cpanx(row, position, next_position)
     }
 
-    fn cpplr(&self, rng: &mut Random, row: usize, position: usize, mut next_position: usize) -> usize {
+    fn cpplr(
+        &self,
+        rng: &mut Random,
+        row: usize,
+        position: usize,
+        mut next_position: usize,
+    ) -> usize {
         let (next_in_neighborhood, _, _) = &self.0[row + 1][next_position];
         for &neighbor in &next_in_neighborhood.0 {
             if neighbor == position {
@@ -138,7 +148,7 @@ impl Map {
     fn cpanx(&self, row: usize, position: usize, mut next_position: usize) -> usize {
         assert!(position <= LAST_POSITION);
         assert!(next_position <= LAST_POSITION);
-        
+
         if position != 0 {
             let sibling_position = position - 1;
             let (_, out_neighborhood, _) = &self.0[row][sibling_position];
@@ -170,28 +180,28 @@ impl Map {
     }
 
     fn create_second_path(&mut self, rng: &mut Random, first_position: usize) {
-        let mut position = rng.next_capped_u64(WIDTH as u64) as usize;
+        let mut position = rng.next_capped_u64(WIDTH) as usize;
         while position == first_position {
-            position = rng.next_capped_u64(WIDTH as u64) as usize;
+            position = rng.next_capped_u64(WIDTH) as usize;
         }
         assert!(position <= LAST_POSITION);
 
-        for row in 0..HEIGHT as usize - 1 {
+        for row in 0..HEIGHT - 1 {
             if row <= 6 {
                 dbg!(row, position);
             }
             let next_position = self.next_position(rng, row, position);
             assert!(position <= LAST_POSITION);
             assert!(next_position <= LAST_POSITION);
-        
+
             self.add_edge(row, position, next_position);
             position = next_position;
         }
     }
 
     fn create_path(&mut self, rng: &mut Random) {
-        let mut position = rng.next_capped_u64(WIDTH as u64) as usize;
-        for row in 0..HEIGHT as usize - 1 {
+        let mut position = rng.next_capped_u64(WIDTH) as usize;
+        for row in 0..HEIGHT - 1 {
             if row <= 6 {
                 dbg!(row, position);
             }
@@ -203,9 +213,7 @@ impl Map {
 }
 
 impl Map {
-    fn filter_redundant_edges_from_first_row(&mut self) {
-        
-    }
+    fn filter_redundant_edges_from_first_row(&mut self) {}
 }
 
 #[cfg(test)]
