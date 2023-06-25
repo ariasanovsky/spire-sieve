@@ -1,6 +1,7 @@
 use crate::character::Character;
 
-pub mod all_cards;
+pub mod card;
+pub mod card_pool;
 
 const IRONCLAD: u8 = Character::Ironclad as u8;
 const SILENT: u8 = Character::Silent as u8;
