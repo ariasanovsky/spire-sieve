@@ -1,3 +1,4 @@
+pub mod card;
 pub mod character;
 pub mod daily;
 pub mod events;
