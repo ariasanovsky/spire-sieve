@@ -29,7 +29,7 @@ pub mod card_pool;
 
 // // #[derive(Debug, Eq, PartialEq)]
 // // struct CardPool<const CHARACTER: u8> {
-// //     commons: &'static 
+// //     commons: &'static
 // // }
 
 // #[test]

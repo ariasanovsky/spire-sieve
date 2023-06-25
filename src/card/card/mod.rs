@@ -1,10 +1,9 @@
 use strum::EnumCount;
 use strum_macros::EnumCount;
-use strum_macros::FromRepr;
 use strum_macros::EnumIter;
+use strum_macros::FromRepr;
 
-pub const fn cards<const START: usize, const N: usize, const REVERSE: bool>() -> [Card; N]
-{
+pub const fn cards<const START: usize, const N: usize, const REVERSE: bool>() -> [Card; N] {
     let mut cards = [Card::None; N];
     let mut i = 0;
     let mut index = START;
@@ -24,7 +23,7 @@ pub const fn cards<const START: usize, const N: usize, const REVERSE: bool>() ->
     cards
 }
 
-pub const CARDS: [Card; Card::COUNT] = cards::<0, {Card::COUNT}, false>();
+pub const CARDS: [Card; Card::COUNT] = cards::<0, { Card::COUNT }, false>();
 
 // const unsafe fn cards_slice<const START: usize, const END: usize>() -> &'static [Card] {
 //     unsafe { CARDS.get_unchecked(START..END) }
@@ -363,4 +362,3 @@ pub enum Card {
     Transmutation,
     Violence,
 }
-
