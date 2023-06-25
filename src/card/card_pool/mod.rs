@@ -1,0 +1,119 @@
+use crate::character::Character;
+use crate::card::card::{Card, cards};
+
+type CardPool = &'static [Card];
+
+#[derive(Debug)]
+struct CharacterCardPool {
+    all: CardPool,
+    common: CardPool,
+    uncommon: CardPool,
+    rare: CardPool,
+}
+
+impl CharacterCardPool {
+    pub fn all(&self) -> CardPool {
+        self.all
+    }
+
+    pub fn common(&self) -> CardPool {
+        self.common
+    }
+
+    pub fn uncommon(&self) -> CardPool {
+        self.uncommon
+    }
+
+    pub fn rare(&self) -> CardPool {
+        self.rare
+    }
+}
+
+const RAW_POOL_PARAMETERS: [(usize, usize, usize, usize); 4] = [
+    (1, 20, 36, 16),
+    (73, 19, 33, 19),
+    (144, 18, 36, 17),
+    (215, 19, 35, 17),
+];
+
+const fn pool_parameters<const START: usize, const COMMON: usize, const UNCOMMON: usize, const RARE: usize>() -> [(usize, usize); 4] {
+    [
+        (START, COMMON + UNCOMMON + RARE),
+        (START, COMMON),
+        (START + COMMON, UNCOMMON),
+        (START + COMMON + UNCOMMON, RARE),
+    ]
+}
+
+const POOL_PARAMETERS: [[(usize, usize); 4]; 4] = [
+    pool_parameters::<{RAW_POOL_PARAMETERS[0].0}, {RAW_POOL_PARAMETERS[0].1}, {RAW_POOL_PARAMETERS[0].2}, {RAW_POOL_PARAMETERS[0].3}>(),
+    pool_parameters::<{RAW_POOL_PARAMETERS[1].0}, {RAW_POOL_PARAMETERS[1].1}, {RAW_POOL_PARAMETERS[1].2}, {RAW_POOL_PARAMETERS[1].3}>(),
+    pool_parameters::<{RAW_POOL_PARAMETERS[2].0}, {RAW_POOL_PARAMETERS[2].1}, {RAW_POOL_PARAMETERS[2].2}, {RAW_POOL_PARAMETERS[2].3}>(),
+    pool_parameters::<{RAW_POOL_PARAMETERS[3].0}, {RAW_POOL_PARAMETERS[3].1}, {RAW_POOL_PARAMETERS[3].2}, {RAW_POOL_PARAMETERS[3].3}>(),
+];
+
+const IRONCLAD_PARAMETERS: [(usize, usize); 4] = POOL_PARAMETERS[Character::Ironclad as usize];
+const IRONCLAD_CARD_POOL: CharacterCardPool = CharacterCardPool {
+    all: &cards::<{IRONCLAD_PARAMETERS[0].0}, {IRONCLAD_PARAMETERS[0].1}, false>(),
+    common: &cards::<{IRONCLAD_PARAMETERS[1].0}, {IRONCLAD_PARAMETERS[1].1}, false>(),
+    uncommon: &cards::<{IRONCLAD_PARAMETERS[2].0}, {IRONCLAD_PARAMETERS[2].1}, false>(),
+    rare: &cards::<{IRONCLAD_PARAMETERS[3].0}, {IRONCLAD_PARAMETERS[3].1}, false>(),
+};
+
+const SILENT_PARAMETERS: [(usize, usize); 4] = POOL_PARAMETERS[Character::Silent as usize];
+const SILENT_CARD_POOL: CharacterCardPool = CharacterCardPool {
+    all: &cards::<{SILENT_PARAMETERS[0].0}, {SILENT_PARAMETERS[0].1}, false>(),
+    common: &cards::<{SILENT_PARAMETERS[1].0}, {SILENT_PARAMETERS[1].1}, false>(),
+    uncommon: &cards::<{SILENT_PARAMETERS[2].0}, {SILENT_PARAMETERS[2].1}, false>(),
+    rare: &cards::<{SILENT_PARAMETERS[3].0}, {SILENT_PARAMETERS[3].1}, false>(),
+};
+
+const DEFECT_PARAMETERS: [(usize, usize); 4] = POOL_PARAMETERS[Character::Defect as usize];
+const DEFECT_CARD_POOL: CharacterCardPool = CharacterCardPool {
+    all: &cards::<{DEFECT_PARAMETERS[0].0}, {DEFECT_PARAMETERS[0].1}, false>(),
+    common: &cards::<{DEFECT_PARAMETERS[1].0}, {DEFECT_PARAMETERS[1].1}, false>(),
+    uncommon: &cards::<{DEFECT_PARAMETERS[2].0}, {DEFECT_PARAMETERS[2].1}, false>(),
+    rare: &cards::<{DEFECT_PARAMETERS[3].0}, {DEFECT_PARAMETERS[3].1}, false>(),
+};
+
+const WATCHER_PARAMETERS: [(usize, usize); 4] = POOL_PARAMETERS[Character::Watcher as usize];
+const WATCHER_CARD_POOL: CharacterCardPool = CharacterCardPool {
+    all: &cards::<{WATCHER_PARAMETERS[0].0}, {WATCHER_PARAMETERS[0].1}, false>(),
+    common: &cards::<{WATCHER_PARAMETERS[1].0}, {WATCHER_PARAMETERS[1].1}, false>(),
+    uncommon: &cards::<{WATCHER_PARAMETERS[2].0}, {WATCHER_PARAMETERS[2].1}, false>(),
+    rare: &cards::<{WATCHER_PARAMETERS[3].0}, {WATCHER_PARAMETERS[3].1}, false>(),
+};
+
+#[cfg(test)]
+mod test_character_card_pool_initializations {
+    use super::*;
+
+    fn card_pool_info(card_pool: CardPool) -> (Card, Card, usize) {
+        (*card_pool.first().unwrap(), *card_pool.last().unwrap(), card_pool.len())
+    }
+
+    fn character_card_pool_info(character_card_pool: &CharacterCardPool) -> [(Card, Card, usize); 4] {
+        [
+            card_pool_info(character_card_pool.all),
+            card_pool_info(character_card_pool.common),
+            card_pool_info(character_card_pool.uncommon),
+            card_pool_info(character_card_pool.rare),
+        ]
+    }
+
+    #[test]
+    fn all_card_pool_info() {
+        [
+            IRONCLAD_CARD_POOL,
+            SILENT_CARD_POOL,
+            DEFECT_CARD_POOL,
+            WATCHER_CARD_POOL,
+        ].iter().for_each(|character_card_pool| {
+            character_card_pool_info(character_card_pool)
+            .iter()
+            .for_each(|info| {
+                dbg!(info);
+            });
+        });
+    }
+}

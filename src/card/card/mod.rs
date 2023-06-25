@@ -9,25 +9,38 @@ impl Default for Card {
     }
 }
 
-const fn cards() -> [Card; Card::COUNT] {
-    let mut cards = [Card::None; Card::COUNT];
+pub const fn cards<const START: usize, const N: usize, const REVERSE: bool>() -> [Card; N]
+{
+    let mut cards = [Card::None; N];
     let mut i = 0;
-    while i < Card::COUNT {
-        cards[i] = if let Some(card) = Card::from_repr(i) {
+    let mut index = START;
+    while i < N {
+        cards[i] = if let Some(card) = Card::from_repr(index as usize) {
             card
         } else {
             continue;
         };
         i += 1;
+        if REVERSE {
+            index -= 1;
+        } else {
+            index += 1;
+        }
     }
     cards
 }
 
-pub const CARDS: [Card; Card::COUNT] = cards();
+pub const CARDS: [Card; Card::COUNT] = cards::<0, {Card::COUNT}, false>();
+
+// const unsafe fn cards_slice<const START: usize, const END: usize>() -> &'static [Card] {
+//     unsafe { CARDS.get_unchecked(START..END) }
+// } // not yet stable :(
 
 #[test]
 fn test_card_array_initialization() {
     dbg!(&CARDS, CARDS.len());
+    dbg!(std::mem::size_of_val(&CARDS));
+    dbg!(std::mem::size_of::<Card>());
 }
 
 #[derive(Debug, Eq, PartialEq, FromRepr, EnumIter, EnumCount, Clone, Copy)]
