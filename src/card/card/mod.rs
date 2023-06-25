@@ -1,5 +1,38 @@
-#[derive(Debug, Eq, PartialEq)]
+use strum::EnumCount;
+use strum_macros::EnumCount;
+use strum_macros::FromRepr;
+use strum_macros::EnumIter;
+
+impl Default for Card {
+    fn default() -> Self {
+        Card::None
+    }
+}
+
+const fn cards() -> [Card; Card::COUNT] {
+    let mut cards = [Card::None; Card::COUNT];
+    let mut i = 0;
+    while i < Card::COUNT {
+        cards[i] = if let Some(card) = Card::from_repr(i) {
+            card
+        } else {
+            continue;
+        };
+        i += 1;
+    }
+    cards
+}
+
+pub const CARDS: [Card; Card::COUNT] = cards();
+
+#[test]
+fn test_card_array_initialization() {
+    dbg!(&CARDS, CARDS.len());
+}
+
+#[derive(Debug, Eq, PartialEq, FromRepr, EnumIter, EnumCount, Clone, Copy)]
 pub enum Card {
+    None,
     Anger,
     BodySlam,
     Clash,
@@ -321,3 +354,4 @@ pub enum Card {
     Transmutation,
     Violence,
 }
+
