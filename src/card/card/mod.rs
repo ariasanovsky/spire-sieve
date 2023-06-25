@@ -3,19 +3,13 @@ use strum_macros::EnumCount;
 use strum_macros::FromRepr;
 use strum_macros::EnumIter;
 
-impl Default for Card {
-    fn default() -> Self {
-        Card::None
-    }
-}
-
 pub const fn cards<const START: usize, const N: usize, const REVERSE: bool>() -> [Card; N]
 {
     let mut cards = [Card::None; N];
     let mut i = 0;
     let mut index = START;
     while i < N {
-        cards[i] = if let Some(card) = Card::from_repr(index as usize) {
+        cards[i] = if let Some(card) = Card::from_repr(index) {
             card
         } else {
             continue;
@@ -35,6 +29,7 @@ pub const CARDS: [Card; Card::COUNT] = cards::<0, {Card::COUNT}, false>();
 // const unsafe fn cards_slice<const START: usize, const END: usize>() -> &'static [Card] {
 //     unsafe { CARDS.get_unchecked(START..END) }
 // } // not yet stable :(
+// also, as_ref() is not defined as const
 
 #[test]
 fn test_card_array_initialization() {
@@ -43,8 +38,9 @@ fn test_card_array_initialization() {
     dbg!(std::mem::size_of::<Card>());
 }
 
-#[derive(Debug, Eq, PartialEq, FromRepr, EnumIter, EnumCount, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, FromRepr, EnumIter, EnumCount, Clone, Copy, Default)]
 pub enum Card {
+    #[default]
     None,
     Anger,
     BodySlam,

@@ -41,10 +41,10 @@ impl Map {
     }
 
     fn create_first_path(&mut self, rng: &mut Random) -> usize {
-        let first_position = rng.next_capped_u64(WIDTH as u64) as usize;
+        let first_position = rng.next_capped_u64(WIDTH) as usize;
         let mut position = first_position;
         
-        for row in 0..HEIGHT as usize - 1 {
+        for row in 0..HEIGHT - 1 {
             if row <= 6 {
                 dbg!(row, position);
             }
@@ -170,13 +170,13 @@ impl Map {
     }
 
     fn create_second_path(&mut self, rng: &mut Random, first_position: usize) {
-        let mut position = rng.next_capped_u64(WIDTH as u64) as usize;
+        let mut position = rng.next_capped_u64(WIDTH) as usize;
         while position == first_position {
-            position = rng.next_capped_u64(WIDTH as u64) as usize;
+            position = rng.next_capped_u64(WIDTH) as usize;
         }
         assert!(position <= LAST_POSITION);
 
-        for row in 0..HEIGHT as usize - 1 {
+        for row in 0..HEIGHT - 1 {
             if row <= 6 {
                 dbg!(row, position);
             }
@@ -190,8 +190,8 @@ impl Map {
     }
 
     fn create_path(&mut self, rng: &mut Random) {
-        let mut position = rng.next_capped_u64(WIDTH as u64) as usize;
-        for row in 0..HEIGHT as usize - 1 {
+        let mut position = rng.next_capped_u64(WIDTH) as usize;
+        for row in 0..HEIGHT - 1 {
             if row <= 6 {
                 dbg!(row, position);
             }

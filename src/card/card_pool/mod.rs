@@ -62,28 +62,28 @@ const SILENT_PARAMETERS: [(usize, usize); 4] = POOL_PARAMETERS[Character::Silent
 const DEFECT_PARAMETERS: [(usize, usize); 4] = POOL_PARAMETERS[Character::Defect as usize];
 const WATCHER_PARAMETERS: [(usize, usize); 4] = POOL_PARAMETERS[Character::Watcher as usize];
 
-pub static IRONCLAD_CARD_POOL: CharacterCardPool = CharacterCardPool {
+pub const IRONCLAD_CARD_POOL: CharacterCardPool = CharacterCardPool {
     all: CardPool(&cards::<{IRONCLAD_PARAMETERS[0].0}, {IRONCLAD_PARAMETERS[0].1}, false>()),
     common: CardPool(&cards::<{IRONCLAD_PARAMETERS[1].0}, {IRONCLAD_PARAMETERS[1].1}, false>()),
     uncommon: CardPool(&cards::<{IRONCLAD_PARAMETERS[2].0}, {IRONCLAD_PARAMETERS[2].1}, false>()),
     rare: CardPool(&cards::<{IRONCLAD_PARAMETERS[3].0}, {IRONCLAD_PARAMETERS[3].1}, false>()),
 };
 
-pub static SILENT_CARD_POOL: CharacterCardPool = CharacterCardPool {
+pub const SILENT_CARD_POOL: CharacterCardPool = CharacterCardPool {
     all: CardPool(&cards::<{SILENT_PARAMETERS[0].0}, {SILENT_PARAMETERS[0].1}, false>()),
     common: CardPool(&cards::<{SILENT_PARAMETERS[1].0}, {SILENT_PARAMETERS[1].1}, false>()),
     uncommon: CardPool(&cards::<{SILENT_PARAMETERS[2].0}, {SILENT_PARAMETERS[2].1}, false>()),
     rare: CardPool(&cards::<{SILENT_PARAMETERS[3].0}, {SILENT_PARAMETERS[3].1}, false>()),
 };
 
-pub static DEFECT_CARD_POOL: CharacterCardPool = CharacterCardPool {
+pub const DEFECT_CARD_POOL: CharacterCardPool = CharacterCardPool {
     all: CardPool(&cards::<{DEFECT_PARAMETERS[0].0}, {DEFECT_PARAMETERS[0].1}, false>()),
     common: CardPool(&cards::<{DEFECT_PARAMETERS[1].0}, {DEFECT_PARAMETERS[1].1}, false>()),
     uncommon: CardPool(&cards::<{DEFECT_PARAMETERS[2].0}, {DEFECT_PARAMETERS[2].1}, false>()),
     rare: CardPool(&cards::<{DEFECT_PARAMETERS[3].0}, {DEFECT_PARAMETERS[3].1}, false>()),
 };
 
-pub static WATCHER_CARD_POOL: CharacterCardPool = CharacterCardPool {
+pub const WATCHER_CARD_POOL: CharacterCardPool = CharacterCardPool {
     all: CardPool(&cards::<{WATCHER_PARAMETERS[0].0}, {WATCHER_PARAMETERS[0].1}, false>()),
     common: CardPool(&cards::<{WATCHER_PARAMETERS[1].0}, {WATCHER_PARAMETERS[1].1}, false>()),
     uncommon: CardPool(&cards::<{WATCHER_PARAMETERS[2].0}, {WATCHER_PARAMETERS[2].1}, false>()),
