@@ -1,4 +1,6 @@
-#[derive(Debug, Eq, PartialEq)]
+use enum_iterator::Sequence;
+
+#[derive(Debug, Eq, PartialEq, Sequence)]
 pub enum Card {
     Anger,
     BodySlam,
