@@ -1,4 +1,4 @@
-use crate::card::card::{cards, Card};
+use crate::card::{cards, Card};
 use crate::character::Character;
 
 #[derive(Debug, Clone, Copy)]

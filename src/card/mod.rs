@@ -1,48 +1,366 @@
-// use crate::character::Character;
-
-pub mod card;
 pub mod card_pool;
 
-// const IRONCLAD: u8 = Character::Ironclad as u8;
-// const SILENT: u8 = Character::Silent as u8;
-// const DEFECT: u8 = Character::Defect as u8;
-// const WATCHER: u8 = Character::Watcher as u8;
+use strum::EnumCount;
+use strum_macros::EnumCount;
+use strum_macros::EnumIter;
+use strum_macros::FromRepr;
 
-// #[derive(Debug, Eq, PartialEq)]
-// pub struct AnonymousCard<const CHARACTER: u8>(usize);
+pub const fn cards<const START: usize, const N: usize, const REVERSE: bool>() -> [Card; N] {
+    let mut cards = [Card::None; N];
+    let mut i = 0;
+    let mut index = START;
+    while i < N {
+        cards[i] = if let Some(card) = Card::from_repr(index) {
+            card
+        } else {
+            continue;
+        };
+        i += 1;
+        if REVERSE {
+            index -= 1;
+        } else {
+            index += 1;
+        }
+    }
+    cards
+}
 
-// impl<const CHARACTER: u8> AnonymousCard<CHARACTER> {
-//     pub fn new(index: usize) -> Self {
-//         Self(index)
-//     }
-// }
+pub const CARDS: [Card; Card::COUNT] = cards::<0, { Card::COUNT }, false>();
 
-// #[derive(Debug, Eq, PartialEq)]
-// enum AnonymouslyRareCard<const CHARACTER: u8> {
-//     Common(AnonymousCard<CHARACTER>),
-//     Uncommon(AnonymousCard<CHARACTER>),
-//     Rare(AnonymousCard<CHARACTER>),
-// }
+// const unsafe fn cards_slice<const START: usize, const END: usize>() -> &'static [Card] {
+//     unsafe { CARDS.get_unchecked(START..END) }
+// } // not yet stable :(
+// also, as_ref() is not defined as const
 
-// #[derive(Debug, Eq, PartialEq)]
-// enum Card<const CHARACTER: u8> {}
+#[test]
+fn test_card_array_initialization() {
+    dbg!(&CARDS, CARDS.len());
+    dbg!(std::mem::size_of_val(&CARDS));
+    dbg!(std::mem::size_of::<Card>());
+}
 
-// // #[derive(Debug, Eq, PartialEq)]
-// // struct CardPool<const CHARACTER: u8> {
-// //     commons: &'static
-// // }
-
-// #[test]
-// fn byte_sized_enums() {
-//     assert_eq!(std::mem::size_of::<Character>(), 1);
-//     assert_eq!(
-//         std::mem::size_of::<AnonymousCard<IRONCLAD>>(),
-//         std::mem::size_of::<usize>()
-//     );
-//     assert_eq!(
-//         std::mem::size_of::<AnonymouslyRareCard<IRONCLAD>>(),
-//         8 + std::mem::size_of::<AnonymousCard<IRONCLAD>>()
-//     );
-
-//     let foo = Character::Ironclad as usize;
-// }
+#[derive(Debug, Eq, PartialEq, FromRepr, EnumIter, EnumCount, Clone, Copy, Default)]
+pub enum Card {
+    #[default]
+    None,
+    Anger,
+    BodySlam,
+    Clash,
+    Cleave,
+    Clothesline,
+    Headbutt,
+    HeavyBlade,
+    IronWave,
+    PerfectedStrike,
+    PommelStrike,
+    SwordBoomerang,
+    Thunderclap,
+    TwinStrike,
+    WildStrike,
+    BloodForBlood,
+    Carnage,
+    Dropkick,
+    Hemokinesis,
+    Pummel,
+    Rampage,
+    RecklessCharge,
+    SearingBlow,
+    SeverSoul,
+    Uppercut,
+    Whirlwind,
+    Bludgeon,
+    Feed,
+    FiendFire,
+    Immolate,
+    Reaper,
+    Armaments,
+    Flex,
+    Havoc,
+    ShrugItOff,
+    TrueGrit,
+    Warcry,
+    BattleTrance,
+    Bloodletting,
+    BurningPact,
+    Disarm,
+    DualWield,
+    Entrench,
+    FlameBarrier,
+    GhostlyArmor,
+    InfernalBlade,
+    Intimidate,
+    PowerThrough,
+    Rage,
+    SecondWind,
+    SeeingRed,
+    Sentinel,
+    Shockwave,
+    SpotWeakness,
+    DoubleTap,
+    Exhume,
+    Impervious,
+    LimitBreak,
+    Offering,
+    Combust,
+    DarkEmbrace,
+    Evolve,
+    FeelNoPain,
+    FireBreathing,
+    Inflame,
+    Metallicize,
+    Rupture,
+    Barricade,
+    Berserk,
+    Brutality,
+    Corruption,
+    DemonForm,
+    Juggernaut,
+    Bane,
+    DaggerSpray,
+    DaggerThrow,
+    FlyingKnee,
+    PoisonedStab,
+    QuickSlash,
+    Slice,
+    SuckerPunch,
+    SneakyStrike,
+    AllOutAttack,
+    Backstab,
+    Choke,
+    Dash,
+    EndlessAgony,
+    Eviscerate,
+    Finisher,
+    Flechettes,
+    HeelHook,
+    MasterfulStab,
+    Predator,
+    RiddleWithHoles,
+    Skewer,
+    DieDieDie,
+    GlassKnife,
+    GrandFinale,
+    Unload,
+    Acrobatics,
+    Backflip,
+    BladeDance,
+    CloakAndDagger,
+    DeadlyPoison,
+    Deflect,
+    DodgeAndRoll,
+    Outmaneuver,
+    PiercingWail,
+    Prepared,
+    Blur,
+    BouncingFlask,
+    CalculatedGamble,
+    Catalyst,
+    Concentrate,
+    CripplingCloud,
+    Distraction,
+    EscapePlan,
+    Expertise,
+    LegSweep,
+    Reflex,
+    Setup,
+    Tactician,
+    Terror,
+    Adrenaline,
+    BulletTime,
+    Burst,
+    CorpseExplosion,
+    Doppelganger,
+    Malaise,
+    Nightmare,
+    PhantasmalKiller,
+    StormOfSteel,
+    Alchemize,
+    Accuracy,
+    Caltrops,
+    Footwork,
+    InfiniteBlades,
+    NoxiousFumes,
+    WellLaidPlans,
+    AThousandCuts,
+    AfterImage,
+    Envenom,
+    ToolsOfTheTrade,
+    WraithForm,
+    BallLightning,
+    Barrage,
+    BeamCell,
+    ColdSnap,
+    CompileDriver,
+    Claw,
+    GoForTheEyes,
+    Rebound,
+    Streamline,
+    SweepingBeam,
+    Blizzard,
+    DoomAndGloom,
+    Ftl,
+    Bullseye,
+    Melter,
+    RipAndTear,
+    Scrape,
+    Sunder,
+    AllForOne,
+    CoreSurge,
+    Hyperbeam,
+    MeteorStrike,
+    ThunderStrike,
+    ChargeBattery,
+    Coolheaded,
+    Hologram,
+    Leap,
+    Recursion,
+    Stack,
+    SteamBarrier,
+    Turbo,
+    Aggregate,
+    AutoShields,
+    BootSequence,
+    Chaos,
+    Chill,
+    Consume,
+    Darkness,
+    DoubleEnergy,
+    ForceField,
+    Fusion,
+    GeneticAlgorithm,
+    Glacier,
+    Recycle,
+    ReinforcedBody,
+    Reprogram,
+    Skim,
+    Overclock,
+    Tempest,
+    Equilibrium,
+    WhiteNoise,
+    Amplify,
+    Fission,
+    MultiCast,
+    Rainbow,
+    Reboot,
+    Seek,
+    Capacitor,
+    Defragment,
+    Heatsinks,
+    HelloWorld,
+    Loop,
+    SelfRepair,
+    StaticDischarge,
+    Storm,
+    BiasedCognition,
+    Buffer,
+    CreativeAi,
+    EchoForm,
+    Electrodynamics,
+    MachineLearning,
+    BowlingBash,
+    Consecrate,
+    CrushJoints,
+    CutThroughFate,
+    EmptyFist,
+    FlurryOfBlows,
+    FlyingSleeves,
+    FollowUp,
+    JustLucky,
+    SashWhip,
+    CarveReality,
+    Conclude,
+    FearNoEvil,
+    ReachHeaven,
+    SandsOfTime,
+    SignatureMove,
+    TalkToTheHand,
+    Tantrum,
+    Wallop,
+    Weave,
+    WheelKick,
+    WindmillStrike,
+    Brilliance,
+    LessonLearned,
+    Ragnarok,
+    Tranquility,
+    Crescendo,
+    EmptyBody,
+    Evaluate,
+    Halt,
+    PressurePoints,
+    Prostrate,
+    Protect,
+    ThirdEye,
+    Collect,
+    DeceiveReality,
+    EmptyMind,
+    ForeignInfluence,
+    Indignation,
+    InnerPeace,
+    Meditate,
+    Perseverance,
+    Pray,
+    Sanctity,
+    Swivel,
+    SimmeringFury,
+    WaveOfTheHand,
+    Worship,
+    WreathOfFlame,
+    Alpha,
+    Blasphemy,
+    ConjureBlade,
+    DeusExMachina,
+    Judgment,
+    Omniscience,
+    Scrawl,
+    SpiritShield,
+    Vault,
+    Wish,
+    Rushdown,
+    BattleHymn,
+    Fasting,
+    LikeWater,
+    MentalFortress,
+    Nirvana,
+    Study,
+    Foresight,
+    DevaForm,
+    Devotion,
+    Establishment,
+    MasterReality,
+    BandageUp,
+    Blind,
+    DarkShackles,
+    DeepBreath,
+    Discovery,
+    DramaticEntrance,
+    Enlightenment,
+    Finesse,
+    FlashOfSteel,
+    Forethought,
+    GoodInstincts,
+    Impatience,
+    JackOfAllTrades,
+    Madness,
+    MindBlast,
+    Panacea,
+    PanicButton,
+    Purity,
+    SwiftStrike,
+    Trip,
+    Apotheosis,
+    Chrysalis,
+    HandOfGreed,
+    Magnetism,
+    MasterOfStrategy,
+    Mayhem,
+    Metamorphosis,
+    Panache,
+    SadisticNature,
+    SecretTechnique,
+    SecretWeapon,
+    TheBomb,
+    ThinkingAhead,
+    Transmutation,
+    Violence,
+}
