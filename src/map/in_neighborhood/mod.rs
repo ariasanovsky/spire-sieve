@@ -9,9 +9,9 @@ pub struct InVec {
 
 pub trait InNeighborhood<'a, 'b>
 where
-    'b: 'a
+    'b: 'a,
 {
-    type Iter: Iterator<Item = &'b usize>;
+    type Iter: Iterator<Item = &'b usize> + 'a;
     fn min(&'a self) -> Option<&'a usize> {
         self.iter().min()
     }
@@ -20,6 +20,12 @@ where
     }
     fn push(&mut self, value: usize);
     fn iter(&'a self) -> Self::Iter;
+    fn gca_skip(left: &'a Self, right: &'a Self) -> bool {
+        match (left.max(), right.min()) {
+            (Some(left_max), Some(right_min)) => left_max != right_min,
+            _ => true,
+        }
+    }
 }
 
 impl<'a> InNeighborhood<'a, 'a> for InVec {

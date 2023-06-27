@@ -25,7 +25,7 @@ pub struct Daily {
 
 #[cfg(test)]
 mod test_daily_parser {
-    use crate::neow::{Drawback, FirstBonus, SecondBonus, ThirdBonus};
+    //use crate::neow::{Drawback, FirstBonus, SecondBonus, ThirdBonus};
 
     use super::*;
 

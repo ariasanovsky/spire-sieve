@@ -27,8 +27,10 @@ const LAST_POSITION: usize = WIDTH as usize - 1;
 const HEIGHT: usize = 15;
 const PATHS: u64 = 6;
 
+pub type Row = [(InVec, OutNeighborhood, Option<NodeKind>); WIDTH as usize];
+
 #[derive(Debug, Default)]
-pub struct Map([[(InVec, OutNeighborhood, Option<NodeKind>); WIDTH as usize]; HEIGHT]);
+pub struct Map([Row; HEIGHT]);
 
 impl Map {
     pub fn generate(rng: &mut Random) -> Map {
@@ -93,14 +95,13 @@ impl Map {
     ) -> usize {
         let (next_in_neighborhood, _, _) = &self.0[row + 1][next_position];
         let old_next_position = next_position;
-        for neighbor in next_in_neighborhood.iter() {
+        let next_neighbors = next_in_neighborhood
+        .iter()
+        .filter(|neighbor| !position.eq(neighbor))
+        .filter(|&&neighbor| !self.gca_skip(row, neighbor, position))
+        .count();
+        for _ in 0..next_neighbors {
             // let foo = 3;
-            if position.eq(neighbor) {
-                continue;
-            }
-            if self.gca_skip(row, *neighbor, position) {
-                continue;
-            }
             next_position = match next_position.cmp(&position) {
                 std::cmp::Ordering::Greater => {
                     next_position = position + rng.next_capped_u64(2) as usize;
@@ -135,21 +136,17 @@ impl Map {
         next_position
     }
 
-    fn gca_skip(&self, row: usize, position: usize, neighbor: usize) -> bool {
-        let (left_position, right_position) = if position < row {
+    fn gca_skip(&self, row_num: usize, position: usize, neighbor: usize) -> bool {
+        let (left_position, right_position) = if position < row_num {
             (position, neighbor)
         } else {
             (neighbor, position)
         };
 
-        let (in_neighborhood, _, _) = &self.0[row][left_position];
-        let left_max = in_neighborhood.max();
-        let (in_neighborhood, _, _) = &self.0[row][right_position];
-        let right_min = in_neighborhood.min();
-        match (left_max, right_min) {
-            (Some(left_max), Some(right_min)) => left_max != right_min,
-            _ => true,
-        }
+        let row = &self.0[row_num];
+        let (left_in_neighborhood, _, _) = &row[left_position];
+        let (right_in_neighborhood, _, _) = &row[right_position];
+        InNeighborhood::gca_skip(left_in_neighborhood, right_in_neighborhood)
     }
 
     fn cpanx(&self, row: usize, position: usize, mut next_position: usize) -> usize {
