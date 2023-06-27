@@ -87,7 +87,7 @@ impl Map {
 
     fn next_position(&self, rng: &mut Random, row: usize, position: usize) -> usize {
         let min_position = if position == 0 { 0 } else { position - 1 };
-        let n_possible_positions = if position == 0 || position == WIDTH as usize - 1 {
+        let n_possible_positions = if position == 0 || position == LAST_POSITION {
             2
         } else {
             3
@@ -111,9 +111,10 @@ impl Map {
         let old_next_position = next_position;
         let rerolls = next_in_neighborhood
             .iter()
-            .filter(|neighbor| !position.eq(neighbor))
-            .filter(|&&neighbor| !self.gca_skip(row, neighbor, position))
-            .count();
+            .filter(|neighbor| !position.eq(&neighbor.0))
+            .filter(|&&neighbor| !self.gca_skip(row, neighbor.0, position))
+            .map(|neighbor| neighbor.1)
+            .sum();
         for _ in 0..rerolls {
             // let foo = 3;
             next_position = match next_position.cmp(&position) {
@@ -175,7 +176,7 @@ impl Map {
             }
         }
 
-        if position != WIDTH as usize - 1 {
+        if position != LAST_POSITION {
             let sibling_position = position + 1;
             let (_, out_neighborhood, _) = &self.row(row)[sibling_position];
             if let Some(&out_neighbor) = out_neighborhood

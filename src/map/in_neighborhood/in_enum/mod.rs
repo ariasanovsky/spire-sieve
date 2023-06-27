@@ -1,3 +1,5 @@
+use super::InNeighborhood;
+
 mod add_first;
 mod add_second;
 mod add_third;
@@ -89,10 +91,52 @@ pub enum ThreeCmp {
     FourOneOne,
 }
 
-// pub struct NumberedInEnum {
-//     pub in_enum: InEnum,
-//     pub position: usize,
-// }
+#[derive(Debug)]
+pub struct NumberedInEnum {
+    pub in_enum: InEnum,
+    pub position: usize,
+}
+
+impl<'a> InNeighborhood<'a, 'static> for NumberedInEnum {
+    type Iter = std::slice::Iter<'static, (usize, usize)>;
+
+    fn push(&mut self, value: usize) {
+        todo!()
+    }
+
+    fn iter(&'a self) -> Self::Iter {
+        todo!()
+    }
+
+    fn min(&'a self) -> Option<&'a usize> {
+        Some(match self.in_enum {
+            InEnum::Empty => return None,
+            InEnum::Less(_) | InEnum::LessEqual(_) | InEnum::LessEqualGreater(_) => {
+                &[0, 0, 1, 2, 3, 4, 5][self.position]
+            }
+            InEnum::Equal(_) | InEnum::EqualGreater(_) => &[0, 1, 2, 3, 4, 5, 6][self.position],
+            InEnum::Greater(_) => &[1, 2, 3, 4, 5, 6, 7][self.position],
+        })
+    }
+
+    fn max(&'a self) -> Option<&'a usize> {
+        Some(match self.in_enum {
+            InEnum::Empty => return None,
+            InEnum::Less(_) => &[0, 0, 1, 2, 3, 4, 5][self.position],
+            InEnum::LessEqual(_) | InEnum::Equal(_) => &[0, 1, 2, 3, 4, 5, 6][self.position],
+            InEnum::Greater(_) | InEnum::EqualGreater(_) | InEnum::LessEqualGreater(_) => {
+                &[1, 2, 3, 4, 5, 6, 7][self.position]
+            }
+        })
+    }
+
+    fn gca_skip(left: &'a Self, right: &'a Self) -> bool {
+        match (left.max(), right.min()) {
+            (Some(left_max), Some(right_min)) => left_max != right_min,
+            _ => true,
+        }
+    }
+}
 
 // impl<'a> InNeighborhood<'a> for NumberedInEnum {
 //     fn min(&self) -> Option<usize> {
