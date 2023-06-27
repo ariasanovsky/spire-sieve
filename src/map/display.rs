@@ -1,17 +1,17 @@
 use std::fmt::Display;
 
-use super::{Map, OutNeighborhood};
+use super::{Map, OutVec};
 
 impl Display for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for (row, nodes) in self.0.iter().enumerate().rev() {
+        for (row, nodes) in self.rows.iter().enumerate().rev() {
             write!(f, "\n{: <6}", "")?;
             for (position, (_, out_neighborhood, _)) in nodes.iter().enumerate() {
                 write!(f, "{}", EnumeratedOutNeighborhood(out_neighborhood, position))?;
             }
             write!(f, "\n{: <6}", row)?;
             for (_position, (_, out_neighborhood, _)) in nodes.iter().enumerate() {
-                if out_neighborhood.0.is_empty() {
+                if out_neighborhood.values.is_empty() {
                     write!(f, "   ")?;
                 } else {
                     write!(f, " * ")?;
@@ -22,12 +22,12 @@ impl Display for Map {
     }
 }
 
-struct EnumeratedOutNeighborhood<'a>(&'a OutNeighborhood, usize);
+struct EnumeratedOutNeighborhood<'a>(&'a OutVec, usize);
 
 impl Display for EnumeratedOutNeighborhood<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let (mut right, mut middle, mut left) = (" ", " ", " ");
-        for neighbor in &self.0.0 {
+        for neighbor in &self.0.values {
             match neighbor.cmp(&self.1) {
                 std::cmp::Ordering::Less => left = r"\",
                 std::cmp::Ordering::Equal => middle = "|",

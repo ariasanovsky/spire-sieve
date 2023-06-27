@@ -5,6 +5,7 @@ mod in_neighborhood;
 mod out_neighborhood;
 
 use in_neighborhood::{InVec, InNeighborhood};
+use out_neighborhood::{OutVec, OutNeighborhood};
 
 #[derive(Debug)]
 pub enum NodeKind {
@@ -19,18 +20,30 @@ pub enum NodeKind {
 // #[derive(Debug, Default)]
 // pub struct InNeighborhood(Vec<usize>);
 
-#[derive(Debug, Default)]
-pub struct OutNeighborhood(Vec<usize>);
+// #[derive(Debug, Default)]
+// pub struct OutNeighborhood(Vec<usize>);
 
 const WIDTH: u64 = 7;
 const LAST_POSITION: usize = WIDTH as usize - 1;
 const HEIGHT: usize = 15;
 const PATHS: u64 = 6;
 
-pub type Row = [(InVec, OutNeighborhood, Option<NodeKind>); WIDTH as usize];
+pub type Row = [(InVec, OutVec, Option<NodeKind>); WIDTH as usize];
 
 #[derive(Debug, Default)]
-pub struct Map([Row; HEIGHT]);
+pub struct Map{
+    rows: [Row; HEIGHT]
+}
+
+impl Map {
+    fn row(&self, row: usize) -> &Row {
+        &self.rows[row]
+    }
+
+    fn row_mut(&mut self, row: usize) -> &mut Row {
+        &mut self.rows[row]
+    }
+}
 
 impl Map {
     pub fn generate(rng: &mut Random) -> Map {
@@ -65,9 +78,10 @@ impl Map {
     }
 
     fn add_edge(&mut self, row: usize, position: usize, next_position: usize) {
-        let (_, out_neigh, _) = &mut self.0[row][position];
-        out_neigh.0.push(next_position);
-        let (in_neigh, _, _) = &mut self.0[row + 1][next_position];
+        let (_, out_neigh, _) = &mut self.row_mut(row)[position];
+        out_neigh.push(next_position);
+        
+        let (in_neigh, _, _) = &mut self.row_mut(row + 1)[next_position];
         in_neigh.push(position);
     }
 
@@ -93,14 +107,14 @@ impl Map {
         position: usize,
         mut next_position: usize,
     ) -> usize {
-        let (next_in_neighborhood, _, _) = &self.0[row + 1][next_position];
+        let (next_in_neighborhood, _, _) = &self.row(row + 1)[next_position];
         let old_next_position = next_position;
-        let next_neighbors = next_in_neighborhood
+        let rerolls = next_in_neighborhood
         .iter()
         .filter(|neighbor| !position.eq(neighbor))
         .filter(|&&neighbor| !self.gca_skip(row, neighbor, position))
         .count();
-        for _ in 0..next_neighbors {
+        for _ in 0..rerolls {
             // let foo = 3;
             next_position = match next_position.cmp(&position) {
                 std::cmp::Ordering::Greater => {
@@ -136,14 +150,14 @@ impl Map {
         next_position
     }
 
-    fn gca_skip(&self, row_num: usize, position: usize, neighbor: usize) -> bool {
-        let (left_position, right_position) = if position < row_num {
+    fn gca_skip(&self, row: usize, position: usize, neighbor: usize) -> bool {
+        let (left_position, right_position) = if position < row {
             (position, neighbor)
         } else {
             (neighbor, position)
         };
 
-        let row = &self.0[row_num];
+        let row = &self.row(row);
         let (left_in_neighborhood, _, _) = &row[left_position];
         let (right_in_neighborhood, _, _) = &row[right_position];
         InNeighborhood::gca_skip(left_in_neighborhood, right_in_neighborhood)
@@ -152,28 +166,20 @@ impl Map {
     fn cpanx(&self, row: usize, position: usize, mut next_position: usize) -> usize {
         if position != 0 {
             let sibling_position = position - 1;
-            let (_, out_neighborhood, _) = &self.0[row][sibling_position];
-            let out_neighbor = out_neighborhood.0.iter().max();
-            if let Some(&out_neighbor) = out_neighbor {
-                if out_neighbor > next_position {
-                    next_position = out_neighbor;
-                    // dbg!(next_position);
-                    // let foo = 3;
-                }
-            }
+            let (_, out_neighborhood, _) = &self.row(row)[sibling_position];
+            out_neighborhood
+            .max()
+            .filter(|&&out_neighbor| out_neighbor.gt(&next_position))
+            .map(|&out_neighbor| next_position = out_neighbor);
         }
 
         if position != WIDTH as usize - 1 {
             let sibling_position = position + 1;
-            let (_, out_neighborhood, _) = &self.0[row][sibling_position];
-            let out_neighbor = out_neighborhood.0.iter().min();
-            if let Some(&out_neighbor) = out_neighbor {
-                if out_neighbor < next_position {
-                    next_position = out_neighbor;
-                    // dbg!(next_position);
-                    // let foo = 3;
-                }
-            }
+            let (_, out_neighborhood, _) = &self.row(row)[sibling_position];
+            out_neighborhood
+            .min()
+            .filter(|&&out_neighbor| out_neighbor.lt(&next_position))
+            .map(|&out_neighbor| next_position = out_neighbor);
         }
         next_position
     }
