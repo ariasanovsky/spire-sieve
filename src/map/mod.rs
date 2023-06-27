@@ -37,17 +37,20 @@ impl Map {
     fn create_paths(&mut self, rng: &mut Random) {
         let first_position = self.create_first_path(rng);
         self.create_second_path(rng, first_position);
-        (2..PATHS).for_each(|_| self.create_path(rng));
+        (2..PATHS).for_each(|_| {
+            // dbg!(path);
+            self.create_path(rng);
+        })
     }
 
     fn create_first_path(&mut self, rng: &mut Random) -> usize {
         let first_position = rng.next_capped_u64(WIDTH) as usize;
         let mut position = first_position;
+        // let path = 0;
+        // dbg!(path);
 
         for row in 0..HEIGHT - 1 {
-            if row <= 6 {
-                dbg!(row, position);
-            }
+            // println!("row {row}:\t{position}");
             let next_position = self.next_position(rng, row, position);
             self.add_edge(row, position, next_position);
             position = next_position;
@@ -71,8 +74,10 @@ impl Map {
         };
         let adjustment = rng.next_capped_u64(n_possible_positions) as usize;
         let mut next_position = adjustment + min_position;
+        // dbg!(next_position, &rng);
         next_position = self.cpplr(rng, row, position, next_position);
-        self.cpanx(row, position, next_position)
+        next_position = self.cpanx(row, position, next_position);
+        next_position
     }
 
     fn cpplr(
@@ -83,18 +88,20 @@ impl Map {
         mut next_position: usize,
     ) -> usize {
         let (next_in_neighborhood, _, _) = &self.0[row + 1][next_position];
+        let old_next_position = next_position;
         for &neighbor in &next_in_neighborhood.0 {
+            // let foo = 3;
             if neighbor == position {
                 continue;
             }
-            if self.gca(row, position, neighbor) {
+            if !self.gca_skip(row, neighbor, position) {
                 continue;
             }
-            next_position = match position.cmp(&next_position) {
-                std::cmp::Ordering::Less => {
+            next_position = match next_position.cmp(&position) {
+                std::cmp::Ordering::Greater => {
                     next_position = position + rng.next_capped_u64(2) as usize;
                     if next_position == 0 {
-                        position
+                        old_next_position
                     } else {
                         next_position - 1
                     }
@@ -102,27 +109,30 @@ impl Map {
                 std::cmp::Ordering::Equal => {
                     next_position = position + rng.next_capped_u64(3) as usize;
                     if next_position == 0 {
-                        position + 1
-                    } else if next_position >= WIDTH as usize {
-                        position - 1
+                        old_next_position + 1
+                    } else if next_position >= LAST_POSITION as usize {
+                        old_next_position - 1
                     } else {
-                        position
+                        next_position - 1
                     }
                 }
-                std::cmp::Ordering::Greater => {
+                std::cmp::Ordering::Less => {
                     next_position = position + rng.next_capped_u64(2) as usize;
                     if next_position >= WIDTH as usize {
-                        position
+                        old_next_position
                     } else {
                         next_position
                     }
                 }
-            }
+            };
+            // dbg!(next_position, &rng);
+            // let foo = 3;
+
         }
         next_position
     }
 
-    fn gca(&self, row: usize, position: usize, neighbor: usize) -> bool {
+    fn gca_skip(&self, row: usize, position: usize, neighbor: usize) -> bool {
         let (left_position, right_position) = if position < row {
             (position, neighbor)
         } else {
@@ -130,19 +140,13 @@ impl Map {
         };
 
         let (in_neighborhood, _, _) = &self.0[row][left_position];
-        let left_max = match in_neighborhood.0.iter().max() {
-            Some(&max) => max,
-            None => return true,
-        };
+        let left_max = in_neighborhood.0.iter().max();
         let (in_neighborhood, _, _) = &self.0[row][right_position];
-        let right_min = match in_neighborhood.0.iter().min() {
-            Some(&min) => min,
-            None => return true,
-        };
-        if left_max == right_min {
-            return left_max != 0;
+        let right_min = in_neighborhood.0.iter().min();
+        match (left_max, right_min) {
+            (Some(&left_max), Some(&right_min)) => left_max == right_min,
+            _ => false,
         }
-        return true;
     }
 
     fn cpanx(&self, row: usize, position: usize, mut next_position: usize) -> usize {
@@ -157,6 +161,8 @@ impl Map {
                 Some(&out_neighbor) => {
                     if out_neighbor > next_position {
                         next_position = out_neighbor;
+                        // dbg!(next_position);
+                        // let foo = 3;
                     }
                 }
                 None => {}
@@ -171,6 +177,8 @@ impl Map {
                 Some(&out_neighbor) => {
                     if out_neighbor < next_position {
                         next_position = out_neighbor;
+                        // dbg!(next_position);
+                        // let foo = 3;
                     }
                 }
                 None => {}
@@ -184,16 +192,13 @@ impl Map {
         while position == first_position {
             position = rng.next_capped_u64(WIDTH) as usize;
         }
-        assert!(position <= LAST_POSITION);
-
+        
+        // let path = 1;
+        // dbg!(path);
+        
         for row in 0..HEIGHT - 1 {
-            if row <= 6 {
-                dbg!(row, position);
-            }
+            // println!("row {row}:\t{position}");
             let next_position = self.next_position(rng, row, position);
-            assert!(position <= LAST_POSITION);
-            assert!(next_position <= LAST_POSITION);
-
             self.add_edge(row, position, next_position);
             position = next_position;
         }
@@ -202,9 +207,7 @@ impl Map {
     fn create_path(&mut self, rng: &mut Random) {
         let mut position = rng.next_capped_u64(WIDTH) as usize;
         for row in 0..HEIGHT - 1 {
-            if row <= 6 {
-                dbg!(row, position);
-            }
+            // println!("row {row}:\t{position}");
             let next_position = self.next_position(rng, row, position);
             self.add_edge(row, position, next_position);
             position = next_position;
@@ -225,6 +228,14 @@ mod tests {
         let mut rng = Random::from(1);
         let map = Map::generate(&mut rng);
         dbg!(&map);
+        println!("{map}");
+    }
+
+    #[test]
+    fn test_special_map() {
+        let mut rng = Random::from(533907583096 + 1);
+        let map = Map::generate(&mut rng);
+        //dbg!(&map);
         println!("{map}");
     }
 }

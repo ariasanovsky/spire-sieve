@@ -1,33 +1,38 @@
 use std::fmt::Display;
 
-use super::{InNeighborhood, Map};
+use super::{OutNeighborhood, Map};
 
 impl Display for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.0
-            .iter()
-            .map(|row| {
-                row.iter()
-                    .map(|(in_neighborhood, _, _)| in_neighborhood)
-                    .enumerate()
-                    .map(|(i, in_neighborhood)| EnumeratedInNeighborhood(in_neighborhood, i))
-            })
-            .enumerate()
-            .rev()
-            .map(|(i, row)| {
-                write!(f, "{i}\t")?;
-                row.map(|in_neighborhood| write!(f, "{in_neighborhood}"))
-                    .collect::<Result<Vec<_>, _>>()?;
-                write!(f, "\n\n")
-            })
-            .collect::<Result<Vec<_>, _>>()
-            .map(|_| ())
+        for (row, nodes) in self.0.iter().enumerate().rev() {
+            write!(f, "\n{: <6}", "")?;
+            for (position, (_, out_neighborhood, _)) in nodes.iter().enumerate() {
+                let (mut right, mut middle, mut left) = (" ", " ", " ");
+                for neighbor in &out_neighborhood.0 {
+                    match neighbor.cmp(&position) {
+                        std::cmp::Ordering::Less => left = r"\",
+                        std::cmp::Ordering::Equal => middle = "|",
+                        std::cmp::Ordering::Greater => right = "/",
+                    }
+                }
+                write!(f, "{left}{middle}{right}")?;
+            }
+            write!(f, "\n{: <6}", row)?;
+            for (_position, (_, out_neighborhood, _)) in nodes.iter().enumerate() {
+                if out_neighborhood.0.is_empty() {
+                    write!(f, "   ")?;
+                } else {
+                    write!(f, " * ")?;
+                }
+            }
+        }
+        Ok(())
     }
 }
 
-struct EnumeratedInNeighborhood<'a>(&'a InNeighborhood, usize);
+struct EnumeratedOutNeighborhood<'a>(&'a OutNeighborhood, usize);
 
-impl Display for EnumeratedInNeighborhood<'_> {
+impl Display for EnumeratedOutNeighborhood<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let position = self.1;
         let mut neighbors = self.0 .0.clone();
