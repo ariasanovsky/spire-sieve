@@ -110,7 +110,7 @@ impl Map {
                     next_position = position + rng.next_capped_u64(3) as usize;
                     if next_position == 0 {
                         old_next_position + 1
-                    } else if next_position >= LAST_POSITION as usize {
+                    } else if next_position >= LAST_POSITION {
                         old_next_position - 1
                     } else {
                         next_position - 1
@@ -157,15 +157,12 @@ impl Map {
             let sibling_position = position - 1;
             let (_, out_neighborhood, _) = &self.0[row][sibling_position];
             let out_neighbor = out_neighborhood.0.iter().max();
-            match out_neighbor {
-                Some(&out_neighbor) => {
-                    if out_neighbor > next_position {
-                        next_position = out_neighbor;
-                        // dbg!(next_position);
-                        // let foo = 3;
-                    }
+            if let Some(&out_neighbor) = out_neighbor {
+                if out_neighbor > next_position {
+                    next_position = out_neighbor;
+                    // dbg!(next_position);
+                    // let foo = 3;
                 }
-                None => {}
             }
         }
 
@@ -173,15 +170,12 @@ impl Map {
             let sibling_position = position + 1;
             let (_, out_neighborhood, _) = &self.0[row][sibling_position];
             let out_neighbor = out_neighborhood.0.iter().min();
-            match out_neighbor {
-                Some(&out_neighbor) => {
-                    if out_neighbor < next_position {
-                        next_position = out_neighbor;
-                        // dbg!(next_position);
-                        // let foo = 3;
-                    }
+            if let Some(&out_neighbor) = out_neighbor {
+                if out_neighbor < next_position {
+                    next_position = out_neighbor;
+                    // dbg!(next_position);
+                    // let foo = 3;
                 }
-                None => {}
             }
         }
         next_position
