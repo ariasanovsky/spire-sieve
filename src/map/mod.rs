@@ -1,6 +1,8 @@
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 mod display;
+mod in_neighborhood;
+mod out_neighborhood;
 
 #[derive(Debug)]
 pub enum NodeKind {
@@ -94,7 +96,7 @@ impl Map {
             if neighbor == position {
                 continue;
             }
-            if !self.gca_skip(row, neighbor, position) {
+            if self.gca_skip(row, neighbor, position) {
                 continue;
             }
             next_position = match next_position.cmp(&position) {
@@ -143,15 +145,12 @@ impl Map {
         let (in_neighborhood, _, _) = &self.0[row][right_position];
         let right_min = in_neighborhood.0.iter().min();
         match (left_max, right_min) {
-            (Some(&left_max), Some(&right_min)) => left_max == right_min,
-            _ => false,
+            (Some(&left_max), Some(&right_min)) => left_max != right_min,
+            _ => true,
         }
     }
 
     fn cpanx(&self, row: usize, position: usize, mut next_position: usize) -> usize {
-        assert!(position <= LAST_POSITION);
-        assert!(next_position <= LAST_POSITION);
-
         if position != 0 {
             let sibling_position = position - 1;
             let (_, out_neighborhood, _) = &self.0[row][sibling_position];
