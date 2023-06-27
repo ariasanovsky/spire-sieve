@@ -4,6 +4,8 @@ mod display;
 mod in_neighborhood;
 mod out_neighborhood;
 
+use in_neighborhood::{InVec, InNeighborhood};
+
 #[derive(Debug)]
 pub enum NodeKind {
     Monster,
@@ -14,8 +16,8 @@ pub enum NodeKind {
     Treasure,
 }
 
-#[derive(Debug, Default)]
-pub struct InNeighborhood(Vec<usize>);
+// #[derive(Debug, Default)]
+// pub struct InNeighborhood(Vec<usize>);
 
 #[derive(Debug, Default)]
 pub struct OutNeighborhood(Vec<usize>);
@@ -26,7 +28,7 @@ const HEIGHT: usize = 15;
 const PATHS: u64 = 6;
 
 #[derive(Debug, Default)]
-pub struct Map([[(InNeighborhood, OutNeighborhood, Option<NodeKind>); WIDTH as usize]; HEIGHT]);
+pub struct Map([[(InVec, OutNeighborhood, Option<NodeKind>); WIDTH as usize]; HEIGHT]);
 
 impl Map {
     pub fn generate(rng: &mut Random) -> Map {
@@ -64,7 +66,7 @@ impl Map {
         let (_, out_neigh, _) = &mut self.0[row][position];
         out_neigh.0.push(next_position);
         let (in_neigh, _, _) = &mut self.0[row + 1][next_position];
-        in_neigh.0.push(position);
+        in_neigh.push(position);
     }
 
     fn next_position(&self, rng: &mut Random, row: usize, position: usize) -> usize {
@@ -91,12 +93,12 @@ impl Map {
     ) -> usize {
         let (next_in_neighborhood, _, _) = &self.0[row + 1][next_position];
         let old_next_position = next_position;
-        for &neighbor in &next_in_neighborhood.0 {
+        for neighbor in next_in_neighborhood.iter() {
             // let foo = 3;
-            if neighbor == position {
+            if position.eq(neighbor) {
                 continue;
             }
-            if self.gca_skip(row, neighbor, position) {
+            if self.gca_skip(row, *neighbor, position) {
                 continue;
             }
             next_position = match next_position.cmp(&position) {
@@ -141,11 +143,11 @@ impl Map {
         };
 
         let (in_neighborhood, _, _) = &self.0[row][left_position];
-        let left_max = in_neighborhood.0.iter().max();
+        let left_max = in_neighborhood.max();
         let (in_neighborhood, _, _) = &self.0[row][right_position];
-        let right_min = in_neighborhood.0.iter().min();
+        let right_min = in_neighborhood.min();
         match (left_max, right_min) {
-            (Some(&left_max), Some(&right_min)) => left_max != right_min,
+            (Some(left_max), Some(right_min)) => left_max != right_min,
             _ => true,
         }
     }
