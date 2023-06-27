@@ -1,4 +1,4 @@
-use super::{AddFirst, OneCmp, TwoCmp, ThreeCmp};
+use super::{AddFirst, OneCmp, ThreeCmp, TwoCmp};
 
 impl AddFirst for OneCmp {
     fn add_first(&mut self) {

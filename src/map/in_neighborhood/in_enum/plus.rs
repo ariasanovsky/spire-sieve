@@ -1,4 +1,4 @@
-use super::{Plus, OneCmp, TwoCmp, ThreeCmp};
+use super::{OneCmp, Plus, ThreeCmp, TwoCmp};
 
 impl Plus for OneCmp {
     type Next = TwoCmp;
