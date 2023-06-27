@@ -127,7 +127,6 @@ impl Map {
             };
             // dbg!(next_position, &rng);
             // let foo = 3;
-
         }
         next_position
     }
@@ -186,10 +185,10 @@ impl Map {
         while position == first_position {
             position = rng.next_capped_u64(WIDTH) as usize;
         }
-        
+
         // let path = 1;
         // dbg!(path);
-        
+
         for row in 0..HEIGHT - 1 {
             // println!("row {row}:\t{position}");
             let next_position = self.next_position(rng, row, position);
