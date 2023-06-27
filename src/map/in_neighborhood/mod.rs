@@ -1,6 +1,6 @@
 pub mod one_cmp;
-pub mod two_cmp;
 pub mod three_cmp;
+pub mod two_cmp;
 
 #[derive(Debug, Default)]
 pub struct InVec {
@@ -122,7 +122,7 @@ pub enum TwoCmp {
     ThreeThree,
     FourOne,
     FourTwo,
-    FiveOne,   
+    FiveOne,
 }
 
 #[derive(Debug, Default)]

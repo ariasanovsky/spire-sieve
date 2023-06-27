@@ -7,7 +7,11 @@ impl Display for Map {
         for (row, nodes) in self.rows.iter().enumerate().rev() {
             write!(f, "\n{: <6}", "")?;
             for (position, (_, out_neighborhood, _)) in nodes.iter().enumerate() {
-                write!(f, "{}", EnumeratedOutNeighborhood(out_neighborhood, position))?;
+                write!(
+                    f,
+                    "{}",
+                    EnumeratedOutNeighborhood(out_neighborhood, position)
+                )?;
             }
             write!(f, "\n{: <6}", row)?;
             for (_position, (_, out_neighborhood, _)) in nodes.iter().enumerate() {
