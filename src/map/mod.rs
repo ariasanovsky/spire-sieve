@@ -157,7 +157,7 @@ impl Map {
             (neighbor, position)
         };
 
-        let row = &self.row(row);
+        let row = self.row(row);
         let (left_in_neighborhood, _, _) = &row[left_position];
         let (right_in_neighborhood, _, _) = &row[right_position];
         InNeighborhood::gca_skip(left_in_neighborhood, right_in_neighborhood)
