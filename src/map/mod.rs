@@ -121,6 +121,10 @@ impl Map {
     fn row_mut(&mut self, row: usize) -> &mut Row {
         &mut self.rows[row]
     }
+
+    fn rows(&self) -> &[Row; HEIGHT] {
+        &self.rows
+    }
 }
 
 impl Map {
@@ -429,7 +433,7 @@ impl Map {
         let mut rooms = Vec::with_capacity(count);
         for (kind, chance) in chances {
             let kind_count = (chance * count as f32).round() as usize;
-            dbg!(kind, kind_count);
+            // dbg!(kind, kind_count);
             for _ in 0..kind_count {
                 rooms.push(kind);
             }
@@ -445,14 +449,14 @@ impl Map {
 impl Map {
     fn assign_rooms(&mut self, rng: &mut Random, ascension: bool) {
         let first_count = self.first_count();
-        dbg!(first_count);
+        // dbg!(first_count);
         let mut rooms = Self::fill_room_array(first_count, ascension);
         let recount = self.adjusted_recount();
-        dbg!(recount);
+        // dbg!(recount);
         let new_size = rooms.len().max(recount);
         rooms.resize(new_size, NodeKind::Monster);
         Self::shuffle(&mut rooms, rng);
-        dbg!(&rooms);
+        // dbg!(&rooms);
         for row in 0..HEIGHT {
             if [0, REST_ROW, TREASURE_ROW].contains(&row) {
                 continue;
@@ -466,7 +470,7 @@ impl Map {
                 }
             }
         }
-        dbg!("leftovers:", rooms);
+        // dbg!("leftovers:", rooms);
         self.set_constant_rows();
         self.populate_unassigned_nodes();
     }
@@ -509,9 +513,9 @@ impl Map {
             }
             let siblings = self.siblings(row, position);
             let node = &self.row(row).values[position];
-            let printable_in_neighborhood = &node.0.iter().map(|&(neighbor, _)| neighbor).collect::<Vec<_>>();
-            dbg!(&siblings, printable_in_neighborhood, position, row);
-            let foo = 3;
+            // let printable_in_neighborhood = &node.0.iter().map(|&(neighbor, _)| neighbor).collect::<Vec<_>>();
+            // dbg!(&siblings, printable_in_neighborhood, position, row);
+            // let foo = 3;
             let sibling_kinds: Vec<&NodeKind> = siblings.iter().filter_map(|&sibling| {
                 self.row(row).kind(sibling)
             }).collect();
@@ -566,6 +570,39 @@ impl Row {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum EliteBuff {
+    Strength,
+    MaxHP,
+    Metallicize,
+    Regenerate,
+}
+
+impl Map {
+    pub fn burning_elite_position(&self, rng: &mut Random) -> Option<(usize, usize)> {
+        let mut positions = Vec::new();
+        for (y, row) in self.rows().iter().enumerate() {
+            for (x, kind) in row.kinds().enumerate() {
+                if let Some(NodeKind::Elite) = kind {
+                    positions.push((x, y));
+                }
+            }
+        }
+        let pos = rng.next_capped_u64(positions.len() as u64) as usize;
+        positions.get(pos).copied()
+    }
+
+    pub fn burning_elite_buff(rng: &mut Random) -> EliteBuff {
+        match rng.next_capped_u64(4) {
+            0 => EliteBuff::Strength,
+            1 => EliteBuff::MaxHP,
+            2 => EliteBuff::Metallicize,
+            3 => EliteBuff::Regenerate,
+            _ => unreachable!(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -584,5 +621,36 @@ mod tests {
         let map = Map::generate(&mut rng, true);
         //dbg!(&map);
         println!("{map}");
+        let burning_elite_position = map.burning_elite_position(&mut rng);
+        dbg!(burning_elite_position);
+        let burning_elite_buff = Map::burning_elite_buff(&mut rng);
+        dbg!(burning_elite_buff);
+    }
+
+    fn test_map_with_seed(seed: i64) {
+        dbg!(seed);
+        let mut rng = Random::from(seed + 1);
+        let map = Map::generate(&mut rng, true);
+        println!("{map}");
+        let burning_elite_position = map.burning_elite_position(&mut rng);
+        dbg!(burning_elite_position);
+        let burning_elite_buff = Map::burning_elite_buff(&mut rng);
+        dbg!(burning_elite_buff);
+    }
+
+    #[test]
+    fn test_special_maps() {
+        const SEEDS: &[i64] = &[
+            533907583096,
+            2118750211857,
+            3481836885783,
+            8399213486180,
+            8867133130014,
+            8930754426721,
+            9884674834485,
+        ];
+        for &seed in SEEDS {
+            test_map_with_seed(seed);
+        }
     }
 }
