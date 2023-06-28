@@ -6,7 +6,7 @@ impl Display for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for (row, nodes) in self.rows.iter().enumerate().rev() {
             write!(f, "\n{: <6}", "")?;
-            for (position, (_, out_neighborhood, _)) in nodes.iter().enumerate() {
+            for (position, out_neighborhood) in nodes.out_neighborhoods().enumerate() {
                 write!(
                     f,
                     "{}",
@@ -14,7 +14,7 @@ impl Display for Map {
                 )?;
             }
             write!(f, "\n{: <6}", row)?;
-            for (_position, (_, out_neighborhood, _)) in nodes.iter().enumerate() {
+            for (_position, out_neighborhood) in nodes.out_neighborhoods().enumerate() {
                 if out_neighborhood.values.is_empty() {
                     write!(f, "   ")?;
                 } else {

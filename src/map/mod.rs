@@ -28,7 +28,34 @@ const LAST_POSITION: usize = WIDTH as usize - 1;
 const HEIGHT: usize = 15;
 const PATHS: u64 = 6;
 
-pub type Row = [(InVec, OutVec, Option<NodeKind>); WIDTH as usize];
+//pub type Row = [(InVec, OutVec, Option<NodeKind>); WIDTH as usize];
+
+#[derive(Debug, Default)]
+pub struct Row {
+    values: [(InVec, OutVec, Option<NodeKind>); WIDTH as usize],
+}
+
+impl Row {
+    fn out_neighborhood(&self, position: usize) -> &OutVec {
+        &self.values[position].1
+    }
+
+    fn out_neighborhood_mut(&mut self, position: usize) -> &mut OutVec {
+        &mut self.values[position].1
+    }
+
+    fn in_neighborhood(&self, position: usize) -> &InVec {
+        &self.values[position].0
+    }
+
+    fn in_neighborhood_mut(&mut self, position: usize) -> &mut InVec {
+        &mut self.values[position].0
+    }
+
+    fn out_neighborhoods(&self) -> impl Iterator<Item = &OutVec> {
+        self.values.iter().map(|(_, out, _)| out)
+    }
+}
 
 #[derive(Debug, Default)]
 pub struct Map {
@@ -77,12 +104,44 @@ impl Map {
         first_position
     }
 
-    fn add_edge(&mut self, row: usize, position: usize, next_position: usize) {
-        let (_, out_neigh, _) = &mut self.row_mut(row)[position];
-        out_neigh.push(next_position);
+    fn create_second_path(&mut self, rng: &mut Random, first_position: usize) {
+        let mut position = rng.next_capped_u64(WIDTH) as usize;
+        while position == first_position {
+            position = rng.next_capped_u64(WIDTH) as usize;
+        }
 
-        let (in_neigh, _, _) = &mut self.row_mut(row + 1)[next_position];
-        in_neigh.push(position);
+        // let path = 1;
+        // dbg!(path);
+
+        for row in 0..HEIGHT - 1 {
+            // println!("row {row}:\t{position}");
+            let next_position = self.next_position(rng, row, position);
+            self.add_edge(row, position, next_position);
+            position = next_position;
+        }
+    }
+
+    fn create_path(&mut self, rng: &mut Random) {
+        let mut position = rng.next_capped_u64(WIDTH) as usize;
+        for row in 0..HEIGHT - 1 {
+            // println!("row {row}:\t{position}");
+            let next_position = self.next_position(rng, row, position);
+            self.add_edge(row, position, next_position);
+            position = next_position;
+        }
+    }
+
+    fn add_edge(&mut self, row: usize, position: usize, next_position: usize) {
+        let out_neighborhood = self.row_mut(row).out_neighborhood_mut(position);
+        out_neighborhood.push(next_position);
+
+        let in_neighborhood = &mut self.row_mut(row + 1).in_neighborhood_mut(next_position);
+        in_neighborhood.push(position);
+    }
+
+    fn remove_first_row_edge(&mut self, position: usize, next_position: usize) {
+        let out_neighborhood = &mut self.row_mut(0).out_neighborhood_mut(position);
+        out_neighborhood.remove(next_position);
     }
 
     fn next_position(&self, rng: &mut Random, row: usize, position: usize) -> usize {
@@ -107,7 +166,7 @@ impl Map {
         position: usize,
         mut next_position: usize,
     ) -> usize {
-        let (next_in_neighborhood, _, _) = &self.row(row + 1)[next_position];
+        let next_in_neighborhood = &self.row(row + 1).in_neighborhood(next_position);
         let old_next_position = next_position;
         let rerolls = next_in_neighborhood
             .iter()
@@ -159,15 +218,15 @@ impl Map {
         };
 
         let row = self.row(row);
-        let (left_in_neighborhood, _, _) = &row[left_position];
-        let (right_in_neighborhood, _, _) = &row[right_position];
+        let left_in_neighborhood = row.in_neighborhood(left_position);
+        let right_in_neighborhood = row.in_neighborhood(right_position);
         InNeighborhood::gca_skip(left_in_neighborhood, right_in_neighborhood)
     }
 
     fn cpanx(&self, row: usize, position: usize, mut next_position: usize) -> usize {
         if position != 0 {
             let sibling_position = position - 1;
-            let (_, out_neighborhood, _) = &self.row(row)[sibling_position];
+            let out_neighborhood = self.row(row).out_neighborhood(sibling_position);
             if let Some(&out_neighbor) = out_neighborhood
                 .max()
                 .filter(|&out_neighbor| next_position.lt(out_neighbor))
@@ -178,7 +237,7 @@ impl Map {
 
         if position != LAST_POSITION {
             let sibling_position = position + 1;
-            let (_, out_neighborhood, _) = &self.row(row)[sibling_position];
+            let out_neighborhood = self.row(row).out_neighborhood(sibling_position);
             if let Some(&out_neighbor) = out_neighborhood
                 .min()
                 .filter(|&out_neighbor| next_position.gt(out_neighbor))
@@ -188,37 +247,40 @@ impl Map {
         }
         next_position
     }
+}
 
-    fn create_second_path(&mut self, rng: &mut Random, first_position: usize) {
-        let mut position = rng.next_capped_u64(WIDTH) as usize;
-        while position == first_position {
-            position = rng.next_capped_u64(WIDTH) as usize;
-        }
-
-        // let path = 1;
-        // dbg!(path);
-
-        for row in 0..HEIGHT - 1 {
-            // println!("row {row}:\t{position}");
-            let next_position = self.next_position(rng, row, position);
-            self.add_edge(row, position, next_position);
-            position = next_position;
-        }
-    }
-
-    fn create_path(&mut self, rng: &mut Random) {
-        let mut position = rng.next_capped_u64(WIDTH) as usize;
-        for row in 0..HEIGHT - 1 {
-            // println!("row {row}:\t{position}");
-            let next_position = self.next_position(rng, row, position);
-            self.add_edge(row, position, next_position);
-            position = next_position;
+impl Map {
+    fn filter_redundant_edges_from_first_row(&mut self) {
+        let mut visited = [false; WIDTH as usize];
+        let removals: Vec<_> = self
+            .row(0)
+            .out_neighborhoods()
+            .enumerate()
+            .flat_map(|(position, out_neighborhood)| {
+                out_neighborhood.iter()
+                .filter_map(move |&next_position| {
+                    if visited[next_position] {
+                        Some((position, next_position))
+                    } else {
+                        visited[next_position] = true;
+                        None
+                    }
+                })
+            })
+            .collect();
+        for (position, next_position) in removals {
+            let out_neighborhood = &mut self.row_mut(0).out_neighborhood_mut(position);
+            out_neighborhood.remove(next_position);
         }
     }
 }
 
+impl Row {
+
+}
+
 impl Map {
-    fn filter_redundant_edges_from_first_row(&mut self) {}
+    
 }
 
 #[cfg(test)]
