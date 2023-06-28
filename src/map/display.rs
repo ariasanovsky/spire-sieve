@@ -1,10 +1,21 @@
 use std::fmt::Display;
 
-use super::{Map, OutVec};
+use super::{Map, OutVec, in_neighborhood::{self, InNeighborhood}, NodeKind};
 
 impl Display for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for (row, nodes) in self.rows.iter().enumerate().rev() {
+        let mut rows = self.rows.iter().enumerate().rev();
+        if let Some((row, nodes)) = rows.next() {
+            write!(f, "\n{: <6}", row)?;
+            for in_neighborhood in nodes.in_neighborhoods() {
+                if in_neighborhood.is_empty() {
+                    write!(f, "   ")?;
+                } else {
+                    write!(f, " {} ", NodeKind::Rest.to_char())?;
+                }
+            }
+        }
+        for (row, nodes) in rows {
             write!(f, "\n{: <6}", "")?;
             for (position, out_neighborhood) in nodes.out_neighborhoods().enumerate() {
                 write!(
@@ -14,11 +25,14 @@ impl Display for Map {
                 )?;
             }
             write!(f, "\n{: <6}", row)?;
-            for (_position, out_neighborhood) in nodes.out_neighborhoods().enumerate() {
+            for (_, out_neighborhood, kind) in &nodes.values {
                 if out_neighborhood.values.is_empty() {
                     write!(f, "   ")?;
                 } else {
-                    write!(f, " * ")?;
+                    write!(f, " {} ", match kind {
+                        None => '*',
+                        Some(kind) => kind.to_char(),
+                    })?;
                 }
             }
         }
@@ -49,14 +63,14 @@ mod display_tests {
     #[test]
     fn test_display() {
         let mut rng = Random::new(2);
-        let map = Map::generate(&mut rng);
+        let map = Map::generate(&mut rng, true);
         println!("{map}");
     }
 
     #[test]
     fn test_display_2() {
         let mut rng = Random::new(533907583096 + 1);
-        let map = Map::generate(&mut rng);
+        let map = Map::generate(&mut rng, true);
         println!("{map}");
     }
 }

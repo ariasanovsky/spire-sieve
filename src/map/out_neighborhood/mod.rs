@@ -13,6 +13,7 @@ where
     fn push(&mut self, value: usize);
     fn remove(&mut self, value: usize);
     fn iter(&'a self) -> Self::Iter;
+    fn is_empty(&self) -> bool;
 }
 
 impl<'a> OutNeighborhood<'a, 'a> for OutVec {
@@ -35,5 +36,9 @@ impl<'a> OutNeighborhood<'a, 'a> for OutVec {
 
     fn iter(&'a self) -> Self::Iter {
         self.values.iter()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.values.is_empty()
     }
 }

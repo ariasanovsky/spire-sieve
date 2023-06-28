@@ -24,6 +24,9 @@ where
             _ => true,
         }
     }
+    fn is_empty(&'a self) -> bool {
+        self.iter().next().is_none()
+    }
 }
 
 impl<'a> InNeighborhood<'a, 'a> for InVec {
