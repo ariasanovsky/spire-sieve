@@ -236,19 +236,19 @@ impl Map {
             // let foo = 3;
             
             
-            if row == 11 && [5, 6].contains(&position) {
-                let in_neighborhood_12_6: Vec<_> = self.row(12).in_neighborhood(6).iter().map(|&x| x.0).collect();
-                let out_neighborhood_11_5: Vec<_> = self.row(11).out_neighborhood(5).iter().collect();
-                let out_neighborhood_11_6: Vec<_> = self.row(11).out_neighborhood(6).iter().collect();
-                dbg!(
-                    &rng,
-                    in_neighborhood_12_6,
-                    out_neighborhood_11_5,
-                    out_neighborhood_11_6,
-                    next_position,
-                );
-                let foo = 3;
-            }
+            // if row == 11 && [5, 6].contains(&position) {
+            //     let in_neighborhood_12_6: Vec<_> = self.row(12).in_neighborhood(6).iter().map(|&x| x.0).collect();
+            //     let out_neighborhood_11_5: Vec<_> = self.row(11).out_neighborhood(5).iter().collect();
+            //     let out_neighborhood_11_6: Vec<_> = self.row(11).out_neighborhood(6).iter().collect();
+            //     dbg!(
+            //         &rng,
+            //         in_neighborhood_12_6,
+            //         out_neighborhood_11_5,
+            //         out_neighborhood_11_6,
+            //         next_position,
+            //     );
+            //     let foo = 3;
+            // }
             
             
             
@@ -302,18 +302,18 @@ impl Map {
     }
 
     fn cpanx(&self, row: usize, position: usize, mut next_position: usize) -> usize {
-        if row == 11 && [5, 6].contains(&position) {
-            let in_neighborhood_12_6: Vec<_> = self.row(12).in_neighborhood(6).iter().map(|&x| x.0).collect();
-            let out_neighborhood_11_5: Vec<_> = self.row(11).out_neighborhood(5).iter().collect();
-            let out_neighborhood_11_6: Vec<_> = self.row(11).out_neighborhood(6).iter().collect();
-            // dbg!(
-            //     in_neighborhood_12_6,
-            //     out_neighborhood_11_5,
-            //     out_neighborhood_11_6,
-            //     next_position,
-            // );
-            let foo = 3;
-        }
+        // if row == 11 && [5, 6].contains(&position) {
+        //     let in_neighborhood_12_6: Vec<_> = self.row(12).in_neighborhood(6).iter().map(|&x| x.0).collect();
+        //     let out_neighborhood_11_5: Vec<_> = self.row(11).out_neighborhood(5).iter().collect();
+        //     let out_neighborhood_11_6: Vec<_> = self.row(11).out_neighborhood(6).iter().collect();
+        //     // dbg!(
+        //     //     in_neighborhood_12_6,
+        //     //     out_neighborhood_11_5,
+        //     //     out_neighborhood_11_6,
+        //     //     next_position,
+        //     // );
+        //     let foo = 3;
+        // }
         if position != 0 {
             let sibling_position = position - 1;
             let out_neighborhood = self.row(row).out_neighborhood(sibling_position);
@@ -336,19 +336,19 @@ impl Map {
             }
         }
 
-        if row == 11 && [5, 6].contains(&position) {
-            let in_neighborhood_12_6: Vec<_> = self.row(12).in_neighborhood(6).iter().map(|&x| x.0).collect();
-            let out_neighborhood_11_5: Vec<_> = self.row(11).out_neighborhood(5).iter().collect();
-            let out_neighborhood_11_6: Vec<_> = self.row(11).out_neighborhood(6).iter().collect();
-            // dbg!(
-            //     in_neighborhood_12_6,
-            //     out_neighborhood_11_5,
-            //     out_neighborhood_11_6,
-            //     next_position,
-            // );
-            println!();
-            let foo = 3;
-        }
+        // if row == 11 && [5, 6].contains(&position) {
+        //     let in_neighborhood_12_6: Vec<_> = self.row(12).in_neighborhood(6).iter().map(|&x| x.0).collect();
+        //     let out_neighborhood_11_5: Vec<_> = self.row(11).out_neighborhood(5).iter().collect();
+        //     let out_neighborhood_11_6: Vec<_> = self.row(11).out_neighborhood(6).iter().collect();
+        //     // dbg!(
+        //     //     in_neighborhood_12_6,
+        //     //     out_neighborhood_11_5,
+        //     //     out_neighborhood_11_6,
+        //     //     next_position,
+        //     // );
+        //     println!();
+        //     let foo = 3;
+        // }
         next_position
     }
 }
@@ -373,8 +373,7 @@ impl Map {
             })
             .collect();
         for (position, next_position) in removals {
-            let out_neighborhood = &mut self.row_mut(0).out_neighborhood_mut(position);
-            out_neighborhood.remove(next_position);
+            self.remove_first_row_edge(position, next_position);
         }
     }
 }
@@ -428,7 +427,7 @@ impl Map {
             (NodeKind::Event, 0.22),
         ];
 
-        dbg!(count);
+        // dbg!(count);
 
         let mut rooms = Vec::with_capacity(count);
         for (kind, chance) in chances {
@@ -447,7 +446,7 @@ impl Map {
 }
 
 impl Map {
-    fn assign_rooms(&mut self, rng: &mut Random, ascension: bool) {
+    pub fn assign_rooms(&mut self, rng: &mut Random, ascension: bool) {
         let first_count = self.first_count();
         // dbg!(first_count);
         let mut rooms = Self::fill_room_array(first_count, ascension);
@@ -512,7 +511,7 @@ impl Map {
                 return false;
             }
             let siblings = self.siblings(row, position);
-            let node = &self.row(row).values[position];
+            // let node = &self.row(row).values[position];
             // let printable_in_neighborhood = &node.0.iter().map(|&(neighbor, _)| neighbor).collect::<Vec<_>>();
             // dbg!(&siblings, printable_in_neighborhood, position, row);
             // let foo = 3;
@@ -560,7 +559,7 @@ impl Map {
 
 impl Row {
     fn set_kind(&mut self, position: usize, kind: NodeKind) {
-        self.values[position].2 = Some(kind);
+        *self.kind_mut(position) = Some(kind);
     }
 
     fn set_kinds(&mut self, kind: NodeKind) {
@@ -651,6 +650,7 @@ mod tests {
         ];
         for &seed in SEEDS {
             test_map_with_seed(seed);
+            println!();
         }
     }
 }

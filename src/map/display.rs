@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use super::{Map, OutVec, in_neighborhood::{self, InNeighborhood}, NodeKind};
+use super::{Map, OutVec, in_neighborhood::InNeighborhood, NodeKind};
 
 impl Display for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

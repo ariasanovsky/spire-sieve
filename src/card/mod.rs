@@ -5,6 +5,8 @@ use strum_macros::EnumCount;
 use strum_macros::EnumIter;
 use strum_macros::FromRepr;
 
+use crate::character::Character;
+
 pub const fn cards<const START: usize, const N: usize, const REVERSE: bool>() -> [Card; N] {
     let mut cards = [Card::Invalid; N];
     let mut i = 0;
@@ -39,10 +41,30 @@ fn test_card_array_initialization() {
     dbg!(std::mem::size_of::<Card>());
 }
 
-pub const fn first_card<const CHARACTER: usize, const RARITY: usize>() -> Card {
-    [
+pub const fn card_pool_range(character: Character, rarity: Rarity) -> (Card, Card, bool) {
+    let first: Card = [
         [Card::SwordBoomerang, Card::SwordBoomerang, Card::Evolve, Card::DoubleTap],
-    ][0][RARITY as usize]
+        [Card::FlyingKnee, Card::FlyingKnee, Card::Predator, Card::Alchemize],
+    ][character as usize][rarity as usize];
+    let last: Card = [
+        [Card::Immolate, Card::Anger, Card::SpotWeakness, Card::Immolate],
+        [Card::GrandFinale, Card::CloakAndDagger, Card::CripplingCloud, Card::GrandFinale],
+    ][character as usize][rarity as usize];
+    let reverse: bool = [
+        [false, true, true, true],
+        [false, true, true, true],
+    ][character as usize][rarity as usize];
+    (first, last, reverse)
+}
+
+const IRONCLAD_CARD_RANGE: (Card, Card, bool) = card_pool_range(Character::Ironclad, Rarity::Common);
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, FromRepr, EnumIter, EnumCount)]
+pub enum Rarity {
+    Any,
+    Common,
+    Uncommon,
+    Rare,
 }
 
 #[derive(Debug, Eq, PartialEq, FromRepr, EnumIter, EnumCount, Clone, Copy, Default)]

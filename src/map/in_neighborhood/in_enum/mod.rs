@@ -6,15 +6,15 @@ mod add_third;
 mod plus;
 
 #[derive(Debug, Default)]
-pub enum InEnum {
+pub enum _InEnum {
     #[default]
     Empty,
-    Less(OneCmp),
-    Equal(OneCmp),
-    Greater(OneCmp),
-    LessEqual(TwoCmp),
-    EqualGreater(TwoCmp),
-    LessEqualGreater(ThreeCmp),
+    _Less(OneCmp),
+    _Equal(OneCmp),
+    _Greater(OneCmp),
+    _LessEqual(TwoCmp),
+    _EqualGreater(TwoCmp),
+    _LessEqualGreater(ThreeCmp),
 }
 
 pub trait AddFirst {
@@ -93,14 +93,14 @@ pub enum ThreeCmp {
 
 #[derive(Debug)]
 pub struct NumberedInEnum {
-    pub in_enum: InEnum,
+    pub in_enum: _InEnum,
     pub position: usize,
 }
 
 impl<'a> InNeighborhood<'a, 'static> for NumberedInEnum {
     type Iter = std::slice::Iter<'static, (usize, usize)>;
 
-    fn push(&mut self, value: usize) {
+    fn push(&mut self, _value: usize) {
         todo!()
     }
 
@@ -110,21 +110,21 @@ impl<'a> InNeighborhood<'a, 'static> for NumberedInEnum {
 
     fn min(&'a self) -> Option<&'a usize> {
         Some(match self.in_enum {
-            InEnum::Empty => return None,
-            InEnum::Less(_) | InEnum::LessEqual(_) | InEnum::LessEqualGreater(_) => {
+            _InEnum::Empty => return None,
+            _InEnum::_Less(_) | _InEnum::_LessEqual(_) | _InEnum::_LessEqualGreater(_) => {
                 &[0, 0, 1, 2, 3, 4, 5][self.position]
             }
-            InEnum::Equal(_) | InEnum::EqualGreater(_) => &[0, 1, 2, 3, 4, 5, 6][self.position],
-            InEnum::Greater(_) => &[1, 2, 3, 4, 5, 6, 7][self.position],
+            _InEnum::_Equal(_) | _InEnum::_EqualGreater(_) => &[0, 1, 2, 3, 4, 5, 6][self.position],
+            _InEnum::_Greater(_) => &[1, 2, 3, 4, 5, 6, 7][self.position],
         })
     }
 
     fn max(&'a self) -> Option<&'a usize> {
         Some(match self.in_enum {
-            InEnum::Empty => return None,
-            InEnum::Less(_) => &[0, 0, 1, 2, 3, 4, 5][self.position],
-            InEnum::LessEqual(_) | InEnum::Equal(_) => &[0, 1, 2, 3, 4, 5, 6][self.position],
-            InEnum::Greater(_) | InEnum::EqualGreater(_) | InEnum::LessEqualGreater(_) => {
+            _InEnum::Empty => return None,
+            _InEnum::_Less(_) => &[0, 0, 1, 2, 3, 4, 5][self.position],
+            _InEnum::_LessEqual(_) | _InEnum::_Equal(_) => &[0, 1, 2, 3, 4, 5, 6][self.position],
+            _InEnum::_Greater(_) | _InEnum::_EqualGreater(_) | _InEnum::_LessEqualGreater(_) => {
                 &[1, 2, 3, 4, 5, 6, 7][self.position]
             }
         })

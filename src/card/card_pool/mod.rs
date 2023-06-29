@@ -1,4 +1,3 @@
-use crate::card::{cards, Card};
 use crate::character::Character;
 
 // pub type CardPool = &'static [Card];
@@ -7,14 +6,6 @@ use strum::EnumCount;
 use strum_macros::EnumCount;
 use strum_macros::EnumIter;
 use strum_macros::FromRepr;
-
-#[derive(Debug, PartialEq, Eq, FromRepr, EnumIter, EnumCount)]
-pub enum Rarity {
-    Any,
-    Common,
-    Uncommon,
-    Rare,
-}
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, FromRepr, EnumIter, EnumCount)]
 pub enum UnlockLevel {
@@ -65,42 +56,42 @@ impl Unlocks {
     }
 }
 
-#[derive(Debug)]
-pub struct CardPool {
-    first: usize,
-    last: usize,
-    reversed: bool,
-}
+// #[derive(Debug)]
+// pub struct CardPool {
+//     first: usize,
+//     last: usize,
+//     reversed: bool,
+// }
 
-impl CardPool {
-    const fn new(first: usize, last: usize, reversed: bool) -> Self {
-        Self { first, last, reversed }
-    }
+// impl CardPool {
+//     const fn new(first: usize, last: usize, reversed: bool) -> Self {
+//         Self { first, last, reversed }
+//     }
 
-    const fn first<const CHARACTER: usize>() -> usize {
-        [0, 70, 140, 210][CHARACTER]
-    }
-}
+//     const fn first<const CHARACTER: usize>() -> usize {
+//         [0, 70, 140, 210][CHARACTER]
+//     }
+// }
 
-const IRONCLAD_FIRST: Card = Card::Anger;
-const IRONCLAD_LAST: Card = Card::Juggernaut;
+// const IRONCLAD_FIRST: Card = Card::Anger;
+// const IRONCLAD_LAST: Card = Card::Juggernaut;
 
-const IRONCLAD_ALL: CardPool = CardPool::new(
-    IRONCLAD_FIRST as usize,
-    IRONCLAD_LAST as usize,
-    false,
-);
+// const IRONCLAD_ALL: CardPool = CardPool::new(
+//     IRONCLAD_FIRST as usize,
+//     IRONCLAD_LAST as usize,
+//     false,
+// );
 
-pub struct CharacterCardPool<const CHARACTER: usize> {
-    all: CardPool,
-    common: CardPool,
-    uncommon: CardPool,
-    rare: CardPool,
-}
+// pub struct CharacterCardPool<const CHARACTER: usize> {
+//     all: CardPool,
+//     common: CardPool,
+//     uncommon: CardPool,
+//     rare: CardPool,
+// }
 
-impl<const CHARACTER: usize> CharacterCardPool<CHARACTER> {
+// impl<const CHARACTER: usize> CharacterCardPool<CHARACTER> {
 
-}
+// }
 
 // #[derive(Debug)]
 // pub struct CharacterCardSubPool<const CHARACTER: usize, const RARITY: usize> {
