@@ -57,7 +57,7 @@ pub const fn card_pool_range(character: Character, rarity: Rarity) -> (Card, Car
     (first, last, reverse)
 }
 
-const IRONCLAD_CARD_RANGE: (Card, Card, bool) = card_pool_range(Character::Ironclad, Rarity::Common);
+const _IRONCLAD_CARD_RANGE: (Card, Card, bool) = card_pool_range(Character::Ironclad, Rarity::Common);
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, FromRepr, EnumIter, EnumCount)]
 pub enum Rarity {

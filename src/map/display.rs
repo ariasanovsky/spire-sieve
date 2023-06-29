@@ -11,7 +11,7 @@ impl Display for Map {
                 if in_neighborhood.is_empty() {
                     write!(f, "   ")?;
                 } else {
-                    write!(f, " {} ", NodeKind::Rest.to_char())?;
+                    write!(f, " {} ", NodeKind::Rest.char())?;
                 }
             }
         }
@@ -31,7 +31,7 @@ impl Display for Map {
                 } else {
                     write!(f, " {} ", match kind {
                         None => '*',
-                        Some(kind) => kind.to_char(),
+                        Some(kind) => kind.char(),
                     })?;
                 }
             }

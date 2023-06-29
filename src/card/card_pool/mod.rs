@@ -23,6 +23,12 @@ pub struct Unlocks {
 }
 
 impl Unlocks {
+    pub const fn full() -> Self {
+        Self {
+            levels: [UnlockLevel::Five; Character::COUNT],
+        }
+    }
+    
     pub const fn new(levels: [UnlockLevel; Character::COUNT]) -> Self {
         Self { levels }
     }
@@ -30,7 +36,7 @@ impl Unlocks {
     pub const fn encode(&self) -> usize {
         let mut n = 0;
         let mut i = 0;
-        const UNLOCK_LEVELS: usize = UnlockLevel::COUNT as usize;
+        const UNLOCK_LEVELS: usize = UnlockLevel::COUNT;
         while i < Character::COUNT {
             n *= UNLOCK_LEVELS;
             n += self.levels[i] as usize;
@@ -42,7 +48,7 @@ impl Unlocks {
     pub const fn decode(mut n: usize) -> Option<Self> {
         let mut levels = [UnlockLevel::Zero; Character::COUNT];
         let mut i = 0;
-        const UNLOCK_LEVELS: usize = UnlockLevel::COUNT as usize;
+        const UNLOCK_LEVELS: usize = UnlockLevel::COUNT;
         while i < Character::COUNT {
             levels[i] = if let Some(level) = UnlockLevel::from_repr(n % UNLOCK_LEVELS) {
                 level

@@ -26,7 +26,7 @@ impl NodeKind {
         }
     }
 
-    fn to_char(&self) -> char {
+    fn char(&self) -> char {
         match self {
             Self::Monster => 'M',
             Self::Elite => 'E',
@@ -507,7 +507,7 @@ impl Map {
                 return false;
             }
             if [NodeKind::Rest, NodeKind::Shop, NodeKind::Elite].contains(kind)
-            && self.in_neighbor_kinds(row, position).contains(&kind) {
+            && self.in_neighbor_kinds(row, position).contains(kind) {
                 return false;
             }
             let siblings = self.siblings(row, position);
@@ -525,9 +525,7 @@ impl Map {
             true
         })
         .map(|position| {
-            let kind = rooms.remove(position);
-            //dbg!(position, &kind, rooms.len());
-            kind
+            rooms.remove(position)
             
         })
     }
