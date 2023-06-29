@@ -15,12 +15,12 @@ pub type CardReward = [Card; 3];
 
 #[derive(Debug)]
 pub struct Offset {
-    offset: u64,    
+    offset: i64,    
 }
 
-const DEFAULT_OFFSET: u64 = 5;
-const UNCOMMON_CUTOFF: u64 = 44;
-const RARE_CUTOFF: u64 = 3;
+const DEFAULT_OFFSET: i64 = -5;
+const UNCOMMON_CUTOFF: i64 = 37;
+const RARE_CUTOFF: i64 = 3;
 
 impl Offset {
     fn reset(&mut self) {
@@ -31,8 +31,8 @@ impl Offset {
         self.offset -= 1;
     }
 
-    fn adjusted_percentage(&self, rng: &mut Random) -> u64 {
-        rng.next_capped_u64(100) + self.offset
+    fn adjusted_percentage(&self, rng: &mut Random) -> i64 {
+        rng.next_capped_u64(100) as i64 + self.offset
     }
 
     fn generate_rarity(&mut self, rng: &mut Random) -> Rarity {
@@ -40,7 +40,7 @@ impl Offset {
         if adjusted_percentage < RARE_CUTOFF {
             self.reset();
             Rarity::Rare
-        } else if adjusted_percentage < UNCOMMON_CUTOFF {
+        } else if adjusted_percentage <= UNCOMMON_CUTOFF {
             Rarity::Uncommon
         } else {
             self.decrement();
@@ -83,6 +83,7 @@ impl<'a, const REWARDS: usize> CardRewarder<'a, REWARDS> {
     pub fn generate_card(&self, rng: &mut Random, rarity: Rarity) -> Card {
         let cards = self.card_pool(rarity);
         let card = cards[rng.next_capped_u64(cards.len() as u64) as usize];
+        dbg!(card);
         card
     }
 
@@ -108,5 +109,55 @@ impl<'a, const REWARDS: usize> SeedFilter for CardRewardFilter<'a, REWARDS> {
                 self.rejected_cards.contains(card)
             })
         })
+    }
+}
+
+
+#[cfg(test)]
+mod card_reward_tests {
+    
+    use libgdx_xs128::{rng::Random, RandomXS128};
+    
+    use crate::{seed::Seed, card::{card_pool_range, Rarity, Card, CARDS, reward::CardRewarder}, character::Character};
+
+    #[test]
+    fn test_unwinnable_seed() {
+        let seed = Seed::from(3431382150268629i64);
+        let mut rng = Random::new(seed.seed as u64);
+
+        const RANGES: [(Card, Card, bool); 3] = [
+            card_pool_range(Character::Silent, Rarity::from_repr(0)),
+            card_pool_range(Character::Silent, Rarity::from_repr(1)),
+            card_pool_range(Character::Silent, Rarity::from_repr(2)),
+        ];
+        
+        const NUM_RANGES: [(usize, usize); 3] = [
+            (RANGES[0].0 as usize, RANGES[0].1 as usize),
+            (RANGES[1].0 as usize, RANGES[1].1 as usize),
+            (RANGES[2].0 as usize, RANGES[2].1 as usize),
+        ];
+
+        let [common, uncommon, rare] = [
+            &CARDS[NUM_RANGES[0].0..=NUM_RANGES[0].1],
+            &CARDS[NUM_RANGES[1].0..=NUM_RANGES[1].1],
+            &CARDS[NUM_RANGES[2].0..=NUM_RANGES[2].1],
+        ];
+
+        let [rev_common, rev_uncommon, rev_rare] = [
+            common.iter().rev().copied().collect::<Vec<_>>(),
+            uncommon.iter().rev().copied().collect::<Vec<_>>(),
+            rare.iter().rev().copied().collect::<Vec<_>>(),
+        ];
+
+        let rewarder: CardRewarder<'_, 3> = super::CardRewarder::new(&rev_common, &rev_uncommon, &rev_rare);
+        let rewards = rewarder.generate_rewards(&mut rng);
+        assert_eq!(
+            rewards,
+            [
+                [Card::Prepared, Card::DodgeAndRoll, Card::EscapePlan],
+                [Card::EscapePlan, Card::Outmaneuver, Card::Prepared],
+                [Card::Prepared, Card::DodgeAndRoll, Card::Footwork],
+            ]
+        )
     }
 }
