@@ -1,6 +1,11 @@
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq, Eq)]
+use strum::EnumCount;
+use strum_macros::EnumCount;
+use strum_macros::EnumIter;
+use strum_macros::FromRepr;
+
+#[derive(Debug, PartialEq, Eq, FromRepr, EnumIter, EnumCount)]
 pub enum Character {
     Ironclad,
     Silent,
