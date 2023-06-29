@@ -38,12 +38,6 @@ impl NodeKind {
     }
 }
 
-// #[derive(Debug, Default)]
-// pub struct InNeighborhood(Vec<usize>);
-
-// #[derive(Debug, Default)]
-// pub struct OutNeighborhood(Vec<usize>);
-
 const WIDTH: u64 = 7;
 const LAST_POSITION: usize = WIDTH as usize - 1;
 const HEIGHT: usize = 15;
@@ -52,8 +46,6 @@ const PATHS: u64 = 6;
 const REST_ROW: usize = HEIGHT - 1;
 const BEFORE_REST_ROW: usize = REST_ROW - 1;
 const TREASURE_ROW: usize = 8;
-
-//pub type Row = [(InVec, OutVec, Option<NodeKind>); WIDTH as usize];
 
 #[derive(Debug, Default)]
 pub struct Row {
@@ -86,9 +78,11 @@ impl Row {
     }
 
     fn in_neighborhoods(&self) -> impl Iterator<Item = &InVec> {
-        self.values.iter().map(|(in_neighborhood, _, _)| in_neighborhood)
+        self.values
+            .iter()
+            .map(|(in_neighborhood, _, _)| in_neighborhood)
     }
-    
+
     fn out_neighborhoods(&self) -> impl Iterator<Item = &OutVec> {
         self.values.iter().map(|(_, out, _)| out)
     }
@@ -104,7 +98,9 @@ impl Row {
     }
 
     fn count_out_neighborhoods(&self) -> usize {
-        self.out_neighborhoods().filter(|out| !out.is_empty()).count()
+        self.out_neighborhoods()
+            .filter(|out| !out.is_empty())
+            .count()
     }
 }
 
@@ -140,7 +136,6 @@ impl Map {
         let first_position = self.create_first_path(rng);
         self.create_second_path(rng, first_position);
         (2..PATHS).for_each(|_| {
-            // dbg!(path);
             self.create_path(rng);
         })
     }
@@ -148,11 +143,7 @@ impl Map {
     fn create_first_path(&mut self, rng: &mut Random) -> usize {
         let first_position = rng.next_capped_u64(WIDTH) as usize;
         let mut position = first_position;
-        // let path = 0;
-        // dbg!(path);
-
         for row in 0..HEIGHT - 1 {
-            // println!("row {row}:\t{position}");
             let next_position = self.next_position(rng, row, position);
             self.add_edge(row, position, next_position);
             position = next_position;
@@ -166,11 +157,7 @@ impl Map {
             position = rng.next_capped_u64(WIDTH) as usize;
         }
 
-        // let path = 1;
-        // dbg!(path);
-
         for row in 0..HEIGHT - 1 {
-            // println!("row {row}:\t{position}");
             let next_position = self.next_position(rng, row, position);
             self.add_edge(row, position, next_position);
             position = next_position;
@@ -180,7 +167,6 @@ impl Map {
     fn create_path(&mut self, rng: &mut Random) {
         let mut position = rng.next_capped_u64(WIDTH) as usize;
         for row in 0..HEIGHT - 1 {
-            // println!("row {row}:\t{position}");
             let next_position = self.next_position(rng, row, position);
             self.add_edge(row, position, next_position);
             position = next_position;
@@ -209,11 +195,7 @@ impl Map {
         };
         let adjustment = rng.next_capped_u64(n_possible_positions) as usize;
         let mut next_position = adjustment + min_position;
-        // dbg!(next_position, &rng);
         next_position = self.cpplr(rng, row, position, next_position);
-        if row == 11 && [5, 6].contains(&position) {
-            // dbg!(rng);
-        }
         next_position = self.cpanx(row, position, next_position);
         next_position
     }
@@ -233,27 +215,6 @@ impl Map {
             .map(|neighbor| neighbor.1)
             .sum();
         for _ in 0..rerolls {
-            // let foo = 3;
-            
-            
-            // if row == 11 && [5, 6].contains(&position) {
-            //     let in_neighborhood_12_6: Vec<_> = self.row(12).in_neighborhood(6).iter().map(|&x| x.0).collect();
-            //     let out_neighborhood_11_5: Vec<_> = self.row(11).out_neighborhood(5).iter().collect();
-            //     let out_neighborhood_11_6: Vec<_> = self.row(11).out_neighborhood(6).iter().collect();
-            //     dbg!(
-            //         &rng,
-            //         in_neighborhood_12_6,
-            //         out_neighborhood_11_5,
-            //         out_neighborhood_11_6,
-            //         next_position,
-            //     );
-            //     let foo = 3;
-            // }
-            
-            
-            
-            
-            
             next_position = match next_position.cmp(&position) {
                 std::cmp::Ordering::Greater => {
                     next_position = position + rng.next_capped_u64(2) as usize;
@@ -282,8 +243,6 @@ impl Map {
                     }
                 }
             };
-            // dbg!(next_position, &rng);
-            // let foo = 3;
         }
         next_position
     }
@@ -302,18 +261,6 @@ impl Map {
     }
 
     fn cpanx(&self, row: usize, position: usize, mut next_position: usize) -> usize {
-        // if row == 11 && [5, 6].contains(&position) {
-        //     let in_neighborhood_12_6: Vec<_> = self.row(12).in_neighborhood(6).iter().map(|&x| x.0).collect();
-        //     let out_neighborhood_11_5: Vec<_> = self.row(11).out_neighborhood(5).iter().collect();
-        //     let out_neighborhood_11_6: Vec<_> = self.row(11).out_neighborhood(6).iter().collect();
-        //     // dbg!(
-        //     //     in_neighborhood_12_6,
-        //     //     out_neighborhood_11_5,
-        //     //     out_neighborhood_11_6,
-        //     //     next_position,
-        //     // );
-        //     let foo = 3;
-        // }
         if position != 0 {
             let sibling_position = position - 1;
             let out_neighborhood = self.row(row).out_neighborhood(sibling_position);
@@ -335,20 +282,6 @@ impl Map {
                 next_position = out_neighbor;
             }
         }
-
-        // if row == 11 && [5, 6].contains(&position) {
-        //     let in_neighborhood_12_6: Vec<_> = self.row(12).in_neighborhood(6).iter().map(|&x| x.0).collect();
-        //     let out_neighborhood_11_5: Vec<_> = self.row(11).out_neighborhood(5).iter().collect();
-        //     let out_neighborhood_11_6: Vec<_> = self.row(11).out_neighborhood(6).iter().collect();
-        //     // dbg!(
-        //     //     in_neighborhood_12_6,
-        //     //     out_neighborhood_11_5,
-        //     //     out_neighborhood_11_6,
-        //     //     next_position,
-        //     // );
-        //     println!();
-        //     let foo = 3;
-        // }
         next_position
     }
 }
@@ -361,8 +294,7 @@ impl Map {
             .out_neighborhoods()
             .enumerate()
             .flat_map(|(position, out_neighborhood)| {
-                out_neighborhood.iter()
-                .filter_map(move |&next_position| {
+                out_neighborhood.iter().filter_map(move |&next_position| {
                     if visited[next_position] {
                         Some((position, next_position))
                     } else {
@@ -380,11 +312,10 @@ impl Map {
 
 impl Map {
     fn first_count(&self) -> usize {
-        self.count_in_neighborhoods()
-            + self.count_final_rest_sites()
+        self.count_in_neighborhoods() + self.count_final_rest_sites()
             - self.count_penultimate_out_neighborhoods()
     }
-    
+
     fn count_final_rest_sites(&self) -> usize {
         self.row(REST_ROW).count_in_neighborhoods()
     }
@@ -392,13 +323,19 @@ impl Map {
     fn count_penultimate_out_neighborhoods(&self) -> usize {
         self.row(BEFORE_REST_ROW).count_out_neighborhoods()
     }
-    
+
     fn count_in_neighborhoods(&self) -> usize {
-        self.rows.iter().map(|row| row.count_in_neighborhoods()).sum()
+        self.rows
+            .iter()
+            .map(|row| row.count_in_neighborhoods())
+            .sum()
     }
 
     fn count_out_neighborhoods(&self) -> usize {
-        self.rows.iter().map(|row| row.count_out_neighborhoods()).sum()
+        self.rows
+            .iter()
+            .map(|row| row.count_out_neighborhoods())
+            .sum()
     }
 
     fn count_treasure_rooms(&self) -> usize {
@@ -410,29 +347,20 @@ impl Map {
     }
 
     fn count_pre_assigned_nodes(&self) -> usize {
-        self.count_final_rest_sites()
-            + self.count_treasure_rooms()
-            + self.count_first_floor()
+        self.count_final_rest_sites() + self.count_treasure_rooms() + self.count_first_floor()
     }
-    
+
     fn fill_room_array(count: usize, ascension: bool) -> Vec<NodeKind> {
         let chances: [(NodeKind, f32); 4] = [
             (NodeKind::Shop, 0.05),
             (NodeKind::Rest, 0.12),
-            (NodeKind::Elite, if ascension {
-                0.08 * 1.6
-            } else {
-                0.08
-            }),
+            (NodeKind::Elite, if ascension { 0.08 * 1.6 } else { 0.08 }),
             (NodeKind::Event, 0.22),
         ];
-
-        // dbg!(count);
 
         let mut rooms = Vec::with_capacity(count);
         for (kind, chance) in chances {
             let kind_count = (chance * count as f32).round() as usize;
-            // dbg!(kind, kind_count);
             for _ in 0..kind_count {
                 rooms.push(kind);
             }
@@ -441,21 +369,19 @@ impl Map {
     }
 
     fn adjusted_recount(&self) -> usize {
-        self.count_out_neighborhoods() - self.count_pre_assigned_nodes() + self.count_final_rest_sites()
+        self.count_out_neighborhoods() - self.count_pre_assigned_nodes()
+            + self.count_final_rest_sites()
     }
 }
 
 impl Map {
     pub fn assign_rooms(&mut self, rng: &mut Random, ascension: bool) {
         let first_count = self.first_count();
-        // dbg!(first_count);
         let mut rooms = Self::fill_room_array(first_count, ascension);
         let recount = self.adjusted_recount();
-        // dbg!(recount);
         let new_size = rooms.len().max(recount);
         rooms.resize(new_size, NodeKind::Monster);
         Self::shuffle(&mut rooms, rng);
-        // dbg!(&rooms);
         for row in 0..HEIGHT {
             if [0, REST_ROW, TREASURE_ROW].contains(&row) {
                 continue;
@@ -469,7 +395,6 @@ impl Map {
                 }
             }
         }
-        // dbg!("leftovers:", rooms);
         self.set_constant_rows();
         self.populate_unassigned_nodes();
     }
@@ -493,7 +418,7 @@ impl Map {
             }
         }
     }
-    
+
     fn shuffle(rooms: &mut [NodeKind], rng: &mut Random) {
         for i in (2..=rooms.len()).rev() {
             let j = rng.next_capped_u64(i as u64) as usize;
@@ -501,33 +426,43 @@ impl Map {
         }
     }
 
-    fn next_kind(&self, rooms: &mut Vec<NodeKind>, row: usize, position: usize) -> Option<NodeKind> {
-        rooms.iter().position(|kind| {
-            if kind.incompatible_with(row) {
-                return false;
-            }
-            if [NodeKind::Rest, NodeKind::Shop, NodeKind::Elite].contains(kind)
-            && self.in_neighbor_kinds(row, position).contains(kind) {
-                return false;
-            }
-            let siblings = self.siblings(row, position);
-            // let node = &self.row(row).values[position];
-            // let printable_in_neighborhood = &node.0.iter().map(|&(neighbor, _)| neighbor).collect::<Vec<_>>();
-            // dbg!(&siblings, printable_in_neighborhood, position, row);
-            // let foo = 3;
-            let sibling_kinds: Vec<&NodeKind> = siblings.iter().filter_map(|&sibling| {
-                self.row(row).kind(sibling)
-            }).collect();
-            if [NodeKind::Rest, NodeKind::Shop, NodeKind::Elite, NodeKind::Monster, NodeKind::Event].contains(kind)
-            && sibling_kinds.contains(&kind) {
-                return false;
-            }
-            true
-        })
-        .map(|position| {
-            rooms.remove(position)
-            
-        })
+    fn next_kind(
+        &self,
+        rooms: &mut Vec<NodeKind>,
+        row: usize,
+        position: usize,
+    ) -> Option<NodeKind> {
+        rooms
+            .iter()
+            .position(|kind| {
+                if kind.incompatible_with(row) {
+                    return false;
+                }
+                if [NodeKind::Rest, NodeKind::Shop, NodeKind::Elite].contains(kind)
+                    && self.in_neighbor_kinds(row, position).contains(kind)
+                {
+                    return false;
+                }
+                let siblings = self.siblings(row, position);
+                let sibling_kinds: Vec<&NodeKind> = siblings
+                    .iter()
+                    .filter_map(|&sibling| self.row(row).kind(sibling))
+                    .collect();
+                if [
+                    NodeKind::Rest,
+                    NodeKind::Shop,
+                    NodeKind::Elite,
+                    NodeKind::Monster,
+                    NodeKind::Event,
+                ]
+                .contains(kind)
+                    && sibling_kinds.contains(&kind)
+                {
+                    return false;
+                }
+                true
+            })
+            .map(|position| rooms.remove(position))
     }
 
     fn in_neighbor_kinds(&self, row: usize, position: usize) -> Vec<NodeKind> {
@@ -544,13 +479,8 @@ impl Map {
         self.row(row)
             .in_neighborhood(position)
             .iter()
-            .flat_map(|&(parent, _)| {
-                self.row(row - 1).out_neighborhood(parent).iter()
-            })
-            .filter_map(|&sibling| {
-                Some(sibling)
-                .filter(|&sibling| sibling != position)
-            })
+            .flat_map(|&(parent, _)| self.row(row - 1).out_neighborhood(parent).iter())
+            .filter_map(|&sibling| Some(sibling).filter(|&sibling| sibling != position))
             .collect()
     }
 }
@@ -616,7 +546,6 @@ mod tests {
     fn test_special_map() {
         let mut rng = Random::from(533907583096 + 1);
         let map = Map::generate(&mut rng, true);
-        //dbg!(&map);
         println!("{map}");
         let burning_elite_position = map.burning_elite_position(&mut rng);
         dbg!(burning_elite_position);

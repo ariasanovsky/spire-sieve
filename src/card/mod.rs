@@ -43,21 +43,40 @@ fn test_card_array_initialization() {
 
 pub const fn card_pool_range(character: Character, rarity: Rarity) -> (Card, Card, bool) {
     let first: Card = [
-        [Card::SwordBoomerang, Card::SwordBoomerang, Card::Evolve, Card::DoubleTap],
-        [Card::FlyingKnee, Card::FlyingKnee, Card::Predator, Card::Alchemize],
+        [
+            Card::SwordBoomerang,
+            Card::SwordBoomerang,
+            Card::Evolve,
+            Card::DoubleTap,
+        ],
+        [
+            Card::FlyingKnee,
+            Card::FlyingKnee,
+            Card::Predator,
+            Card::Alchemize,
+        ],
     ][character as usize][rarity as usize];
     let last: Card = [
-        [Card::Immolate, Card::Anger, Card::SpotWeakness, Card::Immolate],
-        [Card::GrandFinale, Card::CloakAndDagger, Card::CripplingCloud, Card::GrandFinale],
+        [
+            Card::Immolate,
+            Card::Anger,
+            Card::SpotWeakness,
+            Card::Immolate,
+        ],
+        [
+            Card::GrandFinale,
+            Card::CloakAndDagger,
+            Card::CripplingCloud,
+            Card::GrandFinale,
+        ],
     ][character as usize][rarity as usize];
-    let reverse: bool = [
-        [false, true, true, true],
-        [false, true, true, true],
-    ][character as usize][rarity as usize];
+    let reverse: bool =
+        [[false, true, true, true], [false, true, true, true]][character as usize][rarity as usize];
     (first, last, reverse)
 }
 
-const _IRONCLAD_CARD_RANGE: (Card, Card, bool) = card_pool_range(Character::Ironclad, Rarity::Common);
+const _IRONCLAD_CARD_RANGE: (Card, Card, bool) =
+    card_pool_range(Character::Ironclad, Rarity::Common);
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, FromRepr, EnumIter, EnumCount)]
 pub enum Rarity {

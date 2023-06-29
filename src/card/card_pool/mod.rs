@@ -28,7 +28,7 @@ impl Unlocks {
             levels: [UnlockLevel::Five; Character::COUNT],
         }
     }
-    
+
     pub const fn new(levels: [UnlockLevel; Character::COUNT]) -> Self {
         Self { levels }
     }

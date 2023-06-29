@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use super::{Map, OutVec, in_neighborhood::InNeighborhood, NodeKind};
+use super::{in_neighborhood::InNeighborhood, Map, NodeKind, OutVec};
 
 impl Display for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -29,10 +29,14 @@ impl Display for Map {
                 if out_neighborhood.values.is_empty() {
                     write!(f, "   ")?;
                 } else {
-                    write!(f, " {} ", match kind {
-                        None => '*',
-                        Some(kind) => kind.char(),
-                    })?;
+                    write!(
+                        f,
+                        " {} ",
+                        match kind {
+                            None => '*',
+                            Some(kind) => kind.char(),
+                        }
+                    )?;
                 }
             }
         }
