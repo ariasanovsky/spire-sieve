@@ -77,13 +77,13 @@ impl<'a, const REWARDS: usize> CardRewarder<'a, REWARDS> {
             }
             reward[i] = card;
         }
+        rng.advance(3);
         reward
     }
 
     pub fn generate_card(&self, rng: &mut Random, rarity: Rarity) -> Card {
         let cards = self.card_pool(rarity);
         let card = cards[rng.next_capped_u64(cards.len() as u64) as usize];
-        dbg!(card);
         card
     }
 
