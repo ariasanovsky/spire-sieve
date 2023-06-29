@@ -43,7 +43,13 @@ fn test_card_array_initialization() {
     dbg!(std::mem::size_of::<Card>());
 }
 
-pub const fn card_pool_range(character: Character, rarity: Rarity) -> (Card, Card, bool) {
+pub const fn card_pool_range(character: Character, rarity: Option<Rarity>) -> (Card, Card, bool) {
+    let rarity = if let Some(rarity) = rarity {
+        rarity as usize + 1
+    } else {
+        0
+    };
+    
     let first: Card = [
         [
             Card::SwordBoomerang,
@@ -57,7 +63,7 @@ pub const fn card_pool_range(character: Character, rarity: Rarity) -> (Card, Car
             Card::Predator,
             Card::Alchemize,
         ],
-    ][character as usize][rarity as usize];
+    ][character as usize][rarity];
     let last: Card = [
         [
             Card::Immolate,
@@ -78,11 +84,10 @@ pub const fn card_pool_range(character: Character, rarity: Rarity) -> (Card, Car
 }
 
 const _IRONCLAD_CARD_RANGE: (Card, Card, bool) =
-    card_pool_range(Character::Ironclad, Rarity::Common);
+    card_pool_range(Character::Ironclad, Some(Rarity::Common));
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, FromRepr, EnumIter, EnumCount)]
 pub enum Rarity {
-    Any,
     Common,
     Uncommon,
     Rare,

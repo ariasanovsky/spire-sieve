@@ -3,9 +3,9 @@ use std::array;
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 use crate::{
-    card::{card_pool_range, Rarity},
+    card::{card_pool_range},
     character::{basics, Character},
-    filter::Filter,
+    filter::SeedFilter,
     seed,
 };
 
@@ -46,22 +46,22 @@ pub struct AnonymousPandoraBox {
 
 impl AnonymousPandoraBox {
     pub const fn new(character: Character) -> Self {
-        let range = card_pool_range(character, Rarity::Any);
+        let range = card_pool_range(character, None);
         let cards = range.1 as u64 - range.0 as u64 + 1;
         let basics: usize = basics(character);
         Self { cards, basics }
     }
 }
 
-impl Filter for AnonymousPandoraBox {
-    fn accept_rng(&self, rng: &mut Random) -> bool {
+impl SeedFilter for AnonymousPandoraBox {
+    fn reject_rng(&self, rng: &mut Random) -> bool {
         let first = rng.next_capped_u64(self.cards);
         for _ in 1..self.basics {
             if first != rng.next_capped_u64(self.cards) {
-                return false;
+                return true;
             }
         }
-        true
+        false
     }
 }
 
