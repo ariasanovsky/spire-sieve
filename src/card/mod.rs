@@ -1,4 +1,6 @@
-pub mod card_pool;
+pub mod pandoras_box;
+pub mod pool;
+pub mod reward;
 
 use strum::EnumCount;
 use strum_macros::EnumCount;

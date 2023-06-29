@@ -30,3 +30,7 @@ impl FromStr for Character {
         })
     }
 }
+
+pub const fn basics(character: Character) -> usize {
+    [9, 10, 8, 8][character as usize]
+}
