@@ -1,10 +1,10 @@
 use crate::character::Character;
 
-use super::{Card, CARDS, REV_CARDS, CardSlice, Rarity};
+use super::{Card, CardSlice, Rarity, CARDS, REV_CARDS};
 
 pub struct CharacterCards<'a> {
     pub all: CardSlice<'a>,
-    pub common: CardSlice<'a>,  
+    pub common: CardSlice<'a>,
     pub uncommon: CardSlice<'a>,
     pub rare: CardSlice<'a>,
 }
@@ -13,10 +13,12 @@ impl<'a> CharacterCards<'a> {
     pub const fn new(character: Character) -> Self {
         Self {
             all: CardSliceParameters::new(character, None).slice(&CARDS, false),
-            common: CardSliceParameters::new(character, Some(Rarity::Common)).slice(&REV_CARDS, true),
-            uncommon: CardSliceParameters::new(character, Some(Rarity::Uncommon)).slice(&REV_CARDS, true),
+            common: CardSliceParameters::new(character, Some(Rarity::Common))
+                .slice(&REV_CARDS, true),
+            uncommon: CardSliceParameters::new(character, Some(Rarity::Uncommon))
+                .slice(&REV_CARDS, true),
             rare: CardSliceParameters::new(character, Some(Rarity::Rare)).slice(&REV_CARDS, true),
-         }
+        }
     }
 }
 
@@ -27,9 +29,9 @@ struct CardSliceParameters {
 
 impl CardSliceParameters {
     pub const fn new(character: Character, rarity: Option<Rarity>) -> Self {
+        use Card::*;
         use Character::*;
         use Rarity::*;
-        use Card::*;
         let (first, len) = if let Some(rarity) = rarity {
             match (character, rarity) {
                 (Ironclad, Common) => (SwordBoomerang, 20),

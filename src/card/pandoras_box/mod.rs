@@ -2,11 +2,7 @@ use std::array;
 
 use libgdx_xs128::{rng::Random, RandomXS128};
 
-use crate::{
-    character::{basics, Character},
-    filter::SeedFilter,
-    seed,
-};
+use crate::{character::Character, filter::SeedFilter, seed};
 
 use super::Card;
 
@@ -44,11 +40,11 @@ pub struct AnonymousPandoraBox {
 }
 
 impl AnonymousPandoraBox {
-    pub const fn new(character: Character) -> Self {
+    pub const fn new(_character: Character) -> Self {
+        // let basics: usize = basics(character);
         // let range = card_pool_range(character, None);
         todo!()
         // let cards = range.1 as u64 - range.0 as u64 + 1;
-        // let basics: usize = basics(character);
         // Self { cards, basics }
     }
 }

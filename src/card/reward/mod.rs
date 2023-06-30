@@ -2,9 +2,9 @@ use std::array;
 
 use libgdx_xs128::{rng::Random, RandomXS128};
 
-use crate::{filter::SeedFilter, unlock::Unlocks, character::Character};
+use crate::{character::Character, filter::SeedFilter, unlock::Unlocks};
 
-use super::{Card, Rarity, pool::CharacterCards};
+use super::{pool::CharacterCards, Card, Rarity};
 
 pub struct CardRewarder<'a, const REWARDS: usize> {
     common: &'a [Card],
@@ -12,15 +12,13 @@ pub struct CardRewarder<'a, const REWARDS: usize> {
     rare: &'a [Card],
 }
 
-impl<'a, const REWARDS: usize> CardRewarder<'a, REWARDS> {
-    
-}
+impl<'a, const REWARDS: usize> CardRewarder<'a, REWARDS> {}
 
 pub type CardReward = [Card; 3];
 
 #[derive(Debug)]
 pub struct Offset {
-    offset: i64,    
+    offset: i64,
 }
 
 const DEFAULT_OFFSET: i64 = -5;
@@ -31,7 +29,7 @@ impl Offset {
     fn reset(&mut self) {
         *self = Self::default();
     }
-    
+
     fn decrement(&mut self) {
         self.offset -= 1;
     }
@@ -56,7 +54,9 @@ impl Offset {
 
 impl Default for Offset {
     fn default() -> Self {
-        Self { offset: DEFAULT_OFFSET, }
+        Self {
+            offset: DEFAULT_OFFSET,
+        }
     }
 }
 
@@ -69,9 +69,9 @@ impl<'a, const REWARDS: usize> CardRewarder<'a, REWARDS> {
                 all: _,
                 common,
                 uncommon,
-                rare }
-            = CharacterCards::new(character);
-            return Self {
+                rare,
+            } = CharacterCards::new(character);
+            Self {
                 common: common.slice,
                 uncommon: uncommon.slice,
                 rare: rare.slice,
@@ -81,9 +81,7 @@ impl<'a, const REWARDS: usize> CardRewarder<'a, REWARDS> {
 
     pub fn generate_rewards(&self, rng: &mut Random) -> [CardReward; REWARDS] {
         let mut offset = Offset::default();
-        array::from_fn(|_| {
-            self.generate_reward(rng, &mut offset)
-        })
+        array::from_fn(|_| self.generate_reward(rng, &mut offset))
     }
 
     pub fn generate_reward(&self, rng: &mut Random, offset: &mut Offset) -> CardReward {
@@ -102,8 +100,7 @@ impl<'a, const REWARDS: usize> CardRewarder<'a, REWARDS> {
 
     pub fn generate_card(&self, rng: &mut Random, rarity: Rarity) -> Card {
         let cards = self.card_pool(rarity);
-        let card = cards[rng.next_capped_u64(cards.len() as u64) as usize];
-        card
+        cards[rng.next_capped_u64(cards.len() as u64) as usize]
     }
 
     pub fn card_pool(&self, rarity: Rarity) -> &[Card] {
@@ -120,32 +117,55 @@ pub struct CardRewardFilter<'a, const REWARDS: usize> {
     rejected_cards: &'a [Card],
 }
 
-impl<'a, const REWARDS: usize> SeedFilter for CardRewardFilter<'a, REWARDS> {
-    fn reject_rng(&self, rng: &mut Random) -> bool {
-        let rewards = self.reward.generate_rewards(rng);
-        rewards.iter().any(|reward| {
-            reward.iter().any(|card| {
-                self.rejected_cards.contains(card)
-            })
-        })
+impl<'a, const N: usize> CardRewardFilter<'a, N> {
+    pub const fn new(
+        character: Character,
+        unlocks: Option<Unlocks>,
+        rejected_cards: &'a [Card],
+    ) -> Self {
+        Self {
+            reward: CardRewarder::new(character, unlocks),
+            rejected_cards,
+        }
     }
 }
 
+impl<'a, const REWARDS: usize> SeedFilter for CardRewardFilter<'a, REWARDS> {
+    fn reject_rng(&self, rng: &mut Random) -> bool {
+        let rewards = self.reward.generate_rewards(rng);
+        rewards
+            .iter()
+            .any(|reward| reward.iter().any(|card| self.rejected_cards.contains(card)))
+    }
+}
 
 #[cfg(test)]
 mod card_reward_tests {
-    
+
     use libgdx_xs128::{rng::Random, RandomXS128};
-    
-    use crate::{seed::Seed, card::{Card, reward::CardRewarder}, character::Character};
+
+    use crate::{
+        card::{
+            reward::{CardRewardFilter, CardRewarder},
+            Card,
+        },
+        character::Character,
+        filter::{self, SeedFilter},
+        seed::{Seed, SeedString},
+    };
 
     #[test]
     fn test_unwinnable_seed() {
-        let seed = Seed::from(3431382150268629i64);
-        let mut rng = Random::new(seed.seed as u64);
+        let seed: SeedString = "18ISL35FYK4".parse().unwrap();
+        let seed: Seed = seed.into();
+        let filter: CardRewardFilter<'_, 3> = CardRewardFilter::new(Character::Silent, None, &[]);
+        assert!(!filter.reject_seed(&seed));
+
         let rewarder = CardRewarder::<3>::new(Character::Silent, None);
+        let mut rng = Random::new(seed.seed as u64);
         let rewards = rewarder.generate_rewards(&mut rng);
 
+        dbg!(&rewards);
         assert_eq!(
             rewards,
             [

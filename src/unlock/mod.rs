@@ -1,7 +1,7 @@
 use strum::EnumCount;
-use strum_macros::{FromRepr, EnumIter, EnumCount};
+use strum_macros::{EnumCount, EnumIter, FromRepr};
 
-use crate::{character::Character};
+use crate::character::Character;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, FromRepr, EnumIter, EnumCount)]
 pub enum UnlockLevel {
