@@ -7,34 +7,72 @@ use strum_macros::EnumCount;
 use strum_macros::EnumIter;
 use strum_macros::FromRepr;
 
-use crate::character::Character;
+pub struct CardSlice<'a> {
+    pub slice: &'a [Card],
+}
 
-pub const fn cards<const START: usize, const N: usize, const REVERSE: bool>() -> [Card; N] {
-    let mut cards = [Card::Invalid; N];
+impl<'a> CardSlice<'a> {
+    pub const fn new(slice: &'a [Card]) -> Self {
+        Self { slice }
+    }
+
+    pub const fn trim_before(self, card: Card) -> Self {
+        let mut slice = self.slice;
+        while let Some((other, rest)) = slice.split_first() {
+            if card.equal_as_usize(other) {
+                return Self { slice };
+            }
+            slice = rest;
+        }
+        Self { slice }
+    }
+
+    pub const fn trim_after(self, card: Card) -> Self {
+        let mut slice = self.slice;
+        while let Some((other, rest)) = slice.split_last() {
+            if card.equal_as_usize(other) {
+                return Self { slice };
+            }
+            slice = rest;
+        }
+        Self { slice }
+    }
+
+    pub const fn trim_inclusive(self, first: Card, last: Card) -> Self {
+        self.trim_before(first).trim_after(last)
+    }
+}
+
+const fn all_cards() -> [Card; Card::COUNT] {
+    let mut cards = [Card::Invalid; Card::COUNT];
     let mut i = 0;
-    let mut index = START;
-    while i < N {
-        cards[i] = if let Some(card) = Card::from_repr(index) {
+    while i < Card::COUNT {
+        cards[i] = if let Some(card) = Card::from_repr(i) {
             card
         } else {
             continue;
         };
         i += 1;
-        if REVERSE {
-            index -= 1;
-        } else {
-            index += 1;
-        }
     }
     cards
 }
 
-pub const CARDS: [Card; Card::COUNT] = cards::<0, { Card::COUNT }, false>();
+const fn rev_cards() -> [Card; Card::COUNT] {
+    let mut cards = [Card::Invalid; Card::COUNT];
+    let mut i = 0;
+    while i < Card::COUNT {
+        cards[i] = if let Some(card) = Card::from_repr(Card::COUNT - i - 1) {
+            card
+        } else {
+            continue;
+        };
+        i += 1;
+    }
+    cards
+}
 
-// const unsafe fn cards_slice<const START: usize, const END: usize>() -> &'static [Card] {
-//     unsafe { CARDS.get_unchecked(START..END) }
-// } // not yet stable :(
-// also, as_ref() is not defined as const
+pub const CARDS: [Card; Card::COUNT] = all_cards();
+pub const REV_CARDS: [Card; Card::COUNT] = rev_cards();
 
 #[test]
 fn test_card_array_initialization() {
@@ -43,54 +81,17 @@ fn test_card_array_initialization() {
     dbg!(std::mem::size_of::<Card>());
 }
 
-pub const fn card_pool_range(character: Character, rarity: Option<Rarity>) -> (Card, Card, bool) {
-    let rarity = if let Some(rarity) = rarity {
-        rarity as usize + 1
-    } else {
-        0
-    };
-    
-    let first: Card = [
-        [
-            Card::SwordBoomerang,
-            Card::SwordBoomerang,
-            Card::Evolve,
-            Card::DoubleTap,
-        ],
-        [
-            Card::FlyingKnee,
-            Card::FlyingKnee,
-            Card::Predator,
-            Card::Alchemize,
-        ],
-    ][character as usize][rarity];
-    let last: Card = [
-        [
-            Card::Immolate,
-            Card::Anger,
-            Card::SpotWeakness,
-            Card::Immolate,
-        ],
-        [
-            Card::GrandFinale,
-            Card::CloakAndDagger,
-            Card::CripplingCloud,
-            Card::GrandFinale,
-        ],
-    ][character as usize][rarity as usize];
-    let reverse: bool =
-        [[false, true, true, true], [false, true, true, true]][character as usize][rarity as usize];
-    (first, last, reverse)
-}
-
-const _IRONCLAD_CARD_RANGE: (Card, Card, bool) =
-    card_pool_range(Character::Ironclad, Some(Rarity::Common));
-
 #[derive(Debug, PartialEq, Eq, Clone, Copy, FromRepr, EnumIter, EnumCount)]
 pub enum Rarity {
     Common,
     Uncommon,
     Rare,
+}
+
+impl Card {
+    const fn equal_as_usize(self, other: &Card) -> bool {
+        self as usize == *other as usize
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, FromRepr, EnumIter, EnumCount, Clone, Copy, Default)]
