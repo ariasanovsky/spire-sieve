@@ -12,10 +12,10 @@ pub struct CharacterCards<'a> {
 impl<'a> CharacterCards<'a> {
     pub const fn new(character: Character) -> Self {
         Self {
-            all: CardSliceParameters::new(character, None).slice(&CARDS),
-            common: CardSliceParameters::new(character, Some(Rarity::Common)).slice(&REV_CARDS),
-            uncommon: CardSliceParameters::new(character, Some(Rarity::Uncommon)).slice(&REV_CARDS),
-            rare: CardSliceParameters::new(character, Some(Rarity::Rare)).slice(&REV_CARDS),
+            all: CardSliceParameters::new(character, None).slice(&CARDS, false),
+            common: CardSliceParameters::new(character, Some(Rarity::Common)).slice(&REV_CARDS, true),
+            uncommon: CardSliceParameters::new(character, Some(Rarity::Uncommon)).slice(&REV_CARDS, true),
+            rare: CardSliceParameters::new(character, Some(Rarity::Rare)).slice(&REV_CARDS, true),
          }
     }
 }
@@ -60,8 +60,12 @@ impl CardSliceParameters {
         CARDS[self.first as usize + self.len - 1]
     }
 
-    pub const fn slice<'b>(&self, cards: &'b [Card]) -> CardSlice<'b> {
+    pub const fn slice<'b>(&self, cards: &'b [Card], reversed: bool) -> CardSlice<'b> {
         let last = self.last();
-        CardSlice::new(cards).trim_inclusive(self.first, last)
+        if reversed {
+            CardSlice::new(cards).trim_inclusive(last, self.first)
+        } else {
+            CardSlice::new(cards).trim_inclusive(self.first, last)
+        }
     }
 }

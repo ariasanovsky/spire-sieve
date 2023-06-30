@@ -2,15 +2,20 @@ use std::array;
 
 use libgdx_xs128::{rng::Random, RandomXS128};
 
-use crate::filter::SeedFilter;
+use crate::{filter::SeedFilter, unlock::Unlocks, character::Character};
 
-use super::{Card, Rarity};
+use super::{Card, Rarity, pool::CharacterCards};
 
 pub struct CardRewarder<'a, const REWARDS: usize> {
     common: &'a [Card],
     uncommon: &'a [Card],
     rare: &'a [Card],
 }
+
+impl<'a, const REWARDS: usize> CardRewarder<'a, REWARDS> {
+    
+}
+
 pub type CardReward = [Card; 3];
 
 #[derive(Debug)]
@@ -56,8 +61,22 @@ impl Default for Offset {
 }
 
 impl<'a, const REWARDS: usize> CardRewarder<'a, REWARDS> {
-    pub const fn new(common: &'a [Card], uncommon: &'a [Card], rare: &'a [Card]) -> Self {
-        Self { common, uncommon, rare, }
+    pub const fn new(character: Character, unlocks: Option<Unlocks>) -> Self {
+        if let Some(_unlocks) = unlocks {
+            unimplemented!()
+        } else {
+            let CharacterCards {
+                all: _,
+                common,
+                uncommon,
+                rare }
+            = CharacterCards::new(character);
+            return Self {
+                common: common.slice,
+                uncommon: uncommon.slice,
+                rare: rare.slice,
+            }
+        }
     }
 
     pub fn generate_rewards(&self, rng: &mut Random) -> [CardReward; REWARDS] {
@@ -118,46 +137,22 @@ mod card_reward_tests {
     
     use libgdx_xs128::{rng::Random, RandomXS128};
     
-    // use crate::{seed::Seed, card::{card_pool_range, Rarity, Card, CARDS, reward::CardRewarder}, character::Character};
+    use crate::{seed::Seed, card::{Card, reward::CardRewarder}, character::Character};
 
     #[test]
     fn test_unwinnable_seed() {
-        // let seed = Seed::from(3431382150268629i64);
-        // let mut rng = Random::new(seed.seed as u64);
+        let seed = Seed::from(3431382150268629i64);
+        let mut rng = Random::new(seed.seed as u64);
+        let rewarder = CardRewarder::<3>::new(Character::Silent, None);
+        let rewards = rewarder.generate_rewards(&mut rng);
 
-        // const RANGES: [(Card, Card, bool); 3] = [
-        //     card_pool_range(Character::Silent, Rarity::from_repr(0)),
-        //     card_pool_range(Character::Silent, Rarity::from_repr(1)),
-        //     card_pool_range(Character::Silent, Rarity::from_repr(2)),
-        // ];
-        
-        // const NUM_RANGES: [(usize, usize); 3] = [
-        //     (RANGES[0].0 as usize, RANGES[0].1 as usize),
-        //     (RANGES[1].0 as usize, RANGES[1].1 as usize),
-        //     (RANGES[2].0 as usize, RANGES[2].1 as usize),
-        // ];
-
-        // let [common, uncommon, rare] = [
-        //     &CARDS[NUM_RANGES[0].0..=NUM_RANGES[0].1],
-        //     &CARDS[NUM_RANGES[1].0..=NUM_RANGES[1].1],
-        //     &CARDS[NUM_RANGES[2].0..=NUM_RANGES[2].1],
-        // ];
-
-        // let [rev_common, rev_uncommon, rev_rare] = [
-        //     common.iter().rev().copied().collect::<Vec<_>>(),
-        //     uncommon.iter().rev().copied().collect::<Vec<_>>(),
-        //     rare.iter().rev().copied().collect::<Vec<_>>(),
-        // ];
-
-        // let rewarder: CardRewarder<'_, 3> = super::CardRewarder::new(&rev_common, &rev_uncommon, &rev_rare);
-        // let rewards = rewarder.generate_rewards(&mut rng);
-        // assert_eq!(
-        //     rewards,
-        //     [
-        //         [Card::Prepared, Card::DodgeAndRoll, Card::EscapePlan],
-        //         [Card::EscapePlan, Card::Outmaneuver, Card::Prepared],
-        //         [Card::Prepared, Card::DodgeAndRoll, Card::Footwork],
-        //     ]
-        // )
+        assert_eq!(
+            rewards,
+            [
+                [Card::Prepared, Card::DodgeAndRoll, Card::EscapePlan],
+                [Card::EscapePlan, Card::Outmaneuver, Card::Prepared],
+                [Card::Prepared, Card::DodgeAndRoll, Card::Footwork],
+            ]
+        )
     }
 }
