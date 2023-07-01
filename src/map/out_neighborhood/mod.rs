@@ -1,5 +1,5 @@
 #![allow(unused)]
-mod byte_tables;
+mod out_bytes;
 pub mod out_vec;
 
 pub trait OutNeighborhood<'a, 'b>

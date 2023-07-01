@@ -21,14 +21,14 @@ use self::node_kind::NodeKind;
 pub const WIDTH: u64 = 7;
 pub const LAST_POSITION: usize = WIDTH as usize - 1;
 pub const HEIGHT: usize = 15;
-pub const PATHS: u64 = 6;
+// pub const PATHS: u64 = 6;
 
 pub const REST_ROW: usize = HEIGHT - 1;
 pub const BEFORE_REST_ROW: usize = REST_ROW - 1;
 pub const TREASURE_ROW: usize = 8;
 
 #[derive(Debug, Default)]
-pub struct Map<In, Out>
+pub struct Map<const PATHS: usize, In, Out>
 where
     In: for<'a> InNeighborhood<'a, 'a>,
     Out: for<'a> OutNeighborhood<'a, 'a>,
@@ -36,9 +36,9 @@ where
     rows: [Row<In, Out>; HEIGHT],
 }
 
-type DefaultMap = Map<InVec, OutVec>;
+type DefaultMap = Map<6, InVec, OutVec>;
 
-impl<In, Out> Map<In, Out>
+impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
     In: for<'a> InNeighborhood<'a, 'a>,
     Out: for<'a> OutNeighborhood<'a, 'a>,
@@ -56,7 +56,7 @@ where
     }
 }
 
-impl<In, Out> Map<In, Out>
+impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
 where
     In: for<'a> InNeighborhood<'a, 'a>,
     Out: for<'a> OutNeighborhood<'a, 'a>,
