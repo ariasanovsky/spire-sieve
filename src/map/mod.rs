@@ -14,6 +14,7 @@ mod tests;
 use in_neighborhood::InNeighborhood;
 use out_neighborhood::{out_vec::OutVec, OutNeighborhood};
 use row::Row;
+use row::DefaultGenericRow;
 
 use self::node_kind::NodeKind;
 
@@ -28,19 +29,19 @@ pub const TREASURE_ROW: usize = 8;
 
 #[derive(Debug, Default)]
 pub struct Map {
-    rows: [Row; HEIGHT],
+    rows: [DefaultGenericRow; HEIGHT],
 }
 
 impl Map {
-    fn row(&self, row: usize) -> &Row {
+    fn row(&self, row: usize) -> &DefaultGenericRow {
         &self.rows[row]
     }
 
-    fn row_mut(&mut self, row: usize) -> &mut Row {
+    fn row_mut(&mut self, row: usize) -> &mut DefaultGenericRow {
         &mut self.rows[row]
     }
 
-    fn rows(&self) -> &[Row; HEIGHT] {
+    fn rows(&self) -> &[DefaultGenericRow; HEIGHT] {
         &self.rows
     }
 }
