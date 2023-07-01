@@ -4,6 +4,7 @@ mod display;
 mod filter;
 mod in_neighborhood;
 mod out_neighborhood;
+mod tests;
 
 use in_neighborhood::{InNeighborhood, InVec};
 use out_neighborhood::{OutNeighborhood, OutVec};
@@ -532,7 +533,7 @@ impl Map {
 }
 
 #[cfg(test)]
-mod tests {
+mod map_tests {
     use super::*;
 
     #[test]
