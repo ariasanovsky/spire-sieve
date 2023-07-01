@@ -4,11 +4,14 @@ mod display;
 mod filter;
 mod in_neighborhood;
 mod out_neighborhood;
+mod row;
+
 #[allow(unused)]
 mod tests;
 
-use in_neighborhood::{InNeighborhood, in_vec::InVec};
+use in_neighborhood::{InNeighborhood};
 use out_neighborhood::{OutNeighborhood, out_vec::OutVec};
+use row::Row;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NodeKind {
@@ -41,71 +44,14 @@ impl NodeKind {
     }
 }
 
-const WIDTH: u64 = 7;
-const LAST_POSITION: usize = WIDTH as usize - 1;
-const HEIGHT: usize = 15;
-const PATHS: u64 = 6;
+pub const WIDTH: u64 = 7;
+pub const LAST_POSITION: usize = WIDTH as usize - 1;
+pub const HEIGHT: usize = 15;
+pub const PATHS: u64 = 6;
 
-const REST_ROW: usize = HEIGHT - 1;
-const BEFORE_REST_ROW: usize = REST_ROW - 1;
-const TREASURE_ROW: usize = 8;
-
-#[derive(Debug, Default)]
-pub struct Row {
-    values: [(InVec, OutVec, Option<NodeKind>); WIDTH as usize],
-}
-
-impl Row {
-    fn out_neighborhood(&self, position: usize) -> &OutVec {
-        &self.values[position].1
-    }
-
-    fn out_neighborhood_mut(&mut self, position: usize) -> &mut OutVec {
-        &mut self.values[position].1
-    }
-
-    fn in_neighborhood(&self, position: usize) -> &InVec {
-        &self.values[position].0
-    }
-
-    fn in_neighborhood_mut(&mut self, position: usize) -> &mut InVec {
-        &mut self.values[position].0
-    }
-
-    fn kind(&self, position: usize) -> Option<&NodeKind> {
-        self.values[position].2.as_ref()
-    }
-
-    fn kind_mut(&mut self, position: usize) -> &mut Option<NodeKind> {
-        &mut self.values[position].2
-    }
-
-    fn in_neighborhoods(&self) -> impl Iterator<Item = &InVec> {
-        self.values
-            .iter()
-            .map(|(in_neighborhood, _, _)| in_neighborhood)
-    }
-
-    fn out_neighborhoods(&self) -> impl Iterator<Item = &OutVec> {
-        self.values.iter().map(|(_, out, _)| out)
-    }
-
-    fn kinds(&self) -> impl Iterator<Item = &Option<NodeKind>> {
-        self.values.iter().map(|(_, _, kind)| kind)
-    }
-
-    fn count_in_neighborhoods(&self) -> usize {
-        self.in_neighborhoods()
-            .filter(|in_neighborhood| !in_neighborhood.is_empty())
-            .count()
-    }
-
-    fn count_out_neighborhoods(&self) -> usize {
-        self.out_neighborhoods()
-            .filter(|out| !out.is_empty())
-            .count()
-    }
-}
+pub const REST_ROW: usize = HEIGHT - 1;
+pub const BEFORE_REST_ROW: usize = REST_ROW - 1;
+pub const TREASURE_ROW: usize = 8;
 
 #[derive(Debug, Default)]
 pub struct Map {
@@ -475,18 +421,6 @@ impl Map {
             .flat_map(|&(parent, _)| self.row(row - 1).out_neighborhood(parent).iter())
             .filter_map(|&sibling| Some(sibling).filter(|&sibling| sibling != position))
             .collect()
-    }
-}
-
-impl Row {
-    fn set_kind(&mut self, position: usize, kind: NodeKind) {
-        *self.kind_mut(position) = Some(kind);
-    }
-
-    fn set_kinds(&mut self, kind: NodeKind) {
-        for position in 0..WIDTH as usize {
-            self.set_kind(position, kind);
-        }
     }
 }
 

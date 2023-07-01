@@ -25,7 +25,7 @@ impl Display for Map {
                 )?;
             }
             write!(f, "\n{: <6}", row)?;
-            for (_, out_neighborhood, kind) in &nodes.values {
+            for (_, out_neighborhood, kind) in nodes.values() {
                 if out_neighborhood.values.is_empty() {
                     write!(f, "   ")?;
                 } else {
