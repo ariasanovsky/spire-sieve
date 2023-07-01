@@ -14,7 +14,7 @@ impl Interval {
                 std::cmp::Ordering::Less => Two(next, *a),
                 std::cmp::Ordering::Equal => One(*a),
                 std::cmp::Ordering::Greater => Two(*a, next),
-            }
+            },
             Two(a, b) => match next.cmp(a) {
                 std::cmp::Ordering::Less => Two(next, *b),
                 std::cmp::Ordering::Equal => Two(*a, *b),
@@ -22,8 +22,8 @@ impl Interval {
                     std::cmp::Ordering::Less => Two(*a, *b),
                     std::cmp::Ordering::Equal => Two(*a, *b),
                     std::cmp::Ordering::Greater => Two(*a, next),
-                }
-            }
+                },
+            },
         }
     }
 
@@ -58,11 +58,11 @@ mod interval_tests {
         }
 
         for i in 0..7 {
-            for j in (i+1)..7 {
+            for j in (i + 1)..7 {
                 intervals.push(Two(i, j));
             }
         }
-        
+
         let mut promotion_table = [[0; 7]; 29];
 
         for (pos, interval) in intervals.iter().enumerate() {

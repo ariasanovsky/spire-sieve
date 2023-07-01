@@ -1,4 +1,8 @@
-use super::{NodeKind, WIDTH, out_neighborhood::{out_vec::OutVec, OutNeighborhood}, in_neighborhood::{in_vec::InVec, InNeighborhood}};
+use super::{
+    in_neighborhood::{in_vec::InVec, InNeighborhood},
+    out_neighborhood::{out_vec::OutVec, OutNeighborhood},
+    NodeKind, WIDTH,
+};
 
 #[derive(Debug, Default)]
 pub struct Row {
@@ -9,7 +13,7 @@ impl Row {
     pub fn values(&self) -> &[(InVec, OutVec, Option<NodeKind>)] {
         &self.values
     }
-    
+
     pub fn out_neighborhood(&self, position: usize) -> &OutVec {
         &self.values[position].1
     }

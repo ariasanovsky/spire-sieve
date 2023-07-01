@@ -7,7 +7,7 @@ pub struct OutVec {
 
 impl<'a> OutNeighborhood<'a, 'a> for OutVec {
     type Iter = std::slice::Iter<'a, usize>;
-    
+
     fn update_position_from_left(&'a self, value: &'a mut usize) {
         if let Some(min) = self.values.iter().max().copied() {
             *value = min.max(*value)

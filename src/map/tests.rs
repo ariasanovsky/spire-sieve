@@ -1,8 +1,12 @@
-use std::{path::PathBuf, fs::{self, File}, io::Write};
+use std::{
+    fs::{self, File},
+    io::Write,
+    path::PathBuf,
+};
 
 use libgdx_xs128::{rng::Random, RandomXS128};
 
-use crate::seed::{SeedString, Seed};
+use crate::seed::{Seed, SeedString};
 
 use super::Map;
 
@@ -17,22 +21,7 @@ const BAD_PATH_SEEDS: &[&str] = &[
 ];
 
 const OTHER_SEEDS: &[u64] = &[
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    100,
-    1000,
-    10000,
-    100000,
-    1000000,
-    10000001,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000, 10000, 100000, 1000000, 10000001,
 ];
 
 #[test]
@@ -62,10 +51,9 @@ pub fn write_maps_to_file() {
 
     let approved = PathBuf::from(".map_tests/approved.txt");
     let approved = fs::read_to_string(&approved).unwrap();
-    
+
     let received = PathBuf::from(".map_tests/received.txt");
     let received = fs::read_to_string(&received).unwrap();
 
     assert_eq!(approved, received);
-    
 }
