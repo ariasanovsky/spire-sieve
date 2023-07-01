@@ -150,7 +150,7 @@ mod card_reward_tests {
             Card,
         },
         character::Character,
-        filter::{self, SeedFilter},
+        filter::SeedFilter,
         seed::{Seed, SeedString},
     };
 
@@ -161,9 +161,31 @@ mod card_reward_tests {
         let filter: CardRewardFilter<'_, 3> = CardRewardFilter::new(Character::Silent, None, &[]);
         assert!(!filter.reject_seed(&seed));
 
-        let rewarder = CardRewarder::<3>::new(Character::Silent, None);
+        let rewarder = CardRewarder::new(Character::Silent, None);
         let mut rng = Random::new(seed.seed as u64);
         let rewards = rewarder.generate_rewards(&mut rng);
+
+        dbg!(&rewards);
+        assert_eq!(
+            rewards,
+            [
+                [Card::Prepared, Card::DodgeAndRoll, Card::EscapePlan],
+                [Card::EscapePlan, Card::Outmaneuver, Card::Prepared],
+                [Card::Prepared, Card::DodgeAndRoll, Card::Footwork],
+            ]
+        )
+    }
+
+    #[test]
+    fn const_test_unwinnable_seed() {
+        let seed: SeedString = "18ISL35FYK4".parse().unwrap();
+        let seed: Seed = seed.into();
+        const FILTER: CardRewardFilter<'_, 3> = CardRewardFilter::new(Character::Silent, None, &[]);
+        assert!(!FILTER.reject_seed(&seed));
+
+        const REWARDER: CardRewarder<'_, 3> = CardRewarder::new(Character::Silent, None);
+        let mut rng = Random::new(seed.seed as u64);
+        let rewards = REWARDER.generate_rewards(&mut rng);
 
         dbg!(&rewards);
         assert_eq!(

@@ -1,6 +1,7 @@
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 mod display;
+mod filter;
 mod in_neighborhood;
 mod out_neighborhood;
 
