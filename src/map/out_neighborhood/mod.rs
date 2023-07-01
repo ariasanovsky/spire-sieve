@@ -1,44 +1,16 @@
-#[derive(Debug, Default)]
-pub struct OutVec {
-    pub(crate) values: Vec<usize>,
-}
+#![allow(unused)]
+mod byte_tables;
+pub mod out_vec;
 
 pub trait OutNeighborhood<'a, 'b>
 where
     'b: 'a,
 {
     type Iter: Iterator<Item = &'b usize> + 'a;
-    fn min(&'a self) -> Option<&'a usize>;
-    fn max(&'a self) -> Option<&'a usize>;
+    fn update_position_from_left(&'a self, value: &'a mut usize);
+    fn update_position_from_right(&'a self, value: &'a mut usize);
     fn push(&mut self, value: usize);
     fn remove(&mut self, value: usize);
     fn iter(&'a self) -> Self::Iter;
     fn is_empty(&self) -> bool;
-}
-
-impl<'a> OutNeighborhood<'a, 'a> for OutVec {
-    type Iter = std::slice::Iter<'a, usize>;
-    fn min(&'a self) -> Option<&'a usize> {
-        self.values.iter().min()
-    }
-
-    fn max(&'a self) -> Option<&'a usize> {
-        self.values.iter().max()
-    }
-
-    fn push(&mut self, value: usize) {
-        self.values.push(value);
-    }
-
-    fn remove(&mut self, value: usize) {
-        self.values.retain(|&v| v != value);
-    }
-
-    fn iter(&'a self) -> Self::Iter {
-        self.values.iter()
-    }
-
-    fn is_empty(&self) -> bool {
-        self.values.is_empty()
-    }
 }

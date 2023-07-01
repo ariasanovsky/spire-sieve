@@ -4,10 +4,11 @@ mod display;
 mod filter;
 mod in_neighborhood;
 mod out_neighborhood;
+#[allow(unused)]
 mod tests;
 
-use in_neighborhood::{InNeighborhood, InVec};
-use out_neighborhood::{OutNeighborhood, OutVec};
+use in_neighborhood::{InNeighborhood, in_vec::InVec};
+use out_neighborhood::{OutNeighborhood, out_vec::OutVec};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NodeKind {
@@ -209,6 +210,10 @@ impl Map {
         position: usize,
         mut next_position: usize,
     ) -> usize {
+        assert!([-1, 0, 1].contains(
+            &(next_position as isize - position as isize)
+        ));
+        
         let next_in_neighborhood = &self.row(row + 1).in_neighborhood(next_position);
         let rerolls = next_in_neighborhood
             .iter()
@@ -220,16 +225,12 @@ impl Map {
             next_position = match next_position.cmp(&position) {
                 std::cmp::Ordering::Greater => {
                     next_position = position + rng.next_capped_u64(2) as usize;
-                    if next_position == 0 {
-                        position
-                    } else {
-                        next_position - 1
-                    }
+                    next_position.max(1) - 1
                 }
                 std::cmp::Ordering::Equal => {
                     next_position = position + rng.next_capped_u64(3) as usize;
                     if next_position == 0 {
-                        position + 1
+                        1
                     } else if next_position >= LAST_POSITION {
                         position - 1
                     } else {
@@ -238,13 +239,13 @@ impl Map {
                 }
                 std::cmp::Ordering::Less => {
                     next_position = position + rng.next_capped_u64(2) as usize;
-                    if next_position >= WIDTH as usize {
-                        position
-                    } else {
-                        next_position
-                    }
+                    next_position.min(LAST_POSITION)
                 }
             };
+
+            assert!([-1, 0, 1].contains(
+                &(next_position as isize - position as isize)
+            ));
         }
         next_position
     }
@@ -266,23 +267,13 @@ impl Map {
         if position != 0 {
             let sibling_position = position - 1;
             let out_neighborhood = self.row(row).out_neighborhood(sibling_position);
-            if let Some(&out_neighbor) = out_neighborhood
-                .max()
-                .filter(|&out_neighbor| next_position.lt(out_neighbor))
-            {
-                next_position = out_neighbor;
-            }
+            out_neighborhood.update_position_from_left(&mut next_position);
         }
 
         if position != LAST_POSITION {
             let sibling_position = position + 1;
             let out_neighborhood = self.row(row).out_neighborhood(sibling_position);
-            if let Some(&out_neighbor) = out_neighborhood
-                .min()
-                .filter(|&out_neighbor| next_position.gt(out_neighbor))
-            {
-                next_position = out_neighbor;
-            }
+            out_neighborhood.update_position_from_right(&mut next_position);
         }
         next_position
     }
