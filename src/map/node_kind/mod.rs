@@ -1,8 +1,8 @@
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 use super::{
-    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, BEFORE_REST_ROW,
-    HEIGHT, REST_ROW, TREASURE_ROW, WIDTH,
+    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, DefaultMap,
+    BEFORE_REST_ROW, HEIGHT, REST_ROW, TREASURE_ROW, WIDTH,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -36,7 +36,7 @@ impl NodeKind {
     }
 }
 
-impl Map {
+impl DefaultMap {
     fn first_count(&self) -> usize {
         self.count_in_neighborhoods() + self.count_final_rest_sites()
             - self.count_penultimate_out_neighborhoods()
@@ -100,7 +100,7 @@ impl Map {
     }
 }
 
-impl Map {
+impl DefaultMap {
     pub fn assign_rooms(&mut self, rng: &mut Random, ascension: bool) {
         let first_count = self.first_count();
         let mut rooms = Self::fill_room_array(first_count, ascension);

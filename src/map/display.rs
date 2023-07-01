@@ -1,8 +1,8 @@
 use std::fmt::Display;
 
-use super::{in_neighborhood::InNeighborhood, Map, NodeKind, OutVec};
+use super::{in_neighborhood::InNeighborhood, DefaultMap, NodeKind, OutVec};
 
-impl Display for Map {
+impl Display for DefaultMap {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut rows = self.rows.iter().enumerate().rev();
         if let Some((row, nodes)) = rows.next() {
@@ -67,14 +67,14 @@ mod display_tests {
     #[test]
     fn test_display() {
         let mut rng = Random::new(2);
-        let map = Map::generate(&mut rng, true);
+        let map = DefaultMap::generate(&mut rng, true);
         println!("{map}");
     }
 
     #[test]
     fn test_display_2() {
         let mut rng = Random::new(533907583096 + 1);
-        let map = Map::generate(&mut rng, true);
+        let map = DefaultMap::generate(&mut rng, true);
         println!("{map}");
     }
 }

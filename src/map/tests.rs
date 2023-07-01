@@ -8,7 +8,7 @@ use libgdx_xs128::{rng::Random, RandomXS128};
 
 use crate::seed::{Seed, SeedString};
 
-use super::Map;
+use super::DefaultMap;
 
 const BAD_PATH_SEEDS: &[&str] = &[
     "8AFF4ZZ6",
@@ -33,7 +33,7 @@ pub fn write_maps_to_file() {
         let seed_string: SeedString = seed.parse().unwrap();
         let seed: Seed = seed_string.clone().into();
         let mut rng = Random::new(seed.seed as u64);
-        let map = Map::generate(&mut rng, true);
+        let map = DefaultMap::generate(&mut rng, true);
         let map = map.to_string();
         let map_string = format!("{seed_string},{seed:?}\n{map}\n\n");
         received.write_all(map_string.as_bytes()).unwrap();
@@ -44,7 +44,7 @@ pub fn write_maps_to_file() {
         let seed_string = SeedString::from(seed.clone());
         let mut rng = Random::new(seed.seed as u64);
         let ascension = i % 2 == 0;
-        let map = Map::generate(&mut rng, ascension);
+        let map = DefaultMap::generate(&mut rng, ascension);
         let map_string = format!("{seed_string},{seed:?}\n{map}\n\n");
         received.write_all(map_string.as_bytes()).unwrap();
     }

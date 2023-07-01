@@ -14,8 +14,8 @@ mod tests;
 use in_neighborhood::InNeighborhood;
 use out_neighborhood::{out_vec::OutVec, OutNeighborhood};
 use row::Row;
-use row::DefaultGenericRow;
 
+use self::in_neighborhood::in_vec::InVec;
 use self::node_kind::NodeKind;
 
 pub const WIDTH: u64 = 7;
@@ -28,27 +28,41 @@ pub const BEFORE_REST_ROW: usize = REST_ROW - 1;
 pub const TREASURE_ROW: usize = 8;
 
 #[derive(Debug, Default)]
-pub struct Map {
-    rows: [DefaultGenericRow; HEIGHT],
+pub struct Map<In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
+    rows: [Row<In, Out>; HEIGHT],
 }
 
-impl Map {
-    fn row(&self, row: usize) -> &DefaultGenericRow {
+type DefaultMap = Map<InVec, OutVec>;
+
+impl<In, Out> Map<In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
+    fn row(&self, row: usize) -> &Row<In, Out> {
         &self.rows[row]
     }
 
-    fn row_mut(&mut self, row: usize) -> &mut DefaultGenericRow {
+    fn row_mut(&mut self, row: usize) -> &mut Row<In, Out> {
         &mut self.rows[row]
     }
 
-    fn rows(&self) -> &[DefaultGenericRow; HEIGHT] {
+    fn rows(&self) -> &[Row<In, Out>; HEIGHT] {
         &self.rows
     }
 }
 
-impl Map {
-    pub fn generate(rng: &mut Random, ascension: bool) -> Map {
-        let mut map: Map = Default::default();
+impl<In, Out> Map<In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
+    pub fn generate(rng: &mut Random, ascension: bool) -> DefaultMap {
+        let mut map: DefaultMap = DefaultMap::default();
         map.create_paths(rng);
         map.filter_redundant_edges_from_first_row();
         map.assign_rooms(rng, ascension);
@@ -69,7 +83,7 @@ impl Map {
     }
 }
 
-impl Map {
+impl DefaultMap {
     fn filter_redundant_edges_from_first_row(&mut self) {
         let mut visited = [false; WIDTH as usize];
         let removals: Vec<_> = self
@@ -101,7 +115,7 @@ pub enum EliteBuff {
     Regenerate,
 }
 
-impl Map {
+impl DefaultMap {
     pub fn burning_elite_position(&self, rng: &mut Random) -> Option<(usize, usize)> {
         let mut positions = Vec::new();
         for (y, row) in self.rows().iter().enumerate() {
@@ -133,7 +147,7 @@ mod map_tests {
     #[test]
     fn test_map() {
         let mut rng = Random::from(1);
-        let map = Map::generate(&mut rng, true);
+        let map = DefaultMap::generate(&mut rng, true);
         dbg!(&map);
         println!("{map}");
     }
@@ -141,22 +155,22 @@ mod map_tests {
     #[test]
     fn test_special_map() {
         let mut rng = Random::from(533907583096 + 1);
-        let map = Map::generate(&mut rng, true);
+        let map = DefaultMap::generate(&mut rng, true);
         println!("{map}");
         let burning_elite_position = map.burning_elite_position(&mut rng);
         dbg!(burning_elite_position);
-        let burning_elite_buff = Map::burning_elite_buff(&mut rng);
+        let burning_elite_buff = DefaultMap::burning_elite_buff(&mut rng);
         dbg!(burning_elite_buff);
     }
 
     fn test_map_with_seed(seed: i64) {
         dbg!(seed);
         let mut rng = Random::from(seed + 1);
-        let map = Map::generate(&mut rng, true);
+        let map = DefaultMap::generate(&mut rng, true);
         println!("{map}");
         let burning_elite_position = map.burning_elite_position(&mut rng);
         dbg!(burning_elite_position);
-        let burning_elite_buff = Map::burning_elite_buff(&mut rng);
+        let burning_elite_buff = DefaultMap::burning_elite_buff(&mut rng);
         dbg!(burning_elite_buff);
     }
 
