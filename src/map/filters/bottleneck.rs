@@ -72,6 +72,39 @@ impl<'a> SeedFilter for BuffedEliteBottleneck<'a> {
     }
 }
 
+struct OnePath {
+    length: usize,
+}
+
+impl OnePath {
+    pub const fn new(length: usize) -> Self {
+        Self { length }
+    }
+}
+
+impl Default for OnePath {
+    fn default() -> Self {
+        Self::new(6)
+    }
+}
+
+impl SeedFilter for OnePath {
+    fn reject_rng(&self, rng: &mut Random) -> bool {
+        let map = Map::<6, InVec, OutVec>::generate(rng, true);
+        for row in 1..self.length {
+            if map.row(row).count_out_neighborhoods() != 1 {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn reject_seed(&self, seed: &Seed) -> bool {
+        let mut rng = Random::new(seed.seed as u64 + 1);
+        self.reject_rng(&mut rng)
+    }
+}
+
 #[cfg(test)]
 mod bottleneck_filter_tests {
     use std::str::FromStr;
@@ -124,6 +157,30 @@ mod bottleneck_filter_tests {
         for seed in [1u64, 2, 3, 4, 5] {
             let seed = Seed::from(seed);
             let filter = BuffedEliteBottleneck::default();
+            assert!(filter.reject_seed(&seed));
+        }
+    }
+
+    #[test]
+    fn test_one_path() {
+        for seed in [
+            "8AFF4ZZ6",
+            "XXKBUJNS",
+            "1J432TK4I",
+            "3QJ3DI01K",
+            "3XTMF0PHJ",
+            "3YT8RJBX1",
+            "4DM63LTVA",
+        ] {
+            let seed = SeedString::from_str(seed).unwrap();
+            let seed: Seed = seed.into();
+            let filter = OnePath::default();
+            assert!(!filter.reject_seed(&seed));
+        }
+
+        for seed in [1u64, 2, 3, 4, 5] {
+            let seed = Seed::from(seed);
+            let filter = OnePath::default();
             assert!(filter.reject_seed(&seed));
         }
     }

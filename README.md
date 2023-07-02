@@ -1,19 +1,19 @@
 # Spire sieve
 
 `spire-sieve` is a Rust crate that provides tools to sieve for `Slay the Spire` game seeds with desired properties.
-It is planned to be a mostly `no_std` for compatibility with `CUDA` or other environments where the Rust standard library is not available.
+It is planned to be `no_std`-compatible for `CUDA` and other environments where the Rust standard library is not available.
 
 ## Filter feature map
 
 | Feature          | backend    | `SeedFilter`   | `no_std`      | no `panic` in asm/ptx |`kani` proof |
 |------------------|------------|----------------|---------------|-----------------------|-------------|
 | Bottleneck map   | 🌱🔬      | 🌱🔬          | 🚧           |                       |             |
-| Bad bottleneck   | 🌱🔬      | 🛠️            |               |                       |             |
-| One-path map     | 🌱🔬      | 🛠️            |               |                       |             |
+| Bad bottleneck   | 🌱🔬      | 🌱🔬          | 🚧           |                       |             |
+| One-path map     | 🌱🔬      | 🌱🔬          | 🚧           |                       |             |
 | Speedrun map     | 🌱🔬      | 🛠️            |               |                       |             |
 | Snecko rolls     | 🛠️        | 🛠️             |               |                       |             |
 | Pandora's box    | 🌱        | 🌱             | 🚧           |                       |             |
-| Relic shuffles   | 🛠️        | 🛠️             |               |                       |             |
+| Relic shuffles   | 🚧        |                |               |                       |             |
 | Card rewards     | 🌱🔬      | 🌱            | 🚧            |                       |             |
 | Neow bonuses     | 🌱        | 🛠️             |               |                       |             |
 | Shop cards       | 🚧        | 🛠️             |               |                       |             |
@@ -25,7 +25,7 @@ It is planned to be a mostly `no_std` for compatibility with `CUDA` or other env
 |----------------------|--------------------------------------------|----------|----------------|
 | overflow toggle      | toggle RNG overflow guard                  | 🌱      | 🛠️             |
 | parallel CPU search  | `Search` with rayon enabled                | 🌱      | 🛠️             |
-| parallel GPU search  | `Search` which emits CUDA kernels          | 🌱      | 🛠️             |
+| parallel GPU search  | `Search` which emits CUDA kernels          | 🌱      | 🚧             |
 | filter `PhantomData` | add optionally printable output to data    | 🚧      |                |
 | unlock levels        | adjust filters with save file `Unlocks`    | 🛠️      |                |
 | hash skip            | option to filter over `Seed0` over `Seed`  | 🛠️      |                |
