@@ -1,9 +1,9 @@
 use libgdx_xs128::{rng::Random, RandomXS128};
 
+pub mod assign_nodes;
 mod display;
 mod filters;
 mod in_neighborhood;
-pub mod node_kind;
 mod out_neighborhood;
 mod row;
 pub mod skeleton;
@@ -15,8 +15,8 @@ use in_neighborhood::InNeighborhood;
 use out_neighborhood::{out_vec::OutVec, OutNeighborhood};
 use row::Row;
 
+use self::assign_nodes::NodeKind;
 use self::in_neighborhood::in_vec::InVec;
-use self::node_kind::NodeKind;
 
 pub const WIDTH: u64 = 7;
 pub const LAST_POSITION: usize = WIDTH as usize - 1;
@@ -61,8 +61,8 @@ where
     In: for<'a> InNeighborhood<'a, 'a>,
     Out: for<'a> OutNeighborhood<'a, 'a>,
 {
-    pub fn generate(rng: &mut Random, ascension: bool) -> DefaultMap {
-        let mut map: DefaultMap = DefaultMap::default();
+    pub fn generate(rng: &mut Random, ascension: bool) -> Map<PATHS, In, Out> {
+        let mut map = Map::default();
         map.create_paths(rng);
         map.filter_redundant_edges_from_first_row();
         map.assign_rooms(rng, ascension);
@@ -80,88 +80,6 @@ where
     fn remove_first_row_edge(&mut self, position: usize, next_position: usize) {
         let out_neighborhood = &mut self.row_mut(0).out_neighborhood_mut(position);
         out_neighborhood.remove(next_position);
-    }
-}
-
-impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
-where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
-{
-    fn filter_redundant_edges_from_first_row(&mut self) {
-        let mut visited = [false; WIDTH as usize];
-        let removals: Vec<_> = self
-            .row(0)
-            .out_neighborhoods()
-            .enumerate()
-            .flat_map(|(position, out_neighborhood)| {
-                out_neighborhood.iter().filter_map(move |&next_position| {
-                    if visited[next_position] {
-                        Some((position, next_position))
-                    } else {
-                        visited[next_position] = true;
-                        None
-                    }
-                })
-            })
-            .collect();
-        for (position, next_position) in removals {
-            self.remove_first_row_edge(position, next_position);
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum EliteBuff {
-    Strength,
-    MaxHP,
-    Metallicize,
-    Regenerate,
-}
-
-#[derive(Debug, Clone)]
-pub struct EliteInfo {
-    pub buff_x: usize,
-    pub buff_y: usize,
-    pub buff: EliteBuff,
-    pub buff_index: usize,
-    pub count: usize,
-}
-
-impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
-where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
-{
-    pub fn burning_elite(&self, rng: &mut Random) -> Option<EliteInfo> {
-        let ((x, y), buff_index, count) = self.burning_elite_position(rng)?;
-        let buff = Self::burning_elite_buff(rng);
-        Some(EliteInfo { buff_x: x, buff_y: y, buff, buff_index, count })
-    }
-    
-    fn burning_elite_position(&self, rng: &mut Random) -> Option<((usize, usize), usize, usize)> {
-        let mut positions = Vec::new();
-        for (y, row) in self.rows().iter().enumerate() {
-            for (x, kind) in row.kinds().enumerate() {
-                if let Some(NodeKind::Elite) = kind {
-                    positions.push((x, y));
-                }
-            }
-        }
-        let count = positions.len();
-        let pos = rng.next_capped_u64(count as u64) as usize;
-        positions.get(pos).copied().map(|(x, y)| ((x, y), pos, count)
-        )
-    }
-
-    fn burning_elite_buff(rng: &mut Random) -> EliteBuff {
-        match rng.next_capped_u64(4) {
-            0 => EliteBuff::Strength,
-            1 => EliteBuff::MaxHP,
-            2 => EliteBuff::Metallicize,
-            3 => EliteBuff::Regenerate,
-            _ => unreachable!(),
-        }
     }
 }
 

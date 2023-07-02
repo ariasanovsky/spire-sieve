@@ -1,8 +1,12 @@
 use std::fmt::Display;
 
-use super::{in_neighborhood::InNeighborhood, DefaultMap, NodeKind, OutVec};
+use super::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, NodeKind};
 
-impl Display for DefaultMap {
+impl<const PATHS: usize, In, Out> Display for Map<PATHS, In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut rows = self.rows.iter().enumerate().rev();
         if let Some((row, nodes)) = rows.next() {
@@ -26,7 +30,7 @@ impl Display for DefaultMap {
             }
             write!(f, "\n{: <6}", row)?;
             for (_, out_neighborhood, kind) in nodes.values() {
-                if out_neighborhood.values.is_empty() {
+                if out_neighborhood.is_empty() {
                     write!(f, "   ")?;
                 } else {
                     write!(
@@ -44,12 +48,15 @@ impl Display for DefaultMap {
     }
 }
 
-struct EnumeratedOutNeighborhood<'a>(&'a OutVec, usize);
+struct EnumeratedOutNeighborhood<'a, Out: OutNeighborhood<'a, 'a>>(&'a Out, usize);
 
-impl Display for EnumeratedOutNeighborhood<'_> {
+impl<Out> Display for EnumeratedOutNeighborhood<'_, Out>
+where
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let (mut right, mut middle, mut left) = (" ", " ", " ");
-        for neighbor in &self.0.values {
+        for neighbor in self.0.iter() {
             match neighbor.cmp(&self.1) {
                 std::cmp::Ordering::Less => left = r"\",
                 std::cmp::Ordering::Equal => middle = "|",

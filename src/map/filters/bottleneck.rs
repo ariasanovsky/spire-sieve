@@ -1,12 +1,11 @@
-use libgdx_xs128::RandomXS128;
 use libgdx_xs128::rng::Random;
+use libgdx_xs128::RandomXS128;
 
-use crate::map::EliteBuff;
-use crate::map::node_kind::NodeKind;
-use crate::{filter::SeedFilter, map::Map};
+use crate::map::assign_nodes::buffed_elite::EliteBuff;
 use crate::map::in_neighborhood::in_vec::InVec;
 use crate::map::out_neighborhood::out_vec::OutVec;
 use crate::seed::Seed;
+use crate::{filter::SeedFilter, map::Map};
 
 struct Bottleneck {
     row: usize,
@@ -43,7 +42,10 @@ struct BuffedEliteBottleneck<'a> {
 
 impl<'a> BuffedEliteBottleneck<'a> {
     pub const fn new(floor: usize, required_buffs: Option<&'a [EliteBuff]>) -> Self {
-        Self { row: floor - 1, required_buffs }
+        Self {
+            row: floor - 1,
+            required_buffs,
+        }
     }
 }
 
@@ -60,9 +62,9 @@ impl<'a> SeedFilter for BuffedEliteBottleneck<'a> {
             return true;
         }
         !map.burning_elite(rng).is_some_and(|info| {
-            !self.required_buffs.is_some_and(|required_buffs| {
-                !required_buffs.contains(&info.buff)
-            })
+            !self
+                .required_buffs
+                .is_some_and(|required_buffs| !required_buffs.contains(&info.buff))
         })
     }
 

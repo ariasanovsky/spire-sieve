@@ -2,7 +2,7 @@
 pub mod in_byte;
 pub mod in_vec;
 
-pub trait InNeighborhood<'a, 'b>
+pub trait InNeighborhood<'a, 'b>: Default
 where
     'b: 'a,
 {

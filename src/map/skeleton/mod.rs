@@ -3,10 +3,14 @@ use libgdx_xs128::{rng::Random, RandomXS128};
 use crate::map::LAST_POSITION;
 
 use super::{
-    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, DefaultMap, HEIGHT, WIDTH,
+    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, HEIGHT, WIDTH,
 };
 
-impl DefaultMap {
+impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
     pub(super) fn create_paths(&mut self, rng: &mut Random) {
         let first_position = self.create_first_path(rng);
         self.create_second_path(rng, first_position);

@@ -2,7 +2,7 @@
 mod out_byte;
 pub mod out_vec;
 
-pub trait OutNeighborhood<'a, 'b>
+pub trait OutNeighborhood<'a, 'b>: Default
 where
     'b: 'a,
 {

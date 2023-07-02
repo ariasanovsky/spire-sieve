@@ -1,9 +1,11 @@
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 use super::{
-    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, DefaultMap,
-    BEFORE_REST_ROW, HEIGHT, REST_ROW, TREASURE_ROW, WIDTH,
+    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, BEFORE_REST_ROW,
+    HEIGHT, REST_ROW, TREASURE_ROW, WIDTH,
 };
+
+pub mod buffed_elite;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NodeKind {
@@ -36,7 +38,11 @@ impl NodeKind {
     }
 }
 
-impl DefaultMap {
+impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
     fn first_count(&self) -> usize {
         self.count_in_neighborhoods() + self.count_final_rest_sites()
             - self.count_penultimate_out_neighborhoods()
@@ -99,8 +105,39 @@ impl DefaultMap {
             + self.count_final_rest_sites()
     }
 }
+impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
+    pub(super) fn filter_redundant_edges_from_first_row(&mut self) {
+        let mut visited = [false; WIDTH as usize];
+        let removals: Vec<_> = self
+            .row(0)
+            .out_neighborhoods()
+            .enumerate()
+            .flat_map(|(position, out_neighborhood)| {
+                out_neighborhood.iter().filter_map(move |&next_position| {
+                    if visited[next_position] {
+                        Some((position, next_position))
+                    } else {
+                        visited[next_position] = true;
+                        None
+                    }
+                })
+            })
+            .collect();
+        for (position, next_position) in removals {
+            self.remove_first_row_edge(position, next_position);
+        }
+    }
+}
 
-impl DefaultMap {
+impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
     pub fn assign_rooms(&mut self, rng: &mut Random, ascension: bool) {
         let first_count = self.first_count();
         let mut rooms = Self::fill_room_array(first_count, ascension);
