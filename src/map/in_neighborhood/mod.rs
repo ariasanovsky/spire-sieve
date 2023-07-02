@@ -1,3 +1,4 @@
+pub mod in_byte;
 pub mod in_vec;
 
 pub trait InNeighborhood<'a, 'b>
