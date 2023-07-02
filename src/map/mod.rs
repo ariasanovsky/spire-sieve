@@ -1,7 +1,7 @@
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 mod display;
-mod filter;
+mod filters;
 mod in_neighborhood;
 pub mod node_kind;
 mod out_neighborhood;
@@ -56,7 +56,7 @@ where
     }
 }
 
-impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
+impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
     In: for<'a> InNeighborhood<'a, 'a>,
     Out: for<'a> OutNeighborhood<'a, 'a>,

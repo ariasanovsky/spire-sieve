@@ -7,7 +7,7 @@ It is planned to be a mostly `no_std` for compatibility with `CUDA` or other env
 
 | Feature          | backend    | `SeedFilter`   | `no_std`       | no `panic` in asm/ptx |`kani` proof |
 |------------------|------------|----------------|----------------|-----------------------|-------------|
-| Bottleneck map   | 🌱         | 🛠️            |                |                       |             |
+| Bottleneck map   | 🌱         | 🌱            | 🚧            |                       |             |
 | Bad bottleneck   | 🌱         | 🛠️            |                |                       |             |
 | One-path map     | 🌱         | 🛠️            |                |                       |             |
 | Speedrun map     | 🌱         | 🛠️            |                |                       |             |
