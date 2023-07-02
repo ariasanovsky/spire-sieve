@@ -111,7 +111,7 @@ where
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EliteBuff {
     Strength,
     MaxHP,
@@ -119,12 +119,27 @@ pub enum EliteBuff {
     Regenerate,
 }
 
+#[derive(Debug, Clone)]
+pub struct EliteInfo {
+    pub buff_x: usize,
+    pub buff_y: usize,
+    pub buff: EliteBuff,
+    pub buff_index: usize,
+    pub count: usize,
+}
+
 impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
 where
     In: for<'a> InNeighborhood<'a, 'a>,
     Out: for<'a> OutNeighborhood<'a, 'a>,
 {
-    pub fn burning_elite_position(&self, rng: &mut Random) -> Option<(usize, usize)> {
+    pub fn burning_elite(&self, rng: &mut Random) -> Option<EliteInfo> {
+        let ((x, y), buff_index, count) = self.burning_elite_position(rng)?;
+        let buff = Self::burning_elite_buff(rng);
+        Some(EliteInfo { buff_x: x, buff_y: y, buff, buff_index, count })
+    }
+    
+    fn burning_elite_position(&self, rng: &mut Random) -> Option<((usize, usize), usize, usize)> {
         let mut positions = Vec::new();
         for (y, row) in self.rows().iter().enumerate() {
             for (x, kind) in row.kinds().enumerate() {
@@ -133,11 +148,13 @@ where
                 }
             }
         }
-        let pos = rng.next_capped_u64(positions.len() as u64) as usize;
-        positions.get(pos).copied()
+        let count = positions.len();
+        let pos = rng.next_capped_u64(count as u64) as usize;
+        positions.get(pos).copied().map(|(x, y)| ((x, y), pos, count)
+        )
     }
 
-    pub fn burning_elite_buff(rng: &mut Random) -> EliteBuff {
+    fn burning_elite_buff(rng: &mut Random) -> EliteBuff {
         match rng.next_capped_u64(4) {
             0 => EliteBuff::Strength,
             1 => EliteBuff::MaxHP,

@@ -5,19 +5,19 @@ It is planned to be a mostly `no_std` for compatibility with `CUDA` or other env
 
 ## Filter feature map
 
-| Feature          | backend    | `SeedFilter`   | `no_std`       | no `panic` in asm/ptx |`kani` proof |
-|------------------|------------|----------------|----------------|-----------------------|-------------|
-| Bottleneck map   | 🌱         | 🌱            | 🚧            |                       |             |
-| Bad bottleneck   | 🌱         | 🛠️            |                |                       |             |
-| One-path map     | 🌱         | 🛠️            |                |                       |             |
-| Speedrun map     | 🌱         | 🛠️            |                |                       |             |
-| Bad Snecko rolls | 🛠️         | 🛠️            |                |                       |             |
-| Pandora's box    | 🌱         | 🌱            | 🚧            |                       |             |
-| Relic shuffles   | 🛠️         | 🛠️            |                |                       |             |
-| Card rewards     | 🌱         | 🌱            | 🚧            |                       |             |
-| Neow bonuses     | 🌱         | 🛠️            |                |                       |             |
-| Shop cards       | 🚧         | 🛠️            |                |                       |             |
-| Shop relics      | 🚧         | 🛠️            |                |                       |             |
+| Feature          | backend    | `SeedFilter`   | `no_std`      | no `panic` in asm/ptx |`kani` proof |
+|------------------|------------|----------------|---------------|-----------------------|-------------|
+| Bottleneck map   | 🌱🔬      | 🌱🔬          | 🚧           |                       |             |
+| Bad bottleneck   | 🌱🔬      | 🛠️            |               |                       |             |
+| One-path map     | 🌱🔬      | 🛠️            |               |                       |             |
+| Speedrun map     | 🌱🔬      | 🛠️            |               |                       |             |
+| Snecko rolls     | 🛠️        | 🛠️             |               |                       |             |
+| Pandora's box    | 🌱        | 🌱             | 🚧           |                       |             |
+| Relic shuffles   | 🛠️        | 🛠️             |               |                       |             |
+| Card rewards     | 🌱🔬      | 🌱            | 🚧            |                       |             |
+| Neow bonuses     | 🌱        | 🛠️             |               |                       |             |
+| Shop cards       | 🚧        | 🛠️             |               |                       |             |
+| Shop relics      | 🚧        | 🛠️             |               |                       |             |
 
 ## Other features map
 
@@ -26,6 +26,7 @@ It is planned to be a mostly `no_std` for compatibility with `CUDA` or other env
 | overflow toggle      | toggle RNG overflow guard                  | 🌱      | 🛠️             |
 | parallel CPU search  | `Search` with rayon enabled                | 🌱      | 🛠️             |
 | parallel GPU search  | `Search` which emits CUDA kernels          | 🌱      | 🛠️             |
+| filter `PhantomData` | add optionally printable output to data    | 🚧      |                |
 | unlock levels        | adjust filters with save file `Unlocks`    | 🛠️      |                |
 | hash skip            | option to filter over `Seed0` over `Seed`  | 🛠️      |                |
 | one-path heuristics  | reject prematurely based on paths 1 & 2    | 🛠️      |                |
