@@ -1,3 +1,4 @@
+#[allow(unused)]
 pub mod in_byte;
 pub mod in_vec;
 

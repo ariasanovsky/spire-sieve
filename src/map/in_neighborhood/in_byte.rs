@@ -1,7 +1,16 @@
+use std::fmt::Display;
 
+#[derive(Debug, Clone, Copy)]
+struct InByte(u8);
 
 #[derive(Debug, Clone, Copy)]
 struct Multiplicity(u8);
+
+impl Multiplicity {
+    const fn const_eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
 enum NeighborhoodOfAtMostThreeConsecutiveElements {
@@ -26,24 +35,66 @@ impl NeighborhoodOfAtMostThreeConsecutiveElements {
                         break;
                     }
                     neighborhoods[i] = neighborhood;
+                    assert!(!neighborhoods[i].is_empty() || i == 0);
                     i += 1;
                 }
                 first_neighbor += 1;
             }
             index += 1;
         }
+        assert_eq!(i, 233);
+
+        let mut i = 0;
+        while i < 233 {
+            let neighborhood = neighborhoods[i];
+            assert!(neighborhood.const_eq(&neighborhood));
+            let mut j = 0;
+            while j < i {
+                assert!(!neighborhood.const_eq(&neighborhoods[j]));
+                j += 1;
+            }
+            i += 1;
+        }
         neighborhoods
     }
 
     const fn is_empty(&self) -> bool {
         use NeighborhoodOfAtMostThreeConsecutiveElements::*;
-        match self {
-            Empty => true,
+        matches!(self, Empty)
+    }
+
+    const fn const_eq(&self, other: &Self) -> bool {
+        use NeighborhoodOfAtMostThreeConsecutiveElements::*;
+        match (self, other) {
+            (Empty, Empty) => true,
+            (One(neighbor1, multiplicity1), One(neighbor2, multiplicity2)) => {
+                *neighbor1 == *neighbor2 && multiplicity1.const_eq(multiplicity2)
+            }
+            (
+                Two(neighbor1, multiplicity1, multiplicity2),
+                Two(neighbor2, multiplicity3, multiplicity4),
+            ) => {
+                *neighbor1 == *neighbor2
+                    && multiplicity1.const_eq(multiplicity3)
+                    && multiplicity2.const_eq(multiplicity4)
+            }
+            (
+                Three(neighbor1, multiplicity1, multiplicity2, multiplicity3),
+                Three(neighbor2, multiplicity4, multiplicity5, multiplicity6),
+            ) => {
+                *neighbor1 == *neighbor2
+                    && multiplicity1.const_eq(multiplicity4)
+                    && multiplicity2.const_eq(multiplicity5)
+                    && multiplicity3.const_eq(multiplicity6)
+            }
             _ => false,
         }
     }
-    
-    const fn new(first_neighbor: u8, multiplicities: &StrongCompositionOfLengthAtMostThree) -> Option<Self> {
+
+    const fn new(
+        first_neighbor: u8,
+        multiplicities: &StrongCompositionOfLengthAtMostThree,
+    ) -> Option<Self> {
         use StrongCompositionOfLengthAtMostThree::*;
         Some(match multiplicities {
             Empty => Self::Empty,
@@ -52,7 +103,11 @@ impl NeighborhoodOfAtMostThreeConsecutiveElements {
                 if first_neighbor >= 6 {
                     return None;
                 } else {
-                    Self::Two(first_neighbor, Multiplicity(*multiplicity1), Multiplicity(*multiplicity2))
+                    Self::Two(
+                        first_neighbor,
+                        Multiplicity(*multiplicity1),
+                        Multiplicity(*multiplicity2),
+                    )
                 }
             }
             Three(multiplicity1, multiplicity2, multiplicity3) => {
@@ -82,33 +137,71 @@ impl NeighborhoodOfAtMostThreeConsecutiveElements {
                 } else if *neighbor == new_neighbor + 1 {
                     Two(new_neighbor, Multiplicity(1), Multiplicity(*multiplicity))
                 } else {
-                    return None
+                    return None;
                 }
-            },
+            }
             Two(neighbor, Multiplicity(multiplicity1), Multiplicity(multiplicity2)) => {
                 if new_neighbor == *neighbor {
-                    Two(*neighbor, Multiplicity(*multiplicity1 + 1), Multiplicity(*multiplicity2))
+                    Two(
+                        *neighbor,
+                        Multiplicity(*multiplicity1 + 1),
+                        Multiplicity(*multiplicity2),
+                    )
                 } else if new_neighbor == *neighbor + 1 {
-                    Two(*neighbor, Multiplicity(*multiplicity1), Multiplicity(*multiplicity2 + 1))
+                    Two(
+                        *neighbor,
+                        Multiplicity(*multiplicity1),
+                        Multiplicity(*multiplicity2 + 1),
+                    )
                 } else if new_neighbor == *neighbor + 2 {
-                    Three(*neighbor, Multiplicity(*multiplicity1), Multiplicity(*multiplicity2), Multiplicity(1))
+                    Three(
+                        *neighbor,
+                        Multiplicity(*multiplicity1),
+                        Multiplicity(*multiplicity2),
+                        Multiplicity(1),
+                    )
                 } else if *neighbor == new_neighbor + 1 {
-                    Three(new_neighbor, Multiplicity(1), Multiplicity(*multiplicity1), Multiplicity(*multiplicity2))
+                    Three(
+                        new_neighbor,
+                        Multiplicity(1),
+                        Multiplicity(*multiplicity1),
+                        Multiplicity(*multiplicity2),
+                    )
                 } else {
-                    return None
+                    return None;
                 }
-            },
-            Three(neighbor, Multiplicity(multiplicity1), Multiplicity(multiplicity2), Multiplicity(multiplicity3)) => {
+            }
+            Three(
+                neighbor,
+                Multiplicity(multiplicity1),
+                Multiplicity(multiplicity2),
+                Multiplicity(multiplicity3),
+            ) => {
                 if new_neighbor == *neighbor {
-                    Three(*neighbor, Multiplicity(*multiplicity1 + 1), Multiplicity(*multiplicity2), Multiplicity(*multiplicity3))
+                    Three(
+                        *neighbor,
+                        Multiplicity(*multiplicity1 + 1),
+                        Multiplicity(*multiplicity2),
+                        Multiplicity(*multiplicity3),
+                    )
                 } else if new_neighbor == *neighbor + 1 {
-                    Three(*neighbor, Multiplicity(*multiplicity1), Multiplicity(*multiplicity2 + 1), Multiplicity(*multiplicity3))
+                    Three(
+                        *neighbor,
+                        Multiplicity(*multiplicity1),
+                        Multiplicity(*multiplicity2 + 1),
+                        Multiplicity(*multiplicity3),
+                    )
                 } else if new_neighbor == *neighbor + 2 {
-                    Three(*neighbor, Multiplicity(*multiplicity1), Multiplicity(*multiplicity2), Multiplicity(*multiplicity3 + 1))
+                    Three(
+                        *neighbor,
+                        Multiplicity(*multiplicity1),
+                        Multiplicity(*multiplicity2),
+                        Multiplicity(*multiplicity3 + 1),
+                    )
                 } else {
-                    return None
+                    return None;
                 }
-            },
+            }
         })
     }
 }
@@ -178,15 +271,44 @@ impl StrongCompositionOfLengthAtMostThree {
     }
 }
 
+impl Display for NeighborhoodOfAtMostThreeConsecutiveElements {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            NeighborhoodOfAtMostThreeConsecutiveElements::Empty => Ok(()),
+            NeighborhoodOfAtMostThreeConsecutiveElements::One(first, mult) => {
+                write!(f, "{}", first.to_string().repeat(mult.0 as usize))
+            }
+            NeighborhoodOfAtMostThreeConsecutiveElements::Two(first, mult1, mult2) => {
+                write!(
+                    f,
+                    "{}{}",
+                    first.to_string().repeat(mult1.0 as usize),
+                    (first + 1).to_string().repeat(mult2.0 as usize)
+                )
+            }
+            NeighborhoodOfAtMostThreeConsecutiveElements::Three(first, mult1, mult2, mult3) => {
+                write!(
+                    f,
+                    "{}{}{}",
+                    first.to_string().repeat(mult1.0 as usize),
+                    (first + 1).to_string().repeat(mult2.0 as usize),
+                    (first + 2).to_string().repeat(mult3.0 as usize)
+                )
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod test_in_bytes {
     use super::NeighborhoodOfAtMostThreeConsecutiveElements;
 
     #[test]
     fn test_neighborhoods() {
-        let neighborhoods = NeighborhoodOfAtMostThreeConsecutiveElements::neighborhoods_at_most_six();
+        let neighborhoods =
+            NeighborhoodOfAtMostThreeConsecutiveElements::neighborhoods_at_most_six();
         for (index, neighborhood) in neighborhoods.iter().enumerate() {
-            println!("{index}: {neighborhood:?}");
+            println!("{index}: {neighborhood}");
         }
     }
 }

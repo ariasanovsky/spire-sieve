@@ -83,7 +83,11 @@ where
     }
 }
 
-impl DefaultMap {
+impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
     fn filter_redundant_edges_from_first_row(&mut self) {
         let mut visited = [false; WIDTH as usize];
         let removals: Vec<_> = self
@@ -115,7 +119,11 @@ pub enum EliteBuff {
     Regenerate,
 }
 
-impl DefaultMap {
+impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
+where
+    In: for<'a> InNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a, 'a>,
+{
     pub fn burning_elite_position(&self, rng: &mut Random) -> Option<(usize, usize)> {
         let mut positions = Vec::new();
         for (y, row) in self.rows().iter().enumerate() {
