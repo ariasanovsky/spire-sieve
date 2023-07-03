@@ -12,7 +12,7 @@ impl<'a> InNeighborhood<'a, 'a> for InVec {
     }
 
     fn max(&'a self) -> Option<&'a usize> {
-        self.values.iter().map(|(value, _)| value).min()
+        self.values.iter().map(|(value, _)| value).max()
     }
     fn push(&mut self, value: usize) {
         self.values.push((value, 1));
