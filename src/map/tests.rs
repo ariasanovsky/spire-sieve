@@ -20,10 +20,6 @@ const BAD_PATH_SEEDS: &[&str] = &[
     "4DM63LTVA",
 ];
 
-const OTHER_SEEDS: &[u64] = &[
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000, 10000, 100000, 1000000, 10000001,
-];
-
 #[test]
 pub fn write_maps_to_file() {
     let received = PathBuf::from(".map_tests/received.txt");
@@ -39,8 +35,8 @@ pub fn write_maps_to_file() {
         received.write_all(map_string.as_bytes()).unwrap();
     }
 
-    for (i, seed) in OTHER_SEEDS.iter().enumerate() {
-        let seed = Seed::from(*seed);
+    for (i, seed) in (1u64..10_000).enumerate() {
+        let seed = Seed::from(seed);
         let seed_string = SeedString::from(seed.clone());
         let mut rng = Random::new(seed.seed as u64);
         let ascension = i % 2 == 0;

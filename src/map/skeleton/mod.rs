@@ -73,13 +73,13 @@ where
         position: usize,
         mut next_position: usize,
     ) -> usize {
-        assert!([-1, 0, 1].contains(&(next_position as isize - position as isize)));
+        debug_assert!([-1, 0, 1].contains(&(next_position as isize - position as isize)));
 
         let next_in_neighborhood = &self.row(row + 1).in_neighborhood(next_position);
         let rerolls = next_in_neighborhood
             .iter()
             .filter(|neighbor| !position.eq(&neighbor.0))
-            .filter(|&&neighbor| !self.gca_skip(row, neighbor.0, position))
+            .filter(|neighbor| !self.gca_skip(row, neighbor.0, position))
             .map(|neighbor| neighbor.1)
             .sum();
         for _ in 0..rerolls {
@@ -104,16 +104,16 @@ where
                 }
             };
 
-            assert!([-1, 0, 1].contains(&(next_position as isize - position as isize)));
+            debug_assert!([-1, 0, 1].contains(&(next_position as isize - position as isize)));
         }
         next_position
     }
 
-    fn gca_skip(&self, row: usize, position: usize, neighbor: usize) -> bool {
-        let (left_position, right_position) = if position < row {
-            (position, neighbor)
-        } else {
+    fn gca_skip(&self, row: usize, neighbor: usize, position: usize) -> bool {
+        let (left_position, right_position) = if neighbor < row {
             (neighbor, position)
+        } else {
+            (position, neighbor)
         };
 
         let row = self.row(row);

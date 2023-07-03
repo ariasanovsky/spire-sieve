@@ -7,12 +7,8 @@ where
     'b: 'a,
 {
     type Iter: Iterator<Item = &'b (usize, usize)> + 'a;
-    fn min(&'a self) -> Option<&'a usize> {
-        self.iter().map(|(a, _)| a).min()
-    }
-    fn max(&'a self) -> Option<&'a usize> {
-        self.iter().map(|(a, _)| a).max()
-    }
+    fn min(&'a self) -> Option<&'a usize>;
+    fn max(&'a self) -> Option<&'a usize>;
     fn push(&mut self, value: usize);
     fn iter(&'a self) -> Self::Iter;
     fn gca_skip(left: &'a Self, right: &'a Self) -> bool {

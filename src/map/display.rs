@@ -69,6 +69,8 @@ where
 
 #[cfg(test)]
 mod display_tests {
+    use libgdx_xs128::RandomXS128;
+
     use crate::map::*;
 
     #[test]

@@ -1,10 +1,38 @@
 use std::fmt::Display;
 
-#[derive(Debug, Clone, Copy)]
-struct InByte(u8);
+pub(super) enum NeighborhoodArray {
+    Zero([(u8, u8); 0]),
+    One([(u8, u8); 1]),
+    Two([(u8, u8); 2]),
+    Three([(u8, u8); 3]),
+}
+
+impl NeighborhoodArray {
+    pub(super) const fn at_most_six() -> [Self; 233] {
+        todo!()
+    }
+    
+    const fn new(neighborhood: NeighborhoodOfAtMostThreeConsecutiveElements) -> Self {
+        use NeighborhoodOfAtMostThreeConsecutiveElements::*;
+        match neighborhood {
+            Empty => Self::Zero([]),
+            One(neighbor, multiplicity) => Self::One([(neighbor, multiplicity.0)]),
+            Two(neighbor1, multiplicity1, multiplicity2) => {
+                Self::Two([(neighbor1, multiplicity1.0), (neighbor1 + 1, multiplicity2.0)])
+            },
+            Three(neighbor1, multiplicity1, multiplicity2, multiplicity3) => {
+                Self::Three([
+                    (neighbor1, multiplicity1.0),
+                    (neighbor1 + 1, multiplicity2.0),
+                    (neighbor1 + 2, multiplicity3.0),
+                ])
+            },
+        }
+    }
+}
 
 #[derive(Debug, Clone, Copy)]
-struct Multiplicity(u8);
+pub struct Multiplicity(pub u8);
 
 impl Multiplicity {
     const fn const_eq(&self, other: &Self) -> bool {
@@ -13,7 +41,7 @@ impl Multiplicity {
 }
 
 #[derive(Debug, Clone, Copy)]
-enum NeighborhoodOfAtMostThreeConsecutiveElements {
+pub enum NeighborhoodOfAtMostThreeConsecutiveElements {
     Empty,
     One(u8, Multiplicity),
     Two(u8, Multiplicity, Multiplicity),
@@ -21,7 +49,7 @@ enum NeighborhoodOfAtMostThreeConsecutiveElements {
 }
 
 impl NeighborhoodOfAtMostThreeConsecutiveElements {
-    fn neighborhoods_at_most_six() -> [Self; 233] {
+    pub const fn at_most_six() -> [Self; 233] {
         let mut neighborhoods = [Self::Empty; 233];
         let mut i = 1;
         let mut index = 0;
@@ -42,7 +70,7 @@ impl NeighborhoodOfAtMostThreeConsecutiveElements {
             }
             index += 1;
         }
-        assert_eq!(i, 233);
+        assert!(i == 233);
 
         let mut i = 0;
         while i < 233 {
@@ -306,7 +334,7 @@ mod test_in_bytes {
     #[test]
     fn test_neighborhoods() {
         let neighborhoods =
-            NeighborhoodOfAtMostThreeConsecutiveElements::neighborhoods_at_most_six();
+            NeighborhoodOfAtMostThreeConsecutiveElements::at_most_six();
         for (index, neighborhood) in neighborhoods.iter().enumerate() {
             println!("{index}: {neighborhood}");
         }

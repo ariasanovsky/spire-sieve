@@ -1,4 +1,4 @@
-use libgdx_xs128::{rng::Random, RandomXS128};
+use libgdx_xs128::rng::Random;
 
 pub mod assign_nodes;
 mod display;
