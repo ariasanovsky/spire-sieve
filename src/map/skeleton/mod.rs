@@ -30,6 +30,14 @@ where
         first_position
     }
 
+    fn add_edge(&mut self, row: usize, position: usize, next_position: usize) {
+        let out_neighborhood = self.row_mut(row).out_neighborhood_mut(position);
+        out_neighborhood.push(next_position);
+
+        let in_neighborhood = &mut self.row_mut(row + 1).in_neighborhood_mut(next_position);
+        in_neighborhood.push(position);
+    }
+
     fn create_second_path(&mut self, rng: &mut Random, first_position: usize) {
         let mut position = rng.next_capped_u64(WIDTH) as usize;
         while position == first_position {

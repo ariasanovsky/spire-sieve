@@ -1,6 +1,4 @@
-use backend::NeighborhoodArray;
-
-use super::InNeighborhood;
+use super::{InNeighborhood, in_array::NeighborhoodArray};
 
 pub mod backend;
 
@@ -179,7 +177,6 @@ mod test_in_byte_tables {
 
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
-    use backend::NeighborhoodArray;
     use super::*;
     const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
     

@@ -1,4 +1,4 @@
-use super::{InNeighborhood, in_byte::backend::NeighborhoodArray};
+use super::{in_array::NeighborhoodArray, InNeighborhood};
 
 #[derive(Debug, Default, Clone)]
 pub struct InVec {
@@ -76,7 +76,6 @@ impl<'a> InNeighborhood<'a, 'a> for InVec {
 
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
-    use crate::map::in_neighborhood::in_byte::backend::NeighborhoodArray;
     use super::*;
     const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
     
