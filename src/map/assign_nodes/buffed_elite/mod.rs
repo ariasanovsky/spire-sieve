@@ -21,7 +21,7 @@ pub struct EliteInfo {
     pub count: usize,
 }
 
-impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
+impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
     In: for<'a> InNeighborhood<'a, 'a>,
     Out: for<'a> OutNeighborhood<'a, 'a>,

@@ -1,11 +1,30 @@
-use self::backend::{NeighborhoodArray, NeighborhoodOfAtMostThreeConsecutiveElements};
+use backend::NeighborhoodArray;
 
 use super::InNeighborhood;
 
-mod backend;
+pub mod backend;
 
-#[derive(Debug, Clone, Copy, Default)]
-struct InByte(u8);
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct InByte(u8);
+
+impl From<NeighborhoodArray> for InByte {
+    fn from(array: NeighborhoodArray) -> Self {
+        const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
+        for (i, other_array) in ARRAYS.iter().enumerate() {
+            if array.const_eq(other_array) {
+                return Self(i as u8);
+            }
+        }
+        unreachable!("{array} could not be found")
+    }
+}
+
+impl Into<NeighborhoodArray> for InByte {
+    fn into(self) -> NeighborhoodArray {
+        const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
+        ARRAYS[self.0 as usize]
+    }
+}
 
 impl<'a> InNeighborhood<'a, 'a> for InByte {
     type Iter = std::slice::Iter<'a, (usize, usize)>;
@@ -40,6 +59,7 @@ impl InByte {
             table[i] = if let Some(min) = arrays[i].min() {
                 Some(*min)
             } else {
+                assert!(i == 0);
                 None
             };
             i += 1;
@@ -55,6 +75,7 @@ impl InByte {
             table[i] = if let Some(max) = arrays[i].max() {
                 Some(*max)
             } else {
+                assert!(i == 0);
                 None
             };
             i += 1;
@@ -152,6 +173,72 @@ mod test_in_byte_tables {
                     );
                 }
             }
+        }
+    }
+}
+
+#[cfg(test)]
+mod test_invec_against_neighborhood_array {
+    use backend::NeighborhoodArray;
+    use super::*;
+    const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
+    
+    #[test]
+    fn test_bijection() {
+        for (i, &array) in ARRAYS.iter().enumerate() {
+            let in_neighborhood = InByte::from(array);
+            let new_array: NeighborhoodArray = in_neighborhood.try_into().unwrap();
+            assert_eq!(
+                new_array,
+                array,
+                "{i}:\tarray: {array}, in_neighborhood: {in_neighborhood:?}, new_array: {new_array}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_invec_min() {
+        for array in ARRAYS {
+            let invec = InByte::from(array);
+            assert_eq!(invec.min(), array.min());
+        }
+    }
+
+    #[test]
+    fn test_invec_max() {
+        for array in ARRAYS {
+            let invec = InByte::from(array);
+            assert_eq!(invec.max(), array.max());
+        }
+    }
+
+    #[test]
+    fn test_push() {
+        for array in ARRAYS {
+            for position in 0..7 {
+                let mut in_neighborhood = InByte::from(array);
+                in_neighborhood.push(position);
+                let array_sum: Option<NeighborhoodArray> = array.plus(position);
+                assert_eq!(
+                    in_neighborhood,
+                    array_sum.map(Into::into).unwrap_or_default(),
+"
+{array} + {position} = {array_sum:?}
+invec: {in_neighborhood:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_iter() {
+        for array in ARRAYS.iter() {
+            let invec = InByte::from(*array);
+            let vec: Vec<_> = invec.iter().collect();
+            assert_eq!(
+                vec,
+                array.slice().iter().collect::<Vec<_>>()
+            )
         }
     }
 }

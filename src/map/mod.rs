@@ -17,6 +17,7 @@ use row::Row;
 
 use self::assign_nodes::NodeKind;
 use self::in_neighborhood::in_vec::InVec;
+use self::in_neighborhood::in_byte::InByte;
 
 pub const WIDTH: u64 = 7;
 pub const LAST_POSITION: usize = WIDTH as usize - 1;
@@ -37,6 +38,7 @@ where
 }
 
 type DefaultMap = Map<6, InVec, OutVec>;
+type _NewDefaultMap = Map<6, InByte, OutVec>;
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
@@ -88,37 +90,32 @@ mod map_tests {
     use super::*;
 
     #[test]
-    fn test_map() {
-        let mut rng = Random::from(1);
-        let map = DefaultMap::generate(&mut rng, true);
-        dbg!(&map);
-        println!("{map}");
+    fn print_first_map() {
+        print_map_with_seed::<InVec>(1);
     }
 
     #[test]
-    fn test_special_map() {
-        let mut rng = Random::from(533907583096 + 1);
-        let map = DefaultMap::generate(&mut rng, true);
-        println!("{map}");
-        let burning_elite_position = map.burning_elite_position(&mut rng);
-        dbg!(burning_elite_position);
-        let burning_elite_buff = DefaultMap::burning_elite_buff(&mut rng);
-        dbg!(burning_elite_buff);
+    fn print_map_for_special_seed() {
+        let seed = 533907583096i64;
+        print_map_with_seed::<InVec>(seed);
     }
 
-    fn test_map_with_seed(seed: i64) {
+    fn print_map_with_seed<In>(seed: i64)
+    where
+        In: for<'a> InNeighborhood<'a, 'a>,
+    {
         dbg!(seed);
         let mut rng = Random::from(seed + 1);
-        let map = DefaultMap::generate(&mut rng, true);
+        let map: Map<6, In, OutVec> = Map::generate(&mut rng, true);
         println!("{map}");
         let burning_elite_position = map.burning_elite_position(&mut rng);
         dbg!(burning_elite_position);
-        let burning_elite_buff = DefaultMap::burning_elite_buff(&mut rng);
+        let burning_elite_buff = Map::<6, In, OutVec>::burning_elite_buff(&mut rng);
         dbg!(burning_elite_buff);
     }
 
     #[test]
-    fn test_special_maps() {
+    fn print_special_maps() {
         const SEEDS: &[i64] = &[
             533907583096,
             2118750211857,
@@ -129,7 +126,7 @@ mod map_tests {
             9884674834485,
         ];
         for &seed in SEEDS {
-            test_map_with_seed(seed);
+            print_map_with_seed::<InVec>(seed);
             println!();
         }
     }

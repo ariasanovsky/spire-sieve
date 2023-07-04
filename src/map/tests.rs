@@ -51,5 +51,5 @@ pub fn write_maps_to_file() {
     let received = PathBuf::from(".map_tests/received.txt");
     let received = fs::read_to_string(&received).unwrap();
 
-    assert_eq!(approved, received);
+    assert_eq!(approved, received, "");
 }

@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(super) enum NeighborhoodArray {
+pub enum NeighborhoodArray {
     Zero([(usize, usize); 0]),
     One([(usize, usize); 1]),
     Two([(usize, usize); 2]),
@@ -9,7 +9,7 @@ pub(super) enum NeighborhoodArray {
 }
 
 impl NeighborhoodArray {
-    pub(super) const fn at_most_six() -> [Self; 233] {
+    pub(crate) const fn at_most_six() -> [Self; 233] {
         let mut neighborhoods = [Self::Zero([]); 233];
         let intervals = NeighborhoodOfAtMostThreeConsecutiveElements::at_most_six();
         let mut i = 0;
@@ -39,7 +39,7 @@ impl NeighborhoodArray {
         }
     }
 
-    pub(super) const fn slice(&self) -> &[(usize, usize)] {
+    pub(crate) const fn slice(&self) -> &[(usize, usize)] {
         use NeighborhoodArray::*;
         match self {
             Zero(slice) => slice,
@@ -49,7 +49,7 @@ impl NeighborhoodArray {
         }
     }
 
-    pub(super) const fn min(&self) -> Option<&usize> {
+    pub const fn min(&self) -> Option<&usize> {
         use NeighborhoodArray::*;
         Some(match self {
             Zero(_) => return None,
@@ -59,7 +59,7 @@ impl NeighborhoodArray {
         })
     }
 
-    pub(super) const fn max(&self) -> Option<&usize> {
+    pub const fn max(&self) -> Option<&usize> {
         use NeighborhoodArray::*;
         Some(match self {
             Zero(_) => return None,
@@ -69,7 +69,7 @@ impl NeighborhoodArray {
         })
     }
 
-    pub(super) const fn plus(&self, position: usize) -> Option<Self> {
+    pub const fn plus(&self, position: usize) -> Option<Self> {
         use NeighborhoodArray::*;
         Some(match *self {
             Zero([]) => Self::One([(position, 1)]),
