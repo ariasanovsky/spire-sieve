@@ -3,16 +3,16 @@ use super::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, 
 #[derive(Debug, Default)]
 pub struct Row<In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     values: [(In, Out, Option<NodeKind>); WIDTH as usize],
 }
 
 impl<In, Out> Row<In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     pub fn values(&self) -> &[(In, Out, Option<NodeKind>)] {
         &self.values
@@ -71,8 +71,8 @@ where
 
 impl<In, Out> Row<In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     pub fn set_kind(&mut self, position: usize, kind: NodeKind) {
         *self.kind_mut(position) = Some(kind);

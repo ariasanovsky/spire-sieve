@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 use super::{
-    in_neighborhood::{InNeighborhood, in_byte::backend::NeighborhoodArray}, out_neighborhood::OutNeighborhood, Map, BEFORE_REST_ROW,
+    in_neighborhood::{InNeighborhood}, out_neighborhood::OutNeighborhood, Map, BEFORE_REST_ROW,
     HEIGHT, REST_ROW, TREASURE_ROW, WIDTH,
 };
 
@@ -42,8 +42,8 @@ impl NodeKind {
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     fn first_count(&self) -> usize {
         self.count_in_neighborhoods() + self.count_final_rest_sites()
@@ -109,8 +109,8 @@ where
 }
 impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     pub(super) fn filter_redundant_edges_from_first_row(&mut self) {
         let mut visited = [false; WIDTH as usize];
@@ -137,8 +137,8 @@ where
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     pub fn assign_rooms(&mut self, rng: &mut Random, ascension: bool) {
         let first_count = self.first_count();

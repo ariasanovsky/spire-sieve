@@ -23,8 +23,8 @@ pub struct EliteInfo {
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     pub fn burning_elite(&self, rng: &mut Random) -> Option<EliteInfo> {
         let ((x, y), buff_index, count) = self.burning_elite_position(rng)?;

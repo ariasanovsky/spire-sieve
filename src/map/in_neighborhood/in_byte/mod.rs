@@ -1,6 +1,4 @@
-use backend::NeighborhoodArray;
-
-use super::InNeighborhood;
+use super::{InNeighborhood, in_array::NeighborhoodArray};
 
 pub mod backend;
 
@@ -15,7 +13,8 @@ impl From<NeighborhoodArray> for InByte {
                 return Self(i as u8);
             }
         }
-        unreachable!("{array} could not be found")
+        // unreachable!("{array} could not be found")
+        Self(0)
     }
 }
 
@@ -26,7 +25,7 @@ impl Into<NeighborhoodArray> for InByte {
     }
 }
 
-impl<'a> InNeighborhood<'a, 'a> for InByte {
+impl<'a> InNeighborhood<'a> for InByte {
     type Iter = std::slice::Iter<'a, (usize, usize)>;
 
     fn min(&'a self) -> Option<&'a usize> {
@@ -179,7 +178,6 @@ mod test_in_byte_tables {
 
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
-    use backend::NeighborhoodArray;
     use super::*;
     const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
     

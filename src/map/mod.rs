@@ -31,8 +31,8 @@ pub const TREASURE_ROW: usize = 8;
 #[derive(Debug, Default)]
 pub struct Map<const PATHS: usize, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     rows: [Row<In, Out>; HEIGHT],
 }
@@ -42,8 +42,8 @@ type _NewDefaultMap = Map<6, InByte, OutVec>;
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     fn row(&self, row: usize) -> &Row<In, Out> {
         &self.rows[row]
@@ -56,12 +56,17 @@ where
     fn rows(&self) -> &[Row<In, Out>; HEIGHT] {
         &self.rows
     }
+
+    fn remove_first_row_edge(&mut self, position: usize, next_position: usize) {
+        let out_neighborhood = &mut self.row_mut(0).out_neighborhood_mut(position);
+        out_neighborhood.remove(next_position);
+    }
 }
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a> + Default,
+    Out: for<'a> OutNeighborhood<'a> + Default,
 {
     pub fn generate(rng: &mut Random, ascension: bool) -> Map<PATHS, In, Out> {
         let mut map = Map::default();
@@ -69,19 +74,6 @@ where
         map.filter_redundant_edges_from_first_row();
         map.assign_rooms(rng, ascension);
         map
-    }
-
-    fn add_edge(&mut self, row: usize, position: usize, next_position: usize) {
-        let out_neighborhood = self.row_mut(row).out_neighborhood_mut(position);
-        out_neighborhood.push(next_position);
-
-        let in_neighborhood = &mut self.row_mut(row + 1).in_neighborhood_mut(next_position);
-        in_neighborhood.push(position);
-    }
-
-    fn remove_first_row_edge(&mut self, position: usize, next_position: usize) {
-        let out_neighborhood = &mut self.row_mut(0).out_neighborhood_mut(position);
-        out_neighborhood.remove(next_position);
     }
 }
 
@@ -102,7 +94,7 @@ mod map_tests {
 
     fn print_map_with_seed<In>(seed: i64)
     where
-        In: for<'a> InNeighborhood<'a, 'a>,
+        In: for<'a> InNeighborhood<'a> + Default,
     {
         dbg!(seed);
         let mut rng = Random::from(seed + 1);

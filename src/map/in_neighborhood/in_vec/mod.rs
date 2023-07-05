@@ -1,4 +1,4 @@
-use super::{InNeighborhood, in_byte::backend::NeighborhoodArray};
+use super::{in_array::NeighborhoodArray, InNeighborhood};
 
 #[derive(Debug, Default, Clone)]
 pub struct InVec {
@@ -55,14 +55,14 @@ impl TryInto<NeighborhoodArray> for InVec {
     }
 }
 
-impl<'a> InNeighborhood<'a, 'a> for InVec {
+impl<'a> InNeighborhood<'a> for InVec {
     type Iter = std::slice::Iter<'a, (usize, usize)>;
     fn min(&'a self) -> Option<&'a usize> {
-        self.values.iter().map(|(value, _)| value).min()
+        self.iter().map(|(value, _)| value).min()
     }
 
     fn max(&'a self) -> Option<&'a usize> {
-        self.values.iter().map(|(value, _)| value).max()
+        self.iter().map(|(value, _)| value).max()
     }
     fn push(&mut self, value: usize) {
         self.values.push((value, 1));
@@ -76,7 +76,6 @@ impl<'a> InNeighborhood<'a, 'a> for InVec {
 
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
-    use crate::map::in_neighborhood::in_byte::backend::NeighborhoodArray;
     use super::*;
     const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
     

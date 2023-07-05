@@ -8,8 +8,8 @@ use super::{
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     pub(super) fn create_paths(&mut self, rng: &mut Random) {
         let first_position = self.create_first_path(rng);
@@ -28,6 +28,14 @@ where
             position = next_position;
         }
         first_position
+    }
+
+    fn add_edge(&mut self, row: usize, position: usize, next_position: usize) {
+        let out_neighborhood = self.row_mut(row).out_neighborhood_mut(position);
+        out_neighborhood.push(next_position);
+
+        let in_neighborhood = &mut self.row_mut(row + 1).in_neighborhood_mut(next_position);
+        in_neighborhood.push(position);
     }
 
     fn create_second_path(&mut self, rng: &mut Random, first_position: usize) {
