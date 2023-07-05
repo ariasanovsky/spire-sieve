@@ -33,12 +33,12 @@ impl From<InByte> for InArray {
 impl<'a> InNeighborhood<'a> for InByte {
     type Iter = std::slice::Iter<'a, (usize, usize)>;
 
-    fn min(&'a self) -> Option<&'a usize> {
+    fn min(&self) -> Option<&usize> {
         const MIN: [Option<usize>; 233] = InByte::min_table();
         MIN[self.0 as usize].as_ref()
     }
 
-    fn max(&'a self) -> Option<&'a usize> {
+    fn max(&self) -> Option<&usize> {
         const MAX: [Option<usize>; 233] = InByte::max_table();
         MAX[self.0 as usize].as_ref()
     }
@@ -48,7 +48,7 @@ impl<'a> InNeighborhood<'a> for InByte {
         self.0 = SUM[self.0 as usize][value];
     }
 
-    fn iter(&'a self) -> Self::Iter {
+    fn iter(&self) -> Self::Iter {
         const ARRAYS: [InArray; 233] = InArray::at_most_six();
         ARRAYS[self.0 as usize].slice().iter()
     }

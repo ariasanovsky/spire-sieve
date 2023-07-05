@@ -8,13 +8,13 @@ pub struct OutVec {
 impl<'a> OutNeighborhood<'a> for OutVec {
     type Iter = std::slice::Iter<'a, usize>;
 
-    fn update_position_from_left(&'a self, value: &'a mut usize) {
+    fn update_position_from_left(&self, value: &mut usize) {
         if let Some(max) = self.values.iter().max().copied() {
             *value = max.max(*value)
         }
     }
 
-    fn update_position_from_right(&'a self, value: &'a mut usize) {
+    fn update_position_from_right(&self, value: &mut usize) {
         if let Some(min) = self.values.iter().min().copied() {
             *value = min.min(*value)
         }
