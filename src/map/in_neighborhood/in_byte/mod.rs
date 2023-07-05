@@ -13,7 +13,8 @@ impl From<NeighborhoodArray> for InByte {
                 return Self(i as u8);
             }
         }
-        unreachable!("{array} could not be found")
+        // unreachable!("{array} could not be found")
+        Self(0)
     }
 }
 
@@ -24,7 +25,7 @@ impl Into<NeighborhoodArray> for InByte {
     }
 }
 
-impl<'a> InNeighborhood<'a, 'a> for InByte {
+impl<'a> InNeighborhood<'a> for InByte {
     type Iter = std::slice::Iter<'a, (usize, usize)>;
 
     fn min(&'a self) -> Option<&'a usize> {

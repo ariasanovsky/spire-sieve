@@ -7,13 +7,17 @@ use crate::map::out_neighborhood::out_vec::OutVec;
 use crate::seed::Seed;
 use crate::{filter::SeedFilter, map::Map};
 
-struct Bottleneck {
+pub struct Bottleneck {
     row: usize,
 }
 
 impl Bottleneck {
     pub const fn new(floor: usize) -> Self {
         Self { row: floor - 1 }
+    }
+
+    pub const fn const_default() -> Self {
+        Self::new(6)
     }
 }
 
@@ -31,11 +35,11 @@ impl SeedFilter for Bottleneck {
 
 impl Default for Bottleneck {
     fn default() -> Self {
-        Self::new(6)
+        Self::const_default()
     }
 }
 
-struct BuffedEliteBottleneck<'a> {
+pub struct BuffedEliteBottleneck<'a> {
     row: usize,
     required_buffs: Option<&'a [EliteBuff]>,
 }
@@ -47,11 +51,15 @@ impl<'a> BuffedEliteBottleneck<'a> {
             required_buffs,
         }
     }
+
+    pub const fn const_default() -> Self {
+        Self::new(6, None)
+    }
 }
 
 impl<'a> Default for BuffedEliteBottleneck<'a> {
     fn default() -> Self {
-        Self::new(6, None)
+        Self::const_default()
     }
 }
 
@@ -128,19 +136,20 @@ mod bottleneck_filter_tests {
         ] {
             let seed = SeedString::from_str(seed).unwrap();
             let seed: Seed = seed.into();
-            let filter = Bottleneck::default();
-            assert!(!filter.reject_seed(&seed));
+            const FILTER: Bottleneck = Bottleneck::const_default();
+            assert!(!FILTER.reject_seed(&seed));
         }
 
         for seed in [1u64, 2, 3, 4, 5] {
             let seed = Seed::from(seed);
-            let filter = Bottleneck::default();
-            assert!(filter.reject_seed(&seed));
+            const FILTER: Bottleneck = Bottleneck::const_default();
+            assert!(FILTER.reject_seed(&seed));
         }
     }
 
     #[test]
     fn test_buffed_elite_bottleneck_filter() {
+        const FILTER: BuffedEliteBottleneck = BuffedEliteBottleneck::const_default();
         for seed in [
             "8AFF4ZZ6",
             "XXKBUJNS",
@@ -152,19 +161,18 @@ mod bottleneck_filter_tests {
         ] {
             let seed = SeedString::from_str(seed).unwrap();
             let seed: Seed = seed.into();
-            let filter = BuffedEliteBottleneck::default();
-            assert!(!filter.reject_seed(&seed));
+            assert!(!FILTER.reject_seed(&seed));
         }
 
         for seed in [1u64, 2, 3, 4, 5] {
             let seed = Seed::from(seed);
-            let filter = BuffedEliteBottleneck::default();
-            assert!(filter.reject_seed(&seed));
+            assert!(FILTER.reject_seed(&seed));
         }
     }
 
     #[test]
     fn test_one_path() {
+        const FILTER: OnePath = OnePath::default();
         for seed in [
             "8AFF4ZZ6",
             "XXKBUJNS",
@@ -176,14 +184,12 @@ mod bottleneck_filter_tests {
         ] {
             let seed = SeedString::from_str(seed).unwrap();
             let seed: Seed = seed.into();
-            let filter = OnePath::default();
-            assert!(!filter.reject_seed(&seed));
+            assert!(!FILTER.reject_seed(&seed));
         }
 
         for seed in [1u64, 2, 3, 4, 5] {
             let seed = Seed::from(seed);
-            let filter = OnePath::default();
-            assert!(filter.reject_seed(&seed));
+            assert!(FILTER.reject_seed(&seed));
         }
     }
 }

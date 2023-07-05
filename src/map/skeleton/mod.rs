@@ -8,8 +8,8 @@ use super::{
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     pub(super) fn create_paths(&mut self, rng: &mut Random) {
         let first_position = self.create_first_path(rng);

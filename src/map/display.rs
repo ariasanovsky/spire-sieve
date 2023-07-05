@@ -4,8 +4,8 @@ use super::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, 
 
 impl<const PATHS: usize, In, Out> Display for Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a, 'a>,
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut rows = self.rows.iter().enumerate().rev();
@@ -48,11 +48,11 @@ where
     }
 }
 
-struct EnumeratedOutNeighborhood<'a, Out: OutNeighborhood<'a, 'a>>(&'a Out, usize);
+struct EnumeratedOutNeighborhood<'a, Out: OutNeighborhood<'a>>(&'a Out, usize);
 
 impl<Out> Display for EnumeratedOutNeighborhood<'_, Out>
 where
-    Out: for<'a> OutNeighborhood<'a, 'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let (mut right, mut middle, mut left) = (" ", " ", " ");

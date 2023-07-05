@@ -2,11 +2,9 @@
 mod out_byte;
 pub mod out_vec;
 
-pub trait OutNeighborhood<'a, 'b>: Default
-where
-    'b: 'a,
+pub trait OutNeighborhood<'a>
 {
-    type Iter: Iterator<Item = &'b usize> + 'a;
+    type Iter: Iterator<Item = &'a usize>;
     fn update_position_from_left(&'a self, value: &'a mut usize);
     fn update_position_from_right(&'a self, value: &'a mut usize);
     fn push(&mut self, value: usize);

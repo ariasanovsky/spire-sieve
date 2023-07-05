@@ -5,7 +5,7 @@ pub struct OutVec {
     pub values: Vec<usize>,
 }
 
-impl<'a> OutNeighborhood<'a, 'a> for OutVec {
+impl<'a> OutNeighborhood<'a> for OutVec {
     type Iter = std::slice::Iter<'a, usize>;
 
     fn update_position_from_left(&'a self, value: &'a mut usize) {

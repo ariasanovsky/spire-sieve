@@ -55,14 +55,14 @@ impl TryInto<NeighborhoodArray> for InVec {
     }
 }
 
-impl<'a> InNeighborhood<'a, 'a> for InVec {
+impl<'a> InNeighborhood<'a> for InVec {
     type Iter = std::slice::Iter<'a, (usize, usize)>;
     fn min(&'a self) -> Option<&'a usize> {
-        self.values.iter().map(|(value, _)| value).min()
+        self.iter().map(|(value, _)| value).min()
     }
 
     fn max(&'a self) -> Option<&'a usize> {
-        self.values.iter().map(|(value, _)| value).max()
+        self.iter().map(|(value, _)| value).max()
     }
     fn push(&mut self, value: usize) {
         self.values.push((value, 1));

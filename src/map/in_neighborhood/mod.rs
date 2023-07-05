@@ -2,11 +2,15 @@ pub mod in_array;
 pub mod in_byte;
 pub mod in_vec;
 
-pub trait InNeighborhood<'a, 'b: 'a>:
+pub trait InNeighborhood<'a>:
 {
-    type Iter: Iterator<Item = &'b (usize, usize)>;
-    fn min(&'a self) -> Option<&'b usize>;
-    fn max(&'a self) -> Option<&'b usize>;
+    type Iter: Iterator<Item = &'a (usize, usize)>;
+    fn min(&'a self) -> Option<&'a usize> {
+        self.iter().map(|(value, _)| value).min()
+    }
+    fn max(&'a self) -> Option<&'a usize> {
+        self.iter().map(|(value, _)| value).max()
+    }
     fn push(&'a mut self, value: usize);
     fn iter(&'a self) -> Self::Iter;
     fn gca_skip(left: &'a Self, right: &'a Self) -> bool {
