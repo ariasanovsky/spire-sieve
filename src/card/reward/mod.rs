@@ -159,7 +159,7 @@ mod card_reward_tests {
         let seed: SeedString = "18ISL35FYK4".parse().unwrap();
         let seed: Seed = seed.into();
         let filter: CardRewardFilter<'_, 3> = CardRewardFilter::new(Character::Silent, None, &[]);
-        assert!(!filter.reject_seed(&seed));
+        assert!(!filter.reject(seed.clone()));
 
         let rewarder = CardRewarder::new(Character::Silent, None);
         let mut rng = Random::new(seed.seed as u64);
@@ -181,7 +181,7 @@ mod card_reward_tests {
         let seed: SeedString = "18ISL35FYK4".parse().unwrap();
         let seed: Seed = seed.into();
         const FILTER: CardRewardFilter<'_, 3> = CardRewardFilter::new(Character::Silent, None, &[]);
-        assert!(!FILTER.reject_seed(&seed));
+        assert!(!FILTER.reject(seed.clone()));
 
         const REWARDER: CardRewarder<'_, 3> = CardRewarder::new(Character::Silent, None);
         let mut rng = Random::new(seed.seed as u64);

@@ -20,19 +20,19 @@ impl FromStr for SeedString {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut seed = String::with_capacity(13);
-        for (i, c) in s.bytes().enumerate() {
-            if i > 13 {
+        let mut seed: [u8; 13] = [b' '; 13];
+        let mut i = 13;
+        for c in s.bytes().rev() {
+            if i == 0 {
                 return Err(Error::InvalidLength(s.bytes().len()));
             }
-            seed.push(match c {
+            i -= 1;
+            seed[i] = match c {
                 b' ' => continue,
-                b'0'..=b'9' => c as char,
-                b'A'..=b'N' => c as char,
-                b'O' => '0',
-                b'P'..=b'Z' => c as char,
+                b'O' => b'0',
+                b'0'..=b'9' | b'A'..=b'N' | b'P'..=b'Z' => c,
                 _ => return Err(Error::InvalidCharacter(c)),
-            })
+            };
         }
         Ok(Self { seed })
     }
@@ -40,29 +40,22 @@ impl FromStr for SeedString {
 
 impl From<SeedString> for Seed {
     fn from(value: SeedString) -> Self {
-        let mut seed: i64 = 0;
-        value
-            .seed
-            .as_bytes()
-            .iter()
-            .map(|c| letter_index(*c))
-            .for_each(|c| {
-                seed = seed.wrapping_mul(BASE);
-                seed = seed.wrapping_add(c as i64);
-            });
-        Self { seed }
+        value.seed.into()
     }
 }
 
 impl From<Seed> for SeedString {
     fn from(value: Seed) -> Self {
         let mut seed = value.seed;
-        let mut s = String::with_capacity(13);
-        while seed != 0 {
+        let mut s: [u8; 13] = [b' '; 13];
+        for i in (0..13).rev() {
+            if seed == 0 {
+                break;
+            }
             let c = seed % BASE;
             seed /= BASE;
             let c = ALPHABET[c as usize];
-            s = format!("{}{s}", (c as char));
+            s[i] = c;
         }
         Self { seed: s }
     }
@@ -70,16 +63,8 @@ impl From<Seed> for SeedString {
 
 impl From<[u8; 13]> for Seed {
     fn from(value: [u8; 13]) -> Self {
-        let mut seed: i64 = 0;
-        value
-            .into_iter()
-            .skip_while(|c| *c == b' ')
-            .map(letter_index)
-            .for_each(|c| {
-                seed = seed.wrapping_mul(BASE);
-                seed = seed.wrapping_add(c as i64);
-            });
-        Self { seed }
+        let value: &[u8; 13] = &value;
+        value.into()
     }
 }
 
@@ -89,10 +74,11 @@ impl From<&[u8; 13]> for Seed {
         value
             .iter()
             .skip_while(|c| **c == b' ')
-            .map(|c| letter_index(*c))
+            //.map(|c| letter_index(*c))
             .for_each(|c| {
+                let index = letter_index(*c);
                 seed = seed.wrapping_mul(BASE);
-                seed = seed.wrapping_add(c as i64);
+                seed = seed.wrapping_add(index as i64);
             });
         Self { seed }
     }
@@ -126,8 +112,10 @@ mod test_seed_conversions {
         let seed = Seed::from(b"            0");
         assert_eq!(seed.seed, 0);
 
-        let seed: Seed = String::from("0").parse::<SeedString>().unwrap().into();
-        assert_eq!(seed.seed, 0);
+        let seed_string: SeedString = String::from("0").parse().unwrap();
+        let seed = Seed::from(seed_string.clone());
+        dbg!(&seed);
+        assert_eq!(seed.seed, 0, "{seed_string}");
     }
 
     #[test]

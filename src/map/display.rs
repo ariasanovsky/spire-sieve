@@ -76,14 +76,14 @@ mod display_tests {
     #[test]
     fn test_display() {
         let mut rng = Random::new(2);
-        let map = DefaultMap::generate(&mut rng, true);
+        let map = _DefaultMap::generate(&mut rng, true);
         println!("{map}");
     }
 
     #[test]
     fn test_display_2() {
         let mut rng = Random::new(533907583096 + 1);
-        let map = DefaultMap::generate(&mut rng, true);
+        let map = _DefaultMap::generate(&mut rng, true);
         println!("{map}");
     }
 }

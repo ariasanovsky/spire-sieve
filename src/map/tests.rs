@@ -6,9 +6,15 @@ use std::{
 
 use libgdx_xs128::{rng::Random, RandomXS128};
 
-use crate::{seed::{Seed, SeedString}, map::{Map, in_neighborhood::in_vec::InVec, out_neighborhood::out_vec::OutVec}};
+use crate::{
+    map::{in_neighborhood::in_vec::InVec, out_neighborhood::out_vec::OutVec, Map},
+    seed::{Seed, SeedString},
+};
 
-use super::{in_neighborhood::{InNeighborhood, in_byte::InByte}, out_neighborhood::OutNeighborhood};
+use super::{
+    in_neighborhood::{in_byte::InByte, InNeighborhood},
+    out_neighborhood::OutNeighborhood,
+};
 
 const BAD_PATH_SEEDS: &[&str] = &[
     "8AFF4ZZ6",
@@ -59,10 +65,15 @@ fn compare_invec_to_inbytes() {
     for seed in (533907583096i64 + 3..533907583096 + 10) {
         let seed = Seed::from(seed);
         let first_map_string = map_string::<InVec, OutVec>(seed.clone(), true);
-        println!("VEC:\n{first_map_string}");
+        // println!("VEC:\n{first_map_string}");
         let second_map_string = map_string::<InByte, OutVec>(seed.clone(), true);
-        println!("BYTE:\n{second_map_string}");
-        assert_eq!(first_map_string, second_map_string, "seed: {seed:?}, {}", SeedString::from(seed.clone()));
+        // println!("BYTE:\n{second_map_string}");
+        assert_eq!(
+            first_map_string,
+            second_map_string,
+            "seed: {seed:?}, {}",
+            SeedString::from(seed.clone())
+        );
     }
 }
 

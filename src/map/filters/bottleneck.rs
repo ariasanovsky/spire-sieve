@@ -27,10 +27,16 @@ impl SeedFilter for Bottleneck {
         map.row(self.row).count_out_neighborhoods() != 1
     }
 
-    fn reject_seed(&self, seed: &Seed) -> bool {
+    fn reject<T: Into<Seed>>(&self, seed: T) -> bool {
+        let seed: Seed = seed.into();
         let mut rng = Random::new(seed.seed as u64 + 1);
         self.reject_rng(&mut rng)
     }
+
+    // fn reject(&self, seed: &Seed) -> bool {
+    //     let mut rng = Random::new(seed.seed as u64 + 1);
+    //     self.reject_rng(&mut rng)
+    // }
 }
 
 impl Default for Bottleneck {
@@ -39,12 +45,12 @@ impl Default for Bottleneck {
     }
 }
 
-pub struct BuffedEliteBottleneck<'a> {
+pub struct BurningEliteBottleneck<'a> {
     row: usize,
     required_buffs: Option<&'a [EliteBuff]>,
 }
 
-impl<'a> BuffedEliteBottleneck<'a> {
+impl<'a> BurningEliteBottleneck<'a> {
     pub const fn new(floor: usize, required_buffs: Option<&'a [EliteBuff]>) -> Self {
         Self {
             row: floor - 1,
@@ -57,13 +63,13 @@ impl<'a> BuffedEliteBottleneck<'a> {
     }
 }
 
-impl<'a> Default for BuffedEliteBottleneck<'a> {
+impl<'a> Default for BurningEliteBottleneck<'a> {
     fn default() -> Self {
         Self::const_default()
     }
 }
 
-impl<'a> SeedFilter for BuffedEliteBottleneck<'a> {
+impl<'a> SeedFilter for BurningEliteBottleneck<'a> {
     fn reject_rng(&self, rng: &mut Random) -> bool {
         let map = Map::<6, InVec, OutVec>::generate(rng, true);
         if map.row(self.row).count_out_neighborhoods() != 1 {
@@ -76,10 +82,16 @@ impl<'a> SeedFilter for BuffedEliteBottleneck<'a> {
         })
     }
 
-    fn reject_seed(&self, seed: &Seed) -> bool {
+    fn reject<T: Into<Seed>>(&self, seed: T) -> bool {
+        let seed: Seed = seed.into();
         let mut rng = Random::new(seed.seed as u64 + 1);
         self.reject_rng(&mut rng)
     }
+
+    // fn reject(&self, seed: &Seed) -> bool {
+    //     let mut rng = Random::new(seed.seed as u64 + 1);
+    //     self.reject_rng(&mut rng)
+    // }
 }
 
 struct OnePath {
@@ -90,11 +102,15 @@ impl OnePath {
     pub const fn new(length: usize) -> Self {
         Self { length }
     }
+
+    pub const fn const_default() -> Self {
+        Self::new(6)
+    }
 }
 
 impl Default for OnePath {
     fn default() -> Self {
-        Self::new(6)
+        Self::const_default()
     }
 }
 
@@ -109,87 +125,67 @@ impl SeedFilter for OnePath {
         false
     }
 
-    fn reject_seed(&self, seed: &Seed) -> bool {
+    fn reject<T: Into<Seed>>(&self, seed: T) -> bool {
+        let seed: Seed = seed.into();
         let mut rng = Random::new(seed.seed as u64 + 1);
         self.reject_rng(&mut rng)
     }
+
+    // fn reject(&self, seed: &Seed) -> bool {
+    //     let mut rng = Random::new(seed.seed as u64 + 1);
+    //     self.reject_rng(&mut rng)
+    // }
 }
 
 #[cfg(test)]
 mod bottleneck_filter_tests {
-    use std::str::FromStr;
-
-    use crate::seed::SeedString;
+    use crate::map::_ONE_PATH_BURNING_ELITE_BOTTLENECKS;
 
     use super::*;
 
     #[test]
     fn test_bottleneck_filter() {
-        for seed in [
-            "8AFF4ZZ6",
-            "XXKBUJNS",
-            "1J432TK4I",
-            "3QJ3DI01K",
-            "3XTMF0PHJ",
-            "3YT8RJBX1",
-            "4DM63LTVA",
-        ] {
-            let seed = SeedString::from_str(seed).unwrap();
-            let seed: Seed = seed.into();
+        for &seed in _ONE_PATH_BURNING_ELITE_BOTTLENECKS {
+            // let seed = SeedString::from_str(seed).unwrap();
+            // let seed: Seed = seed.into();
             const FILTER: Bottleneck = Bottleneck::const_default();
-            assert!(!FILTER.reject_seed(&seed));
+            assert!(!FILTER.reject::<Seed>(seed.into()));
         }
 
         for seed in [1u64, 2, 3, 4, 5] {
-            let seed = Seed::from(seed);
+            // let seed = Seed::from(seed);
             const FILTER: Bottleneck = Bottleneck::const_default();
-            assert!(FILTER.reject_seed(&seed));
+            assert!(FILTER.reject(seed));
         }
     }
 
     #[test]
-    fn test_buffed_elite_bottleneck_filter() {
-        const FILTER: BuffedEliteBottleneck = BuffedEliteBottleneck::const_default();
-        for seed in [
-            "8AFF4ZZ6",
-            "XXKBUJNS",
-            "1J432TK4I",
-            "3QJ3DI01K",
-            "3XTMF0PHJ",
-            "3YT8RJBX1",
-            "4DM63LTVA",
-        ] {
-            let seed = SeedString::from_str(seed).unwrap();
-            let seed: Seed = seed.into();
-            assert!(!FILTER.reject_seed(&seed));
+    fn test_burning_elite_bottleneck_filter() {
+        const FILTER: BurningEliteBottleneck = BurningEliteBottleneck::const_default();
+        for &seed in _ONE_PATH_BURNING_ELITE_BOTTLENECKS {
+            // let seed = SeedString::from_str(seed).unwrap();
+            // let seed: Seed = seed.into();
+            assert!(!FILTER.reject::<Seed>(seed.into()));
         }
 
         for seed in [1u64, 2, 3, 4, 5] {
             let seed = Seed::from(seed);
-            assert!(FILTER.reject_seed(&seed));
+            assert!(FILTER.reject(seed));
         }
     }
 
     #[test]
     fn test_one_path() {
-        const FILTER: OnePath = OnePath::default();
-        for seed in [
-            "8AFF4ZZ6",
-            "XXKBUJNS",
-            "1J432TK4I",
-            "3QJ3DI01K",
-            "3XTMF0PHJ",
-            "3YT8RJBX1",
-            "4DM63LTVA",
-        ] {
-            let seed = SeedString::from_str(seed).unwrap();
-            let seed: Seed = seed.into();
-            assert!(!FILTER.reject_seed(&seed));
+        const FILTER: OnePath = OnePath::const_default();
+        for &seed in _ONE_PATH_BURNING_ELITE_BOTTLENECKS {
+            // let seed = SeedString::from_str(seed).unwrap();
+            // let seed: Seed = seed.into();
+            assert!(!FILTER.reject(seed));
         }
 
         for seed in [1u64, 2, 3, 4, 5] {
             let seed = Seed::from(seed);
-            assert!(FILTER.reject_seed(&seed));
+            assert!(FILTER.reject(seed));
         }
     }
 }

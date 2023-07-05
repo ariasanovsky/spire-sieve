@@ -122,7 +122,7 @@ impl NeighborhoodOfAtMostThreeConsecutiveElements {
         })
     }
 
-    const fn plus(&self, new_neighbor: u8) -> Option<Self> {
+    const fn _plus(&self, new_neighbor: u8) -> Option<Self> {
         use NeighborhoodOfAtMostThreeConsecutiveElements::*;
         Some(match self {
             Empty => One(new_neighbor, Multiplicity(1)),

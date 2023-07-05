@@ -1,6 +1,4 @@
-use super::{InNeighborhood, in_array::NeighborhoodArray};
-
-pub mod backend;
+use super::{in_array::NeighborhoodArray, InNeighborhood};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct InByte(u8);
@@ -18,10 +16,17 @@ impl From<NeighborhoodArray> for InByte {
     }
 }
 
-impl Into<NeighborhoodArray> for InByte {
-    fn into(self) -> NeighborhoodArray {
+// impl Into<NeighborhoodArray> for InByte {
+//     fn into(self) -> NeighborhoodArray {
+//         const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
+//         ARRAYS[self.0 as usize]
+//     }
+// }
+
+impl From<InByte> for NeighborhoodArray {
+    fn from(in_byte: InByte) -> Self {
         const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
-        ARRAYS[self.0 as usize]
+        ARRAYS[in_byte.0 as usize]
     }
 }
 
@@ -180,7 +185,7 @@ mod test_in_byte_tables {
 mod test_invec_against_neighborhood_array {
     use super::*;
     const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
-    
+
     #[test]
     fn test_bijection() {
         for (i, &array) in ARRAYS.iter().enumerate() {
@@ -220,7 +225,7 @@ mod test_invec_against_neighborhood_array {
                 assert_eq!(
                     in_neighborhood,
                     array_sum.map(Into::into).unwrap_or_default(),
-"
+                    "
 {array} + {position} = {array_sum:?}
 invec: {in_neighborhood:?}"
                 );
@@ -233,10 +238,7 @@ invec: {in_neighborhood:?}"
         for array in ARRAYS.iter() {
             let invec = InByte::from(*array);
             let vec: Vec<_> = invec.iter().collect();
-            assert_eq!(
-                vec,
-                array.slice().iter().collect::<Vec<_>>()
-            )
+            assert_eq!(vec, array.slice().iter().collect::<Vec<_>>())
         }
     }
 }

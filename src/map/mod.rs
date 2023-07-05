@@ -16,8 +16,8 @@ use out_neighborhood::{out_vec::OutVec, OutNeighborhood};
 use row::Row;
 
 use self::assign_nodes::NodeKind;
-use self::in_neighborhood::in_vec::InVec;
 use self::in_neighborhood::in_byte::InByte;
+use self::in_neighborhood::in_vec::InVec;
 
 pub const WIDTH: u64 = 7;
 pub const LAST_POSITION: usize = WIDTH as usize - 1;
@@ -37,7 +37,32 @@ where
     rows: [Row<In, Out>; HEIGHT],
 }
 
-type DefaultMap = Map<6, InVec, OutVec>;
+#[derive(Debug, Default)]
+pub enum Act {
+    #[default]
+    One,
+    Two,
+    Three,
+    // Four,
+}
+
+impl Act {
+    const fn seed_offset(&self) -> i64 {
+        match self {
+            Act::One => 1,
+            Act::Two => todo!(),
+            Act::Three => todo!(),
+        }
+    }
+}
+
+impl crate::seed::Seed {
+    pub fn map_rng(&self, act: Act) -> Random {
+        self.offset_rng(act.seed_offset())
+    }
+}
+
+type _DefaultMap = Map<6, InVec, OutVec>;
 type _NewDefaultMap = Map<6, InByte, OutVec>;
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
@@ -79,25 +104,27 @@ where
 
 #[cfg(test)]
 mod map_tests {
+    use crate::seed::Seed;
+
     use super::*;
 
     #[test]
     fn print_first_map() {
-        print_map_with_seed::<InVec>(1);
+        print_map_with_seed::<InVec>(1i64.into());
     }
 
     #[test]
     fn print_map_for_special_seed() {
         let seed = 533907583096i64;
-        print_map_with_seed::<InVec>(seed);
+        print_map_with_seed::<InVec>(seed.into());
     }
 
-    fn print_map_with_seed<In>(seed: i64)
+    fn print_map_with_seed<In>(seed: Seed)
     where
         In: for<'a> InNeighborhood<'a> + Default,
     {
-        dbg!(seed);
-        let mut rng = Random::from(seed + 1);
+        dbg!(&seed);
+        let mut rng = seed.map_rng(Act::One);
         let map: Map<6, In, OutVec> = Map::generate(&mut rng, true);
         println!("{map}");
         let burning_elite_position = map.burning_elite_position(&mut rng);
@@ -107,19 +134,29 @@ mod map_tests {
     }
 
     #[test]
-    fn print_special_maps() {
-        const SEEDS: &[i64] = &[
-            533907583096,
-            2118750211857,
-            3481836885783,
-            8399213486180,
-            8867133130014,
-            8930754426721,
-            9884674834485,
-        ];
-        for &seed in SEEDS {
-            print_map_with_seed::<InVec>(seed);
+    fn print_one_path_burning_elite_bottleneck_maps() {
+        // const SEEDS: &[i64] = &[
+        //     533907583096,
+        //     2118750211857,
+        //     3481836885783,
+        //     8399213486180,
+        //     8867133130014,
+        //     8930754426721,
+        //     9884674834485,
+        // ];
+        for &seed in _ONE_PATH_BURNING_ELITE_BOTTLENECKS {
+            print_map_with_seed::<InVec>(seed.into());
             println!();
         }
     }
 }
+
+static _ONE_PATH_BURNING_ELITE_BOTTLENECKS: &[&[u8; 13]] = &[
+    b"     8AFF4ZZ6",
+    b"     XXKBUJNS",
+    b"    1J432TK4I",
+    b"    3QJ3DI01K",
+    b"    3XTMF0PHJ",
+    b"    3YT8RJBX1",
+    b"    4DM63LTVA",
+];

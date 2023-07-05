@@ -40,16 +40,12 @@ impl TryInto<NeighborhoodArray> for InVec {
             [(value, count)] => One([(*value, *count)]),
             [(value1, count1), (value2, count2)] if *value1 + 1 == *value2 => {
                 Two([(*value1, *count1), (*value2, *count2)])
-            },
+            }
             [(value1, count1), (value2, count2), (value3, count3)]
                 if *value1 + 1 == *value2 && *value2 + 1 == *value3 =>
             {
-                Three([
-                    (*value1, *count1),
-                    (*value2, *count2),
-                    (*value3, *count3),
-                ])
-            },
+                Three([(*value1, *count1), (*value2, *count2), (*value3, *count3)])
+            }
             _ => return Err(()),
         })
     }
@@ -78,7 +74,7 @@ impl<'a> InNeighborhood<'a> for InVec {
 mod test_invec_against_neighborhood_array {
     use super::*;
     const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
-    
+
     #[test]
     fn test_bijection() {
         for array in ARRAYS {
@@ -122,10 +118,7 @@ mod test_invec_against_neighborhood_array {
         for array in ARRAYS.iter() {
             let invec = InVec::from(*array);
             let vec: Vec<_> = invec.iter().collect();
-            assert_eq!(
-                vec,
-                array.slice().iter().collect::<Vec<_>>()
-            )
+            assert_eq!(vec, array.slice().iter().collect::<Vec<_>>())
         }
     }
 }

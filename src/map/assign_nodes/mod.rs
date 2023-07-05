@@ -3,7 +3,7 @@ use std::fmt::Debug;
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 use super::{
-    in_neighborhood::{InNeighborhood}, out_neighborhood::OutNeighborhood, Map, BEFORE_REST_ROW,
+    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, BEFORE_REST_ROW,
     HEIGHT, REST_ROW, TREASURE_ROW, WIDTH,
 };
 

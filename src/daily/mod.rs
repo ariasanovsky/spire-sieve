@@ -183,7 +183,8 @@ mod test_daily_parser {
             FIRST_STRING_SEEDS.iter().zip(FIRST_DAILIES.iter())
         {
             let daily: Daily = daily_string.parse().unwrap();
-            assert_eq!(true_string_seed, &daily.seed_string.seed);
+            let true_seed: SeedString = true_string_seed.parse().unwrap();
+            assert_eq!(true_seed, daily.seed_string);
         }
     }
 
