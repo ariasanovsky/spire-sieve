@@ -35,6 +35,7 @@ where
     Out: for<'a> OutNeighborhood<'a>,
 {
     rows: [Row<In, Out>; HEIGHT],
+    kinds: [[NodeKind; WIDTH as usize]; HEIGHT],
 }
 
 #[derive(Debug, Default)]
@@ -85,6 +86,18 @@ where
     fn remove_first_row_edge(&mut self, position: usize, next_position: usize) {
         let out_neighborhood = &mut self.row_mut(0).out_neighborhood_mut(position);
         out_neighborhood.remove(next_position);
+    }
+
+    fn kind(&self, row: usize, position: usize) -> &NodeKind {
+        &self.kinds[row][position]
+    }
+
+    fn kind_mut(&mut self, row: usize, position: usize) -> &mut NodeKind {
+        &mut self.kinds[row][position]
+    }
+
+    pub fn kinds(&self, row: usize) -> impl Iterator<Item = &NodeKind> {
+        self.kinds[row].iter()
     }
 }
 

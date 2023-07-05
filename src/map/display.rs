@@ -8,8 +8,8 @@ where
     Out: for<'a> OutNeighborhood<'a>,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut rows = self.rows.iter().enumerate().rev();
-        if let Some((row, nodes)) = rows.next() {
+        let mut rows = self.rows.iter().zip(self.kinds).enumerate().rev();
+        if let Some((row, (nodes, kinds))) = rows.next() {
             write!(f, "\n{: <6}", row)?;
             for in_neighborhood in nodes.in_neighborhoods() {
                 if in_neighborhood.is_empty() {
@@ -19,7 +19,7 @@ where
                 }
             }
         }
-        for (row, nodes) in rows {
+        for (row, (nodes, kinds)) in rows {
             write!(f, "\n{: <6}", "")?;
             for (position, out_neighborhood) in nodes.out_neighborhoods().enumerate() {
                 write!(
@@ -29,17 +29,14 @@ where
                 )?;
             }
             write!(f, "\n{: <6}", row)?;
-            for (_, out_neighborhood, kind) in nodes.values() {
+            for (out_neighborhood, kind) in nodes.out_neighborhoods().zip(kinds) {
                 if out_neighborhood.is_empty() {
                     write!(f, "   ")?;
                 } else {
                     write!(
                         f,
                         " {} ",
-                        match kind {
-                            None => '*',
-                            Some(kind) => kind.char(),
-                        }
+                        kind.char()
                     )?;
                 }
             }

@@ -9,14 +9,17 @@ use super::{
 
 pub mod buffed_elite;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub enum NodeKind {
+    #[default]
+    Unassigned,
     Monster,
     Elite,
     Event,
     Rest,
     Shop,
     Treasure,
+    Empty,
 }
 
 impl NodeKind {
@@ -30,13 +33,23 @@ impl NodeKind {
 
     pub fn char(&self) -> char {
         match self {
+            Self::Unassigned => '*',
             Self::Monster => 'M',
             Self::Elite => 'E',
             Self::Event => '?',
             Self::Rest => 'R',
             Self::Shop => '$',
             Self::Treasure => 'T',
+            Self::Empty => ' ',
         }
+    }
+
+    pub fn is_assigned(&self) -> bool {
+        !matches!(self, Self::Unassigned)
+    }
+
+    pub fn is_empty(&self) -> bool {
+        matches!(self, Self::Empty)
     }
 }
 
@@ -156,7 +169,7 @@ where
                     continue;
                 }
                 if let Some(kind) = self.next_kind(&mut rooms, row, position) {
-                    self.row_mut(row).set_kind(position, kind);
+                    self.set_kind(row, position, kind);
                 }
             }
         }
@@ -164,22 +177,36 @@ where
         self.populate_unassigned_nodes();
     }
 
+    pub fn set_kind(&mut self, row: usize, position: usize, kind: NodeKind) {
+        self.kinds[row][position] = kind;
+    }
+
+    pub fn set_kinds(&mut self, row: usize, kind: NodeKind) {
+        for position in 0..WIDTH as usize {
+            self.set_kind(row, position, kind);
+        }
+    }
+
     fn set_constant_rows(&mut self) {
-        self.row_mut(0).set_kinds(NodeKind::Monster);
-        self.row_mut(TREASURE_ROW).set_kinds(NodeKind::Treasure);
-        self.row_mut(REST_ROW).set_kinds(NodeKind::Rest);
+        self.set_kinds(0, NodeKind::Monster);
+        self.set_kinds(TREASURE_ROW, NodeKind::Treasure);
+        self.set_kinds(REST_ROW, NodeKind::Rest);
+        // self.row_mut(0).set_kinds(NodeKind::Monster);
+        // self.row_mut(TREASURE_ROW).set_kinds(NodeKind::Treasure);
+        // self.row_mut(REST_ROW).set_kinds(NodeKind::Rest);
     }
 
     fn populate_unassigned_nodes(&mut self) {
         for row in 0..HEIGHT {
             for position in 0..WIDTH as usize {
-                if self.row(row).kind(position).is_some() {
+                if self.kind(row, position).is_assigned() {
                     continue;
                 }
                 if self.row(row).in_neighborhood(position).is_empty() {
                     continue;
                 }
-                self.row_mut(row).set_kind(position, NodeKind::Monster);
+                // self.row_mut(row).set_kind(position, NodeKind::Monster);
+                self.set_kind(row, position, NodeKind::Monster);
             }
         }
     }
@@ -209,9 +236,10 @@ where
                     return false;
                 }
                 let siblings = self.siblings(row, position);
-                let sibling_kinds: Vec<&NodeKind> = siblings
+                let sibling_kinds: Vec<NodeKind> = siblings
                     .iter()
-                    .filter_map(|&sibling| self.row(row).kind(sibling))
+                    .map(|&sibling| *self.kind(row, sibling))
+                    .filter(NodeKind::is_assigned)
                     .collect();
                 if [
                     NodeKind::Rest,
@@ -231,13 +259,12 @@ where
     }
 
     fn in_neighbor_kinds(&self, row: usize, position: usize) -> Vec<NodeKind> {
-        let mut kinds = Vec::new();
-        for &(in_neighbor, _) in self.row(row).in_neighborhood(position).iter() {
-            if let Some(kind) = self.row(row - 1).kind(in_neighbor) {
-                kinds.push(*kind);
-            }
-        }
-        kinds
+        self.row(row)
+            .in_neighborhood(position)
+            .iter()
+            .map(|&(in_neighbor, _)| *self.kind(row - 1, in_neighbor))
+            .filter(|kind| kind.is_assigned() && !kind.is_empty())
+            .collect()
     }
 
     fn siblings(&self, row: usize, position: usize) -> Vec<usize> {

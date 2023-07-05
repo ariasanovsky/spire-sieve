@@ -74,9 +74,8 @@ impl From<&[u8; 13]> for Seed {
         value
             .iter()
             .skip_while(|c| **c == b' ')
-            //.map(|c| letter_index(*c))
-            .for_each(|c| {
-                let index = letter_index(*c);
+            .map(|c| letter_index(*c))
+            .for_each(|index| {
                 seed = seed.wrapping_mul(BASE);
                 seed = seed.wrapping_add(index as i64);
             });

@@ -11,33 +11,36 @@ Please support the developers of this excellent game by [purchasing it](https://
 
 `spire-sieve` is planned for `no_std`-compatibility for `CUDA` and other environments where the Rust standard library is not available.
 
-## Filter roadmap
+## Feature roadmap
 
-| Feature          | backend    | `SeedFilter`   | `no_std`      | no `panic` in asm/ptx |`kani` proof |
+- 🌱: basic implementation complete
+- 🔬: tests in place
+- 🚧: roadblock present
+- 🛣️: roadblock removed
+
+| filter           | backend    | `SeedFilter`   | `no_std`      | no `panic` in asm/ptx |`kani` proof |
 |------------------|------------|----------------|---------------|-----------------------|-------------|
-| bottleneck map   | 🌱🔬      | 🌱🔬          | 🚧           |                       |             |
-| elite bottleneck | 🌱🔬      | 🌱🔬          | 🚧           |                       |             |
-| one-path map     | 🌱🔬      | 🌱🔬          | 🚧           |                       |             |
-| speedrun map     | 🌱🔬      | 🛠️            |               |                       |             |
-| Snecko rolls     | 🛠️        |                |               |                       |             |
+| bottleneck map   | 🌱🔬      | 🌱🔬          | 🛣️🛣️🚧      |                       |             |
+| elite bottleneck | 🌱🔬      | 🌱🔬          | 🛣️🛣️🚧🚧    |                       |             |
+| one-path map     | 🌱🔬      | 🌱🔬          | 🛣️🛣️🚧      |                       |             |
+| speedrun map     | 🌱🔬      | 🛣️            |               |                       |             |
+| Snecko rolls     | 🛣️        |                |               |                       |             |
 | Pandora's Box    | 🌱        | 🌱             | 🚧           |                       |             |
-| relic shuffles   | 🚧        |                |               |                       |             |
+| relic shuffles   | 🚧🚧      |                |               |                       |             |
 | card rewards     | 🌱🔬      | 🌱            | 🚧            |                       |             |
-| Neow bonuses     | 🌱        | 🛠️             |               |                       |             |
+| Neow bonuses     | 🌱        | 🛣️             |               |                       |             |
 | shop cards       | 🚧        |                |               |                       |             |
 | shop relics      | 🚧        |                |               |                       |             |
 
-## Additional features roadmap
-
-| Feature                | description                                | backend  | implementation |
+| feature     | description                                | backend  | implementation |
 |------------------------|--------------------------------------------|----------|----------------|
-| overflow toggle        | toggle RNG overflow guard                  | 🌱      | 🛠️             |
-| parallel CPU search    | `Search` with rayon enabled                | 🌱      | 🛠️             |
+| overflow toggle        | toggle RNG overflow guard                  | 🌱      | 🛣️️             |
+| parallel CPU search    | `Search` with rayon enabled                | 🌱      | 🛣️             |
 | parallel GPU search    | `Search` which emits CUDA kernels          | 🌱      | 🚧             |
 | filter `PhantomData`   | add optionally printable output to data    | 🚧      |                |
-| unlock levels          | adjust filters with save file `Unlocks`    | 🛠️      |                |
-| hash skip              | option to filter over `Seed0` over `Seed`  | 🛠️      |                |
-| one-path heuristics    | reject prematurely based on paths 1 & 2    | 🛠️      |                |
+| unlock levels          | adjust filters with save file `Unlocks`    | 🛣️      |                |
+| hash skip              | option to filter over `Seed0` over `Seed`  | 🛣️      |                |
+| one-path heuristics    | reject prematurely based on paths 1 & 2    | 🛣️      |                |
 | `JSON` search settings | `SearchSettings` to specify search params  | 🚧      |                |
 | CLI search             | specify search from command line interface | 🚧      |                |
 | GUI search             | specify search from graphical interface    | 🚧      |                |

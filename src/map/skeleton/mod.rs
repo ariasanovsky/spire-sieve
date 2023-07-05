@@ -6,6 +6,16 @@ use super::{
     in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, HEIGHT, WIDTH,
 };
 
+use super::row::Row;
+
+pub(super) struct MapSkeleton<const PATHS: usize, In, Out>
+where
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
+{
+    rows: [Row<In, Out>; HEIGHT],
+}
+
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
     In: for<'a> InNeighborhood<'a>,

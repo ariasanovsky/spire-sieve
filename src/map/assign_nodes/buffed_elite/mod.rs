@@ -43,13 +43,24 @@ where
         rng: &mut Random,
     ) -> Option<((usize, usize), usize, usize)> {
         let mut positions = Vec::new();
-        for (y, row) in self.rows().iter().enumerate() {
-            for (x, kind) in row.kinds().enumerate() {
-                if let Some(NodeKind::Elite) = kind {
+        for (y, row) in self.kinds.iter().enumerate() {
+            for (x, kind) in row.iter().enumerate() {
+                // if let Some(NodeKind::Elite) = kind {
+                //     positions.push((x, y));
+                // }
+                if matches!(kind, NodeKind::Elite) {
                     positions.push((x, y));
                 }
             }
         }
+        // for (y, row) in self.kinds.iter().enumerate() {
+        //     for (x, kind) in row.kinds().enumerate() {
+                // if let Some(NodeKind::Elite) = kind {
+                //     positions.push((x, y));
+                // }
+                
+        //     }
+        // }
         let count = positions.len();
         let pos = rng.next_capped_u64(count as u64) as usize;
         positions
