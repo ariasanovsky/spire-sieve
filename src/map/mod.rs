@@ -18,6 +18,7 @@ use row::Row;
 use self::assign_nodes::NodeKind;
 use self::in_neighborhood::in_byte::InByte;
 use self::in_neighborhood::in_vec::InVec;
+use self::skeleton::Skeleton;
 
 pub const WIDTH: u64 = 7;
 pub const LAST_POSITION: usize = WIDTH as usize - 1;
@@ -34,7 +35,7 @@ where
     In: for<'a> InNeighborhood<'a>,
     Out: for<'a> OutNeighborhood<'a>,
 {
-    rows: [Row<In, Out>; HEIGHT],
+    skeleton: Skeleton<PATHS, In, Out>,
     kinds: [[NodeKind; WIDTH as usize]; HEIGHT],
 }
 
@@ -72,15 +73,15 @@ where
     Out: for<'a> OutNeighborhood<'a>,
 {
     fn row(&self, row: usize) -> &Row<In, Out> {
-        &self.rows[row]
+        &self.skeleton.rows[row]
     }
 
     fn row_mut(&mut self, row: usize) -> &mut Row<In, Out> {
-        &mut self.rows[row]
+        &mut self.skeleton.rows[row]
     }
 
-    fn rows(&self) -> &[Row<In, Out>; HEIGHT] {
-        &self.rows
+    fn _rows(&self) -> &[Row<In, Out>; HEIGHT] {
+        &self.skeleton.rows
     }
 
     fn remove_first_row_edge(&mut self, position: usize, next_position: usize) {
@@ -92,7 +93,7 @@ where
         &self.kinds[row][position]
     }
 
-    fn kind_mut(&mut self, row: usize, position: usize) -> &mut NodeKind {
+    fn _kind_mut(&mut self, row: usize, position: usize) -> &mut NodeKind {
         &mut self.kinds[row][position]
     }
 

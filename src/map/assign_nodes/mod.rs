@@ -8,6 +8,7 @@ use super::{
 };
 
 pub mod buffed_elite;
+pub mod display;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub enum NodeKind {
@@ -72,14 +73,16 @@ where
     }
 
     fn count_in_neighborhoods(&self) -> usize {
-        self.rows
+        self.skeleton
+            .rows
             .iter()
             .map(|row| row.count_in_neighborhoods())
             .sum()
     }
 
     fn count_out_neighborhoods(&self) -> usize {
-        self.rows
+        self.skeleton
+            .rows
             .iter()
             .map(|row| row.count_out_neighborhoods())
             .sum()
@@ -249,7 +252,7 @@ where
                     NodeKind::Event,
                 ]
                 .contains(kind)
-                    && sibling_kinds.contains(&kind)
+                    && sibling_kinds.contains(kind)
                 {
                     return false;
                 }

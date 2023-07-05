@@ -8,14 +8,14 @@ where
     Out: for<'a> OutNeighborhood<'a>,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut rows = self.rows.iter().zip(self.kinds).enumerate().rev();
-        if let Some((row, (nodes, kinds))) = rows.next() {
+        let mut rows = self.skeleton.rows.iter().zip(self.kinds).enumerate().rev();
+        if let Some((row, (nodes, _))) = rows.next() {
             write!(f, "\n{: <6}", row)?;
             for in_neighborhood in nodes.in_neighborhoods() {
                 if in_neighborhood.is_empty() {
                     write!(f, "   ")?;
                 } else {
-                    write!(f, " {} ", NodeKind::Rest.char())?;
+                    write!(f, " {} ", NodeKind::Rest)?;
                 }
             }
         }
@@ -33,11 +33,7 @@ where
                 if out_neighborhood.is_empty() {
                     write!(f, "   ")?;
                 } else {
-                    write!(
-                        f,
-                        " {} ",
-                        kind.char()
-                    )?;
+                    write!(f, " {kind} ",)?;
                 }
             }
         }
@@ -45,7 +41,7 @@ where
     }
 }
 
-struct EnumeratedOutNeighborhood<'a, Out: OutNeighborhood<'a>>(&'a Out, usize);
+pub(crate) struct EnumeratedOutNeighborhood<'a, Out: OutNeighborhood<'a>>(pub &'a Out, pub usize);
 
 impl<Out> Display for EnumeratedOutNeighborhood<'_, Out>
 where

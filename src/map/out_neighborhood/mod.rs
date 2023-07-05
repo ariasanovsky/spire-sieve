@@ -1,5 +1,5 @@
-#![allow(unused)]
-mod out_byte;
+pub mod out_array;
+pub mod out_byte;
 pub mod out_vec;
 
 pub trait OutNeighborhood<'a> {

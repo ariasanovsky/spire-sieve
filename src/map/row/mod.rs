@@ -1,4 +1,4 @@
-use super::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, NodeKind, WIDTH};
+use super::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, WIDTH};
 
 #[derive(Debug, Default)]
 pub struct Row<In, Out>
@@ -6,7 +6,7 @@ where
     In: for<'a> InNeighborhood<'a>,
     Out: for<'a> OutNeighborhood<'a>,
 {
-    values: [(In, Out); WIDTH as usize],
+    pub(super) values: [(In, Out); WIDTH as usize],
 }
 
 impl<In, Out> Row<In, Out>
@@ -14,7 +14,7 @@ where
     In: for<'a> InNeighborhood<'a>,
     Out: for<'a> OutNeighborhood<'a>,
 {
-    pub fn values(&self) -> &[(In, Out); WIDTH as usize] {
+    pub fn _values(&self) -> &[(In, Out); WIDTH as usize] {
         &self.values
     }
 
@@ -62,5 +62,4 @@ where
     In: for<'a> InNeighborhood<'a>,
     Out: for<'a> OutNeighborhood<'a>,
 {
-    
 }

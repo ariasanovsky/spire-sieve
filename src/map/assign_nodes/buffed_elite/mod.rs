@@ -55,10 +55,10 @@ where
         }
         // for (y, row) in self.kinds.iter().enumerate() {
         //     for (x, kind) in row.kinds().enumerate() {
-                // if let Some(NodeKind::Elite) = kind {
-                //     positions.push((x, y));
-                // }
-                
+        // if let Some(NodeKind::Elite) = kind {
+        //     positions.push((x, y));
+        // }
+
         //     }
         // }
         let count = positions.len();

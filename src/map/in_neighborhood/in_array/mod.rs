@@ -3,14 +3,26 @@ mod backend;
 use backend::NeighborhoodOfAtMostThreeConsecutiveElements;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum NeighborhoodArray {
+pub enum InArray {
     Zero([(usize, usize); 0]),
     One([(usize, usize); 1]),
     Two([(usize, usize); 2]),
     Three([(usize, usize); 3]),
 }
 
-impl NeighborhoodArray {
+impl<'a> InNeighborhood<'a> for InArray {
+    type Iter = std::slice::Iter<'a, (usize, usize)>;
+
+    fn push(&mut self, value: usize) {
+        *self = self.plus(value).unwrap();
+    }
+
+    fn iter(&'a self) -> Self::Iter {
+        self.slice().iter()
+    }
+}
+
+impl InArray {
     pub(crate) const fn at_most_six() -> [Self; 233] {
         let mut neighborhoods = [Self::Zero([]); 233];
         let intervals = NeighborhoodOfAtMostThreeConsecutiveElements::at_most_six();
@@ -42,7 +54,7 @@ impl NeighborhoodArray {
     }
 
     pub(crate) const fn slice(&self) -> &[(usize, usize)] {
-        use NeighborhoodArray::*;
+        use InArray::*;
         match self {
             Zero(slice) => slice,
             One(slice) => slice,
@@ -52,7 +64,7 @@ impl NeighborhoodArray {
     }
 
     pub const fn min(&self) -> Option<&usize> {
-        use NeighborhoodArray::*;
+        use InArray::*;
         Some(match self {
             Zero(_) => return None,
             One(slice) => &slice[0].0,
@@ -62,7 +74,7 @@ impl NeighborhoodArray {
     }
 
     pub const fn max(&self) -> Option<&usize> {
-        use NeighborhoodArray::*;
+        use InArray::*;
         Some(match self {
             Zero(_) => return None,
             One(slice) => &slice[0].0,
@@ -72,7 +84,7 @@ impl NeighborhoodArray {
     }
 
     pub const fn plus(&self, position: usize) -> Option<Self> {
-        use NeighborhoodArray::*;
+        use InArray::*;
         Some(match *self {
             Zero([]) => Self::One([(position, 1)]),
             One([(a, mult)]) => {
@@ -115,7 +127,7 @@ impl NeighborhoodArray {
     }
 
     pub(super) const fn const_eq(&self, other: &Self) -> bool {
-        use NeighborhoodArray::*;
+        use InArray::*;
         match (self, other) {
             (Zero([]), Zero([])) => true,
             (One(a), One(b)) => {
@@ -161,18 +173,20 @@ impl NeighborhoodArray {
 
 use std::fmt::Display;
 
-impl Display for NeighborhoodArray {
+use super::InNeighborhood;
+
+impl Display for InArray {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            NeighborhoodArray::Zero([]) => write!(f, "[]"),
-            NeighborhoodArray::One([a]) => write!(f, "{}", a.0.to_string().repeat(a.1)),
-            NeighborhoodArray::Two([a, b]) => write!(
+            InArray::Zero([]) => write!(f, "[]"),
+            InArray::One([a]) => write!(f, "{}", a.0.to_string().repeat(a.1)),
+            InArray::Two([a, b]) => write!(
                 f,
                 "{}{}",
                 a.0.to_string().repeat(a.1),
                 b.0.to_string().repeat(b.1)
             ),
-            NeighborhoodArray::Three([a, b, c]) => write!(
+            InArray::Three([a, b, c]) => write!(
                 f,
                 "{}{}{}",
                 a.0.to_string().repeat(a.1),

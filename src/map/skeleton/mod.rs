@@ -8,12 +8,16 @@ use super::{
 
 use super::row::Row;
 
-pub(super) struct MapSkeleton<const PATHS: usize, In, Out>
+pub mod canonize;
+pub mod display;
+
+#[derive(Debug, Default)]
+pub(super) struct Skeleton<const PATHS: usize, In, Out>
 where
     In: for<'a> InNeighborhood<'a>,
     Out: for<'a> OutNeighborhood<'a>,
 {
-    rows: [Row<In, Out>; HEIGHT],
+    pub(super) rows: [Row<In, Out>; HEIGHT],
 }
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>

@@ -1,24 +1,24 @@
-use super::{in_array::NeighborhoodArray, InNeighborhood};
+use super::{in_array::InArray, InNeighborhood};
 
 #[derive(Debug, Default, Clone)]
 pub struct InVec {
     values: Vec<(usize, usize)>,
 }
 
-impl From<NeighborhoodArray> for InVec {
-    fn from(array: NeighborhoodArray) -> Self {
+impl From<InArray> for InVec {
+    fn from(array: InArray) -> Self {
         match array {
-            NeighborhoodArray::Zero([]) => Self { values: vec![] },
-            NeighborhoodArray::One(a) => Self { values: a.into() },
-            NeighborhoodArray::Two(a) => Self { values: a.into() },
-            NeighborhoodArray::Three(a) => Self { values: a.into() },
+            InArray::Zero([]) => Self { values: vec![] },
+            InArray::One(a) => Self { values: a.into() },
+            InArray::Two(a) => Self { values: a.into() },
+            InArray::Three(a) => Self { values: a.into() },
         }
     }
 }
 
-impl TryInto<NeighborhoodArray> for InVec {
+impl TryInto<InArray> for InVec {
     type Error = ();
-    fn try_into(self) -> Result<NeighborhoodArray, ()> {
+    fn try_into(self) -> Result<InArray, ()> {
         let mut counts: [usize; 7] = [0; 7];
         for (value, count) in self.values {
             counts[value] += count;
@@ -34,7 +34,7 @@ impl TryInto<NeighborhoodArray> for InVec {
                 }
             })
             .collect::<Vec<_>>();
-        use NeighborhoodArray::*;
+        use InArray::*;
         Ok(match &shortened_vec[..] {
             [] => Zero([]),
             [(value, count)] => One([(*value, *count)]),
@@ -73,13 +73,13 @@ impl<'a> InNeighborhood<'a> for InVec {
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
     use super::*;
-    const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
+    const ARRAYS: [InArray; 233] = InArray::at_most_six();
 
     #[test]
     fn test_bijection() {
         for array in ARRAYS {
             let in_neighborhood = InVec::from(array);
-            let new_array: NeighborhoodArray = in_neighborhood.try_into().unwrap();
+            let new_array: InArray = in_neighborhood.try_into().unwrap();
             assert_eq!(new_array, array);
         }
     }
@@ -104,10 +104,10 @@ mod test_invec_against_neighborhood_array {
     fn test_push() {
         for array in ARRAYS {
             for position in 0..7 {
-                let array_sum: Option<NeighborhoodArray> = array.plus(position);
+                let array_sum: Option<InArray> = array.plus(position);
                 let mut invec = InVec::from(array);
                 invec.push(position);
-                let vec_sum: Option<NeighborhoodArray> = invec.try_into().ok();
+                let vec_sum: Option<InArray> = invec.try_into().ok();
                 assert_eq!(vec_sum, array_sum);
             }
         }

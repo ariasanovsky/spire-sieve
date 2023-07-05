@@ -298,7 +298,7 @@ impl Display for NeighborhoodOfAtMostThreeConsecutiveElements {
 
 #[cfg(test)]
 mod test_in_bytes_backend {
-    use crate::map::in_neighborhood::in_array::NeighborhoodArray;
+    use crate::map::in_neighborhood::in_array::InArray;
 
     use super::NeighborhoodOfAtMostThreeConsecutiveElements;
 
@@ -312,7 +312,7 @@ mod test_in_bytes_backend {
 
     #[test]
     fn test_array_plus() {
-        const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
+        const ARRAYS: [InArray; 233] = InArray::at_most_six();
         for (i, array) in ARRAYS.iter().enumerate() {
             for j in 0..7 {
                 if let Some(sum) = array.plus(j) {
