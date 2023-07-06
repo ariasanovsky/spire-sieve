@@ -59,7 +59,64 @@ where
 
 #[cfg(test)]
 mod test_canonized_maps {
-    fn foo() {
-        for i in 0..10 {}
+    use crate::{seed::Seed, map::{skeleton::Skeleton, Act, in_neighborhood::{in_vec::InVec, in_array::InArray, in_byte::InByte}, out_neighborhood::{out_vec::OutVec, out_array::OutArray, out_byte::OutByte}}};
+
+    use super::CanonicalSkeleton;
+
+    #[test]
+    fn test_canonized_skeletons() {
+        let seed: Seed = 1i64.into();
+        let vec_vec_skeleton: Skeleton<6, InVec, OutVec> = Skeleton::generate(&mut seed.map_rng(Act::One));
+        let vec_array_skeleton: Skeleton<6, InVec, OutArray> = Skeleton::generate(&mut seed.map_rng(Act::One));
+        assert_eq!(
+            vec_vec_skeleton.to_string(),
+            vec_array_skeleton.to_string()
+        );
+        
+        let array_vec_skeleton: Skeleton<6, InArray, OutVec> = Skeleton::generate(&mut seed.map_rng(Act::One));
+        assert_eq!(
+            vec_vec_skeleton.to_string(),
+            array_vec_skeleton.to_string()
+        );
+
+        let array_array_skeleton: Skeleton<6, InArray, OutArray> = Skeleton::generate(&mut seed.map_rng(Act::One));
+        assert_eq!(
+            vec_vec_skeleton.to_string(),
+            array_array_skeleton.to_string()
+        );
+
+        let vec_byte_skeleton: Skeleton<6, InVec, OutByte> = Skeleton::generate(&mut seed.map_rng(Act::One));
+        assert_eq!(
+            vec_vec_skeleton.to_string(),
+            vec_byte_skeleton.to_string()
+        );
+
+        let byte_vec_skeleton: Skeleton<6, InByte, OutVec> = Skeleton::generate(&mut seed.map_rng(Act::One));
+        assert_eq!(
+            vec_vec_skeleton.to_string(),
+            byte_vec_skeleton.to_string()
+        );
+
+        let byte_array_skeleton: Skeleton<6, InByte, OutArray> = Skeleton::generate(&mut seed.map_rng(Act::One));
+        assert_eq!(
+            vec_vec_skeleton.to_string(),
+            byte_array_skeleton.to_string()
+        );
+
+        let byte_byte_skeleton: Skeleton<6, InByte, OutByte> = Skeleton::generate(&mut seed.map_rng(Act::One));
+        assert_eq!(
+            vec_vec_skeleton.to_string(),
+            byte_byte_skeleton.to_string()
+        );
+
+
+        // println!("{vec_vec_skeleton}");
+        // let byte_byte_skeleton: Skeleton<6, InByte, OutByte> = Skeleton::generate(&mut seed.map_rng(Act::One));
+
+        // let canonical_maps: [CanonicalSkeleton<6>; 3] = [
+        //     vec_vec_skeleton.into(),
+        //     array_array_skeleton,
+        //     byte_byte_skeleton.into(),
+        // ];
     }
 }

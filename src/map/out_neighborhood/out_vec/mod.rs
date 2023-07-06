@@ -1,8 +1,34 @@
-use super::OutNeighborhood;
+use std::fmt::Display;
+
+use super::{OutNeighborhood, out_array::OutArray};
 
 #[derive(Debug, Default, Clone)]
 pub struct OutVec {
     pub values: Vec<usize>,
+}
+
+impl From<OutVec> for OutArray {
+    fn from(value: OutVec) -> Self {
+        let mut values = value.values;
+        values.sort();
+        match values[..] {
+            [] => Self::Zero([]),
+            [a] => Self::One([a]),
+            [a, b] => Self::Two([a, b]),
+            [a, b, c] => Self::Three([a, b, c]),
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl Display for OutVec {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        {
+            let mut values = self.values.clone();
+            values.sort();
+            values
+        }.iter().try_for_each(|v| write!(f, "{v}"))
+    }
 }
 
 impl<'a> OutNeighborhood<'a> for OutVec {
@@ -21,7 +47,10 @@ impl<'a> OutNeighborhood<'a> for OutVec {
     }
 
     fn push(&mut self, value: usize) {
-        self.values.push(value);
+        // self.values.push(value);
+        if !self.values.contains(&value) {
+            self.values.push(value);
+        }
     }
 
     fn remove(&mut self, value: usize) {

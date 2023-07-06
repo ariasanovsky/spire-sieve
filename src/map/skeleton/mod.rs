@@ -3,7 +3,7 @@ use libgdx_xs128::{rng::Random, RandomXS128};
 use crate::map::LAST_POSITION;
 
 use super::{
-    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, HEIGHT, WIDTH,
+    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, HEIGHT, WIDTH,
 };
 
 use super::row::Row;
@@ -21,8 +21,8 @@ where
 
 impl<const PATHS: usize, In, Out> Skeleton<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a> + Default,
-    Out: for<'a> OutNeighborhood<'a> + Default,
+    In: for<'a> InNeighborhood<'a> + Default + Debug + Display,
+    Out: for<'a> OutNeighborhood<'a> + Default + Debug + Display,
 {
     pub fn generate(rng: &mut Random) -> Skeleton<PATHS, In, Out> {
         let mut skeleton = Skeleton::default();
@@ -49,10 +49,12 @@ where
     }
 }
 
+use std::fmt::{Debug, Display};
+
 impl<const PATHS: usize, In, Out> Skeleton<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a>,
-    Out: for<'a> OutNeighborhood<'a>,
+    In: for<'a> InNeighborhood<'a> + Debug + Display,
+    Out: for<'a> OutNeighborhood<'a> + Debug + Display,
 {
     fn create_paths(&mut self, rng: &mut Random) {
         let first_position = self.create_first_path(rng);
@@ -74,11 +76,16 @@ where
     }
 
     fn add_edge(&mut self, row: usize, position: usize, next_position: usize) {
+        // dbg!(row, position, next_position);
         let out_neighborhood = self.row_mut(row).out_neighborhood_mut(position);
+        // println!("out: [{out_neighborhood}] + {next_position} =");
         out_neighborhood.push(next_position);
+        // println!("\t[{out_neighborhood}]");
 
         let in_neighborhood = &mut self.row_mut(row + 1).in_neighborhood_mut(next_position);
+        // println!("in: [{in_neighborhood}] + {position} =");
         in_neighborhood.push(position);
+        // println!("\t[{in_neighborhood}]");
     }
 
     fn create_second_path(&mut self, rng: &mut Random, first_position: usize) {

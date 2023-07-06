@@ -2,7 +2,7 @@ pub mod in_array;
 pub mod in_byte;
 pub mod in_vec;
 
-pub const NEIGHBORHOODS: usize = 233;
+pub const NEIGHBORHOODS: usize = 308;
 pub const WIDTH: usize = crate::map::WIDTH as usize;
 
 pub trait InNeighborhood<'a> {

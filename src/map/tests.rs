@@ -1,7 +1,7 @@
 use std::{
     fs::{self, File},
     io::Write,
-    path::PathBuf,
+    path::PathBuf, fmt::{Debug, Display},
 };
 
 use libgdx_xs128::{rng::Random, RandomXS128};
@@ -79,8 +79,8 @@ fn compare_invec_to_inbytes() {
 
 fn map_string<In, Out>(seed: Seed, ascension: bool) -> String
 where
-    In: for<'a> InNeighborhood<'a> + Default,
-    Out: for<'a> OutNeighborhood<'a> + Default,
+    In: for<'a> InNeighborhood<'a> + Default + Debug + Display,
+    Out: for<'a> OutNeighborhood<'a> + Default + Debug + Display,
 {
     let seed_string = SeedString::from(seed.clone());
     let mut rng = Random::new(seed.seed as u64);

@@ -1,3 +1,7 @@
+use std::fmt::Display;
+
+use crate::map::in_neighborhood::WIDTH;
+
 use super::{in_array::InArray, InNeighborhood};
 
 #[derive(Debug, Default, Clone)]
@@ -16,13 +20,14 @@ impl From<InArray> for InVec {
     }
 }
 
-impl TryInto<InArray> for InVec {
-    type Error = ();
-    fn try_into(self) -> Result<InArray, ()> {
-        let mut counts: [usize; 7] = [0; 7];
-        for (value, count) in self.values {
+impl From<InVec> for InArray {
+    fn from(value: InVec) -> InArray {
+        dbg!(&value);
+        let mut counts: [usize; WIDTH] = [0; WIDTH];
+        for (value, count) in value.values {
             counts[value] += count;
         }
+        dbg!(&counts);
         let shortened_vec = counts
             .iter()
             .enumerate()
@@ -34,20 +39,14 @@ impl TryInto<InArray> for InVec {
                 }
             })
             .collect::<Vec<_>>();
-        use InArray::*;
-        Ok(match &shortened_vec[..] {
-            [] => Zero([]),
-            [(value, count)] => One([(*value, *count)]),
-            [(value1, count1), (value2, count2)] if *value1 + 1 == *value2 => {
-                Two([(*value1, *count1), (*value2, *count2)])
-            }
-            [(value1, count1), (value2, count2), (value3, count3)]
-                if *value1 + 1 == *value2 && *value2 + 1 == *value3 =>
-            {
-                Three([(*value1, *count1), (*value2, *count2), (*value3, *count3)])
-            }
-            _ => return Err(()),
-        })
+        dbg!(&shortened_vec);
+        match &shortened_vec[..] {
+            [] => InArray::Zero([]),
+            [a] => InArray::One([*a]),
+            [a, b] => InArray::Two([*a, *b]),
+            [a, b, c] => InArray::Three([*a, *b, *c]),
+            _ => unreachable!(),
+        }
     }
 }
 
@@ -70,17 +69,32 @@ impl<'a> InNeighborhood<'a> for InVec {
 
 // impl<'a> TestInNeighborhood<'a, 'a> for InVec {}
 
+impl Display for InVec {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.values.iter().try_for_each(|(value, count)| {
+            write!(f, "{}", value)?;
+            if *count > 1 {
+                write!(f, "({})", count)?;
+            }
+            Ok(())
+        })
+    }
+}
+
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
+    use crate::map::in_neighborhood::NEIGHBORHOODS;
+
     use super::*;
-    const ARRAYS: [InArray; 233] = InArray::at_most_six();
+    const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
 
     #[test]
     fn test_bijection() {
         for array in ARRAYS {
+            dbg!(&array);
             let in_neighborhood = InVec::from(array);
-            let new_array: InArray = in_neighborhood.try_into().unwrap();
-            assert_eq!(new_array, array);
+            let new_array: InArray = in_neighborhood.clone().into();
+            assert_eq!(new_array, array, "{array} -> {in_neighborhood} -> {new_array}");
         }
     }
 

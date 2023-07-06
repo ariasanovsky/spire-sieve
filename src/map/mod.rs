@@ -103,10 +103,13 @@ where
     }
 }
 
+use std::fmt::Display;
+use std::fmt::Debug;
+
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a> + Default,
-    Out: for<'a> OutNeighborhood<'a> + Default,
+    In: for<'a> InNeighborhood<'a> + Default + Debug + Display,
+    Out: for<'a> OutNeighborhood<'a> + Default + Debug + Display,
 {
     pub fn generate(rng: &mut Random, ascension: bool) -> Map<PATHS, In, Out> {
         let skeleton = Skeleton::generate(rng);
@@ -147,7 +150,7 @@ mod map_tests {
 
     fn print_map_with_seed<In>(seed: Seed)
     where
-        In: for<'a> InNeighborhood<'a> + Default,
+        In: for<'a> InNeighborhood<'a> + Default + Debug + Display,
     {
         dbg!(&seed);
         let mut rng = seed.map_rng(Act::One);

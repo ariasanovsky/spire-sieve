@@ -1,7 +1,5 @@
 mod backend;
 
-use backend::NeighborhoodOfAtMostThreeConsecutiveElements;
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum InArray {
     Zero([(usize, usize); 0]),
@@ -10,11 +8,17 @@ pub enum InArray {
     Three([(usize, usize); 3]),
 }
 
+impl Default for InArray {
+    fn default() -> Self {
+        Self::Zero([])
+    }
+}
+
 impl<'a> InNeighborhood<'a> for InArray {
     type Iter = std::slice::Iter<'a, (usize, usize)>;
 
     fn push(&mut self, value: usize) {
-        *self = self.plus(value).unwrap();
+        *self = self.plus(value).expect(&format!("{self} + {value}"))
     }
 
     fn iter(&'a self) -> Self::Iter {
@@ -22,35 +26,39 @@ impl<'a> InNeighborhood<'a> for InArray {
     }
 }
 
+use crate::map::out_neighborhood::out_array::OutArray;
+
 impl InArray {
-    pub(crate) const fn at_most_six() -> [Self; 233] {
-        let mut neighborhoods = [Self::Zero([]); 233];
-        let intervals = NeighborhoodOfAtMostThreeConsecutiveElements::at_most_six();
+    pub(crate) const fn at_most_six() -> [Self; NEIGHBORHOODS] {
+        let mut neighborhoods = [Self::Zero([]); NEIGHBORHOODS];
+        let compositions = StrongCompositionOfLengthAtMostThree::compositions_of_six();
+        let mut n = 0;
         let mut i = 0;
-        while i < neighborhoods.len() {
-            neighborhoods[i] = Self::new(intervals[i]);
+        while i < compositions.len() {
+            let composition = &compositions[i];
+            let mut j = 0;
+            while j < ARRAYS.len() {
+                let array = &ARRAYS[j];
+                use StrongCompositionOfLengthAtMostThree::*;
+                let pair = match (composition, array) {
+                    (Empty, OutArray::Zero([])) => Some(Self::Zero([])),
+                    (One(x), OutArray::One([a])) => Some(Self::One([(*a, *x)])),
+                    (Two(x, y), OutArray::Two([a, b])) => Some(Self::Two([(*a, *x), (*b, *y)])),
+                    (Three(x, y, z), OutArray::Three([a, b, c])) => {
+                        Some(Self::Three([(*a, *x), (*b, *y), (*c, *z)]))
+                    }
+                    _ => None,
+                };
+                if let Some(pair) = pair {
+                    neighborhoods[n] = pair;
+                    n += 1;
+                }
+                j += 1;
+            }
             i += 1;
         }
+        assert!(n == NEIGHBORHOODS);
         neighborhoods
-    }
-
-    const fn new(neighborhood: NeighborhoodOfAtMostThreeConsecutiveElements) -> Self {
-        use NeighborhoodOfAtMostThreeConsecutiveElements::*;
-        match neighborhood {
-            Empty => Self::Zero([]),
-            One(neighbor, multiplicity) => {
-                Self::One([(neighbor as usize, multiplicity.0 as usize)])
-            }
-            Two(neighbor1, multiplicity1, multiplicity2) => Self::Two([
-                (neighbor1 as usize, multiplicity1.0 as usize),
-                (neighbor1 as usize + 1, multiplicity2.0 as usize),
-            ]),
-            Three(neighbor1, multiplicity1, multiplicity2, multiplicity3) => Self::Three([
-                (neighbor1 as usize, multiplicity1.0 as usize),
-                (neighbor1 as usize + 1, multiplicity2.0 as usize),
-                (neighbor1 as usize + 2, multiplicity3.0 as usize),
-            ]),
-        }
     }
 
     pub(crate) const fn slice(&self) -> &[(usize, usize)] {
@@ -90,28 +98,30 @@ impl InArray {
             One([(a, mult)]) => {
                 if position == a {
                     Self::One([(a, mult + 1)])
-                } else if position == a + 1 {
+                } else if position == a + 1 || position == a + 2 {
                     Self::Two([(a, mult), (position, 1)])
-                } else if a == position + 1 {
+                } else if a == position + 1 || a == position + 2 {
                     Self::Two([(position, 1), (a, mult)])
                 } else {
                     return None;
                 }
             }
-            Two([(a, m_a), (b, m_b)]) if b == a + 1 => {
+            Two([(a, m_a), (b, m_b)]) => {
                 if position == a {
                     Self::Two([(a, m_a + 1), (b, m_b)])
                 } else if position == b {
                     Self::Two([(a, m_a), (b, m_b + 1)])
-                } else if position == b + 1 {
+                } else if b == a + 1 && position == a + 2 {
                     Self::Three([(a, m_a), (b, m_b), (b + 1, 1)])
-                } else if a == position + 1 {
+                } else if a == position + 1 && b == position + 2 {
                     Self::Three([(position, 1), (a, m_a), (b, m_b)])
+                } else if position == a + 1 && b == a + 2 {
+                    Self::Three([(a, m_a), (position, 1), (b, m_b)])
                 } else {
                     return None;
                 }
             }
-            Three([(a, m_a), (b, m_b), (c, m_c)]) if b == a + 1 && c == b + 1 => {
+            Three([(a, m_a), (b, m_b), (c, m_c)]) => {
                 if position == a {
                     Self::Three([(a, m_a + 1), (b, m_b), (c, m_c)])
                 } else if position == b {
@@ -173,7 +183,11 @@ impl InArray {
 
 use std::fmt::Display;
 
-use super::InNeighborhood;
+use crate::map::out_neighborhood::out_array::ARRAYS;
+
+use self::backend::StrongCompositionOfLengthAtMostThree;
+
+use super::{InNeighborhood, NEIGHBORHOODS};
 
 impl Display for InArray {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

@@ -1,17 +1,19 @@
-use crate::map::in_neighborhood::{NEIGHBORHOODS, WIDTH};
+use std::fmt::Display;
+
+use crate::map::in_neighborhood::{WIDTH, NEIGHBORHOODS};
 
 use super::{in_array::InArray, InNeighborhood};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 
-pub struct InByte(u8);
+pub struct InByte(u16);
 
 impl From<InArray> for InByte {
     fn from(array: InArray) -> Self {
         const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
         for (i, other_array) in ARRAYS.iter().enumerate() {
             if array.const_eq(other_array) {
-                return Self(i as u8);
+                return Self(i as u16);
             }
         }
         // unreachable!("{array} could not be found")
@@ -19,12 +21,11 @@ impl From<InArray> for InByte {
     }
 }
 
-// impl Into<NeighborhoodArray> for InByte {
-//     fn into(self) -> NeighborhoodArray {
-//         const ARRAYS: [NeighborhoodArray; BYTES] = NeighborhoodArray::at_most_six();
-//         ARRAYS[self.0 as usize]
-//     }
-// }
+impl Display for InByte {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
 
 impl From<InByte> for InArray {
     fn from(in_byte: InByte) -> Self {
@@ -47,8 +48,8 @@ impl<'a> InNeighborhood<'a> for InByte {
     }
 
     fn push(&mut self, value: usize) {
-        const SUM: [[u8; WIDTH]; NEIGHBORHOODS] = InByte::sum_table();
-        self.0 = SUM[self.0 as usize][value];
+        const SUM: [[InByte; WIDTH]; NEIGHBORHOODS] = InByte::sum_table();
+        *self = SUM[self.0 as usize][value];
     }
 
     fn iter(&self) -> Self::Iter {
@@ -90,9 +91,9 @@ impl InByte {
         table
     }
 
-    const fn sum_table() -> [[u8; WIDTH]; NEIGHBORHOODS] {
+    const fn sum_table() -> [[Self; WIDTH]; NEIGHBORHOODS] {
         let arrays = InArray::at_most_six();
-        let mut table = [[0; WIDTH]; NEIGHBORHOODS];
+        let mut table = [[Self(0); WIDTH]; NEIGHBORHOODS];
         let mut i = 0;
         while i < arrays.len() {
             let array = arrays[i];
@@ -103,13 +104,13 @@ impl InByte {
                     let mut k = 0;
                     while k < arrays.len() {
                         if arrays[k].const_eq(&sum) {
-                            table[i][j] = k as u8;
+                            table[i][j] = Self(k as u16);
                             break;
                         }
                         k += 1;
                     }
                 } else {
-                    table[i][j] = 0;
+                    table[i][j] = Self(0);
                 }
                 j += 1;
             }
@@ -152,7 +153,7 @@ mod test_in_byte_tables {
     #[test]
     fn test_sum_table() {
         const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
-        const SUM: [[u8; WIDTH]; NEIGHBORHOODS] = InByte::sum_table();
+        const SUM: [[InByte; WIDTH]; NEIGHBORHOODS] = InByte::sum_table();
         for (i, (array, sums)) in ARRAYS.iter().zip(SUM.iter()).enumerate() {
             for (j, sum) in sums.iter().enumerate() {
                 if let Some((array_sum, sum_position)) = array.plus(j).and_then(|array_sum| {
@@ -162,7 +163,7 @@ mod test_in_byte_tables {
                         .map(|position| (array_sum, position))
                 }) {
                     assert_eq!(
-                        *sum as usize, sum_position,
+                        sum.0 as usize, sum_position,
                         "
 {i}:\t{array}
 \t{sums:?}
@@ -171,7 +172,7 @@ mod test_in_byte_tables {
                     );
                 } else {
                     assert_eq!(
-                        *sum, 0,
+                        sum.0, 0,
                         "
 {i}:\t{array}
 \t{sums:?}

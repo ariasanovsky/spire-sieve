@@ -1,29 +1,29 @@
-use super::{out_array::OutArray, OutNeighborhood};
+use std::fmt::Display;
+
+use crate::map::in_neighborhood::WIDTH;
+
+use super::{out_array::{OutArray, ARRAYS, OUT_NEIGHBORHOODS}, OutNeighborhood};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct OutByte(u8);
 
-const ARRAYS: [OutArray; 19] = [
-    OutArray::Zero([]),
-    OutArray::One([0]),
-    OutArray::One([1]),
-    OutArray::One([2]),
-    OutArray::One([3]),
-    OutArray::One([4]),
-    OutArray::One([5]),
-    OutArray::One([6]),
-    OutArray::Two([0, 1]),
-    OutArray::Two([1, 2]),
-    OutArray::Two([2, 3]),
-    OutArray::Two([3, 4]),
-    OutArray::Two([4, 5]),
-    OutArray::Two([5, 6]),
-    OutArray::Three([0, 1, 2]),
-    OutArray::Three([1, 2, 3]),
-    OutArray::Three([2, 3, 4]),
-    OutArray::Three([3, 4, 5]),
-    OutArray::Three([4, 5, 6]),
-];
+impl Default for OutByte {
+    fn default() -> Self {
+        Self(0)
+    }
+}
+
+impl Display for OutByte {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
+}
+
+impl From<OutByte> for OutArray {
+    fn from(value: OutByte) -> Self {
+        ARRAYS[value.0 as usize].clone()
+    }
+}
 
 impl OutByte {
     const fn position(array: &OutArray) -> usize {
@@ -37,9 +37,9 @@ impl OutByte {
         unreachable!()
     }
 
-    const fn left_update_table() -> [[usize; 7]; 19] {
-        let mut table = [[0; 7]; 19];
-        const MAX_TABLE: [Option<usize>; 19] = OutByte::max_table();
+    const fn left_update_table() -> [[usize; WIDTH]; OUT_NEIGHBORHOODS] {
+        let mut table = [[0; WIDTH]; OUT_NEIGHBORHOODS];
+        const MAX_TABLE: [Option<usize>; OUT_NEIGHBORHOODS] = OutByte::max_table();
         let mut i = 0;
         while i < table.len() {
             let mut value = 0;
@@ -56,9 +56,9 @@ impl OutByte {
         table
     }
 
-    const fn right_update_table() -> [[usize; 7]; 19] {
-        let mut table = [[0; 7]; 19];
-        const MIN_TABLE: [Option<usize>; 19] = OutByte::min_table();
+    const fn right_update_table() -> [[usize; WIDTH]; OUT_NEIGHBORHOODS] {
+        let mut table = [[0; WIDTH]; OUT_NEIGHBORHOODS];
+        const MIN_TABLE: [Option<usize>; OUT_NEIGHBORHOODS] = OutByte::min_table();
         let mut i = 0;
         while i < table.len() {
             let mut value = 0;
@@ -75,8 +75,8 @@ impl OutByte {
         table
     }
 
-    const fn max_table() -> [Option<usize>; 19] {
-        let mut table = [None; 19];
+    const fn max_table() -> [Option<usize>; OUT_NEIGHBORHOODS] {
+        let mut table = [None; OUT_NEIGHBORHOODS];
         let mut i = 0;
         while i < table.len() {
             if let Some(max) = ARRAYS[i].max() {
@@ -87,8 +87,8 @@ impl OutByte {
         table
     }
 
-    const fn min_table() -> [Option<usize>; 19] {
-        let mut table = [None; 19];
+    const fn min_table() -> [Option<usize>; OUT_NEIGHBORHOODS] {
+        let mut table = [None; OUT_NEIGHBORHOODS];
         let mut i = 0;
         while i < table.len() {
             if let Some(min) = ARRAYS[i].min() {
@@ -99,8 +99,8 @@ impl OutByte {
         table
     }
 
-    const fn push_table() -> [[Self; 7]; 19] {
-        let mut table = [[Self(0); 7]; 19];
+    const fn push_table() -> [[Self; WIDTH]; OUT_NEIGHBORHOODS] {
+        let mut table = [[Self(0); WIDTH]; OUT_NEIGHBORHOODS];
         let mut i = 0;
         while i < table.len() {
             let mut j = 0;
@@ -116,8 +116,8 @@ impl OutByte {
         table
     }
 
-    const fn remove_table() -> [[Self; 7]; 19] {
-        let mut table = [[Self(0); 7]; 19];
+    const fn remove_table() -> [[Self; WIDTH]; OUT_NEIGHBORHOODS] {
+        let mut table = [[Self(0); WIDTH]; OUT_NEIGHBORHOODS];
         let mut i = 0;
         while i < table.len() {
             let mut j = 0;
@@ -138,22 +138,22 @@ impl<'a> OutNeighborhood<'a> for OutByte {
     type Iter = std::slice::Iter<'a, usize>;
 
     fn update_position_from_left(&self, value: &mut usize) {
-        const LEFT_UPDATE_TABLE: [[usize; 7]; 19] = OutByte::left_update_table();
+        const LEFT_UPDATE_TABLE: [[usize; WIDTH]; OUT_NEIGHBORHOODS] = OutByte::left_update_table();
         *value = LEFT_UPDATE_TABLE[self.0 as usize][*value];
     }
 
     fn update_position_from_right(&self, value: &mut usize) {
-        const RIGHT_UPDATE_TABLE: [[usize; 7]; 19] = OutByte::right_update_table();
+        const RIGHT_UPDATE_TABLE: [[usize; WIDTH]; OUT_NEIGHBORHOODS] = OutByte::right_update_table();
         *value = RIGHT_UPDATE_TABLE[self.0 as usize][*value];
     }
 
     fn push(&mut self, value: usize) {
-        const PUSH_TABLE: [[OutByte; 7]; 19] = OutByte::push_table();
+        const PUSH_TABLE: [[OutByte; WIDTH]; OUT_NEIGHBORHOODS] = OutByte::push_table();
         *self = PUSH_TABLE[self.0 as usize][value];
     }
 
     fn remove(&mut self, value: usize) {
-        const REMOVE_TABLE: [[OutByte; 7]; 19] = OutByte::remove_table();
+        const REMOVE_TABLE: [[OutByte; WIDTH]; OUT_NEIGHBORHOODS] = OutByte::remove_table();
         *self = REMOVE_TABLE[self.0 as usize][value];
     }
 

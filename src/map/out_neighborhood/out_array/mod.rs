@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use super::OutNeighborhood;
 
 #[derive(Debug, Clone)]
@@ -6,6 +8,51 @@ pub enum OutArray {
     One([usize; 1]),
     Two([usize; 2]),
     Three([usize; 3]),
+}
+
+pub const OUT_NEIGHBORHOODS: usize = 24;
+
+pub const ARRAYS: [OutArray; OUT_NEIGHBORHOODS] = [
+    OutArray::Zero([]),
+    OutArray::One([0]),
+    OutArray::One([1]),
+    OutArray::One([2]),
+    OutArray::One([3]),
+    OutArray::One([4]),
+    OutArray::One([5]),
+    OutArray::One([6]),
+    OutArray::Two([0, 1]),
+    OutArray::Two([1, 2]),
+    OutArray::Two([2, 3]),
+    OutArray::Two([3, 4]),
+    OutArray::Two([4, 5]),
+    OutArray::Two([5, 6]),
+    OutArray::Two([0, 2]),
+    OutArray::Two([1, 3]),
+    OutArray::Two([2, 4]),
+    OutArray::Two([3, 5]),
+    OutArray::Two([4, 6]),
+    OutArray::Three([0, 1, 2]),
+    OutArray::Three([1, 2, 3]),
+    OutArray::Three([2, 3, 4]),
+    OutArray::Three([3, 4, 5]),
+    OutArray::Three([4, 5, 6]),
+];
+
+impl Default for OutArray {
+    fn default() -> Self {
+        Self::Zero([])
+    }
+}
+
+impl Display for OutArray {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{:?}",
+            self.values()
+        )
+    }
 }
 
 impl OutArray {
@@ -61,9 +108,9 @@ impl OutArray {
             Self::One([a]) => {
                 if *a == position {
                     Self::One([position])
-                } else if *a == position + 1 {
+                } else if *a == position + 1 || *a == position + 2 {
                     Self::Two([position, *a])
-                } else if position == *a + 1 {
+                } else if position == *a + 1 || position == *a + 2 {
                     Self::Two([*a, position])
                 } else {
                     return None;
@@ -72,10 +119,12 @@ impl OutArray {
             Self::Two([a, b]) => {
                 if *a == position || *b == position {
                     Self::Two([*a, *b])
-                } else if *a == position + 1 {
+                } else if *a == position + 1 && *b == *a + 1 {
                     Self::Three([position, *a, *b])
-                } else if position == *b + 1 {
+                } else if *b == *a + 1 && position == *b + 1 {
                     Self::Three([*a, *b, position])
+                } else if position == *a + 1 && *b == position + 1 {
+                    Self::Three([*a, position, *b])
                 } else {
                     return None;
                 }
@@ -126,21 +175,21 @@ impl<'a> OutNeighborhood<'a> for OutArray {
     type Iter = std::slice::Iter<'a, usize>;
 
     fn update_position_from_left(&self, value: &mut usize) {
-        if let Some(max) = self.max() {
-            *value = *max;
+        if let Some(max) = self.max().copied() {
+            *value = max.max(*value);
         }
     }
 
     fn update_position_from_right(&self, value: &mut usize) {
-        if let Some(min) = self.min() {
-            *value = *min;
+        if let Some(min) = self.min().copied() {
+            *value = min.min(*value);
         }
     }
 
     fn push(&mut self, value: usize) {
         *self = match self.plus(value) {
             Some(array) => array,
-            None => unreachable!(),
+            None => unreachable!("{self:?} + {value}"),
         }
     }
 
@@ -157,5 +206,22 @@ impl<'a> OutNeighborhood<'a> for OutArray {
 
     fn is_empty(&self) -> bool {
         self.values().is_empty()
+    }
+}
+
+#[cfg(test)]
+mod test_out_array {
+    use crate::map::WIDTH;
+
+    use super::ARRAYS;
+
+    #[test]
+    fn test_plus_table() {
+        for array in ARRAYS {
+            println!("[{array}]");
+            for i in 0..WIDTH as usize {
+                println!("\t+ {i} = {:?}", array.plus(i));
+            }
+        }
     }
 }
