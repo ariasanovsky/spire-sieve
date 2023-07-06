@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use crate::map::in_neighborhood::NEIGHBORHOODS;
+
 #[derive(Debug, Clone, Copy)]
 pub struct Multiplicity(pub u8);
 
@@ -18,8 +20,8 @@ pub enum NeighborhoodOfAtMostThreeConsecutiveElements {
 }
 
 impl NeighborhoodOfAtMostThreeConsecutiveElements {
-    pub const fn at_most_six() -> [Self; 233] {
-        let mut neighborhoods = [Self::Empty; 233];
+    pub const fn at_most_six() -> [Self; NEIGHBORHOODS] {
+        let mut neighborhoods = [Self::Empty; NEIGHBORHOODS];
         let mut i = 1;
         let mut index = 0;
         let comps = StrongCompositionOfLengthAtMostThree::compositions_of_six();
@@ -39,10 +41,10 @@ impl NeighborhoodOfAtMostThreeConsecutiveElements {
             }
             index += 1;
         }
-        assert!(i == 233);
+        assert!(i == NEIGHBORHOODS);
 
         let mut i = 0;
-        while i < 233 {
+        while i < NEIGHBORHOODS {
             let neighborhood = neighborhoods[i];
             assert!(neighborhood.const_eq(&neighborhood));
             let mut j = 0;
@@ -298,7 +300,7 @@ impl Display for NeighborhoodOfAtMostThreeConsecutiveElements {
 
 #[cfg(test)]
 mod test_in_bytes_backend {
-    use crate::map::in_neighborhood::in_array::InArray;
+    use crate::map::in_neighborhood::{in_array::InArray, NEIGHBORHOODS};
 
     use super::NeighborhoodOfAtMostThreeConsecutiveElements;
 
@@ -312,7 +314,7 @@ mod test_in_bytes_backend {
 
     #[test]
     fn test_array_plus() {
-        const ARRAYS: [InArray; 233] = InArray::at_most_six();
+        const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
         for (i, array) in ARRAYS.iter().enumerate() {
             for j in 0..7 {
                 if let Some(sum) = array.plus(j) {

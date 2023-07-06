@@ -56,10 +56,3 @@ where
             .count()
     }
 }
-
-impl<In, Out> Row<In, Out>
-where
-    In: for<'a> InNeighborhood<'a>,
-    Out: for<'a> OutNeighborhood<'a>,
-{
-}

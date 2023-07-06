@@ -8,11 +8,10 @@ use super::{
 
 use super::row::Row;
 
-pub mod canonize;
 pub mod display;
 
 #[derive(Debug, Default)]
-pub(super) struct Skeleton<const PATHS: usize, In, Out>
+pub struct Skeleton<const PATHS: usize, In, Out>
 where
     In: for<'a> InNeighborhood<'a>,
     Out: for<'a> OutNeighborhood<'a>,
@@ -20,12 +19,42 @@ where
     pub(super) rows: [Row<In, Out>; HEIGHT],
 }
 
-impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
+impl<const PATHS: usize, In, Out> Skeleton<PATHS, In, Out>
+where
+    In: for<'a> InNeighborhood<'a> + Default,
+    Out: for<'a> OutNeighborhood<'a> + Default,
+{
+    pub fn generate(rng: &mut Random) -> Skeleton<PATHS, In, Out> {
+        let mut skeleton = Skeleton::default();
+        skeleton.create_paths(rng);
+        skeleton
+    }
+}
+
+impl<const PATHS: usize, In, Out> Skeleton<PATHS, In, Out>
 where
     In: for<'a> InNeighborhood<'a>,
     Out: for<'a> OutNeighborhood<'a>,
 {
-    pub(super) fn create_paths(&mut self, rng: &mut Random) {
+    fn row(&self, row: usize) -> &Row<In, Out> {
+        &self.rows[row]
+    }
+
+    fn row_mut(&mut self, row: usize) -> &mut Row<In, Out> {
+        &mut self.rows[row]
+    }
+
+    fn _rows(&self) -> &[Row<In, Out>; HEIGHT] {
+        &self.rows
+    }
+}
+
+impl<const PATHS: usize, In, Out> Skeleton<PATHS, In, Out>
+where
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
+{
+    fn create_paths(&mut self, rng: &mut Random) {
         let first_position = self.create_first_path(rng);
         self.create_second_path(rng, first_position);
         (2..6).for_each(|_| {

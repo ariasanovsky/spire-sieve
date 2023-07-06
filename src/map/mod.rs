@@ -1,6 +1,7 @@
 use libgdx_xs128::rng::Random;
 
 pub mod assign_nodes;
+pub mod canonize;
 mod display;
 mod filters;
 mod in_neighborhood;
@@ -108,10 +109,21 @@ where
     Out: for<'a> OutNeighborhood<'a> + Default,
 {
     pub fn generate(rng: &mut Random, ascension: bool) -> Map<PATHS, In, Out> {
-        let mut map = Map::default();
-        map.create_paths(rng);
+        let skeleton = Skeleton::generate(rng);
+        let mut map = Self {
+            skeleton,
+            kinds: [[NodeKind::default(); WIDTH as usize]; HEIGHT],
+        };
+
         map.filter_redundant_edges_from_first_row();
         map.assign_rooms(rng, ascension);
+
+        // let mut map = Map::default();
+        // map.create_paths(rng);
+        // map.filter_redundant_edges_from_first_row();
+        // map.assign_rooms(rng, ascension);
+        // map
+
         map
     }
 }

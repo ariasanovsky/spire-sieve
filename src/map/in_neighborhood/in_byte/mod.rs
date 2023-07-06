@@ -1,11 +1,14 @@
+use crate::map::in_neighborhood::{NEIGHBORHOODS, WIDTH};
+
 use super::{in_array::InArray, InNeighborhood};
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+
 pub struct InByte(u8);
 
 impl From<InArray> for InByte {
     fn from(array: InArray) -> Self {
-        const ARRAYS: [InArray; 233] = InArray::at_most_six();
+        const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
         for (i, other_array) in ARRAYS.iter().enumerate() {
             if array.const_eq(other_array) {
                 return Self(i as u8);
@@ -18,14 +21,14 @@ impl From<InArray> for InByte {
 
 // impl Into<NeighborhoodArray> for InByte {
 //     fn into(self) -> NeighborhoodArray {
-//         const ARRAYS: [NeighborhoodArray; 233] = NeighborhoodArray::at_most_six();
+//         const ARRAYS: [NeighborhoodArray; BYTES] = NeighborhoodArray::at_most_six();
 //         ARRAYS[self.0 as usize]
 //     }
 // }
 
 impl From<InByte> for InArray {
     fn from(in_byte: InByte) -> Self {
-        const ARRAYS: [InArray; 233] = InArray::at_most_six();
+        const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
         ARRAYS[in_byte.0 as usize]
     }
 }
@@ -34,30 +37,30 @@ impl<'a> InNeighborhood<'a> for InByte {
     type Iter = std::slice::Iter<'a, (usize, usize)>;
 
     fn min(&self) -> Option<&usize> {
-        const MIN: [Option<usize>; 233] = InByte::min_table();
+        const MIN: [Option<usize>; NEIGHBORHOODS] = InByte::min_table();
         MIN[self.0 as usize].as_ref()
     }
 
     fn max(&self) -> Option<&usize> {
-        const MAX: [Option<usize>; 233] = InByte::max_table();
+        const MAX: [Option<usize>; NEIGHBORHOODS] = InByte::max_table();
         MAX[self.0 as usize].as_ref()
     }
 
     fn push(&mut self, value: usize) {
-        const SUM: [[u8; 7]; 233] = InByte::sum_table();
+        const SUM: [[u8; WIDTH]; NEIGHBORHOODS] = InByte::sum_table();
         self.0 = SUM[self.0 as usize][value];
     }
 
     fn iter(&self) -> Self::Iter {
-        const ARRAYS: [InArray; 233] = InArray::at_most_six();
+        const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
         ARRAYS[self.0 as usize].slice().iter()
     }
 }
 
 impl InByte {
-    const fn min_table() -> [Option<usize>; 233] {
+    const fn min_table() -> [Option<usize>; NEIGHBORHOODS] {
         let arrays = InArray::at_most_six();
-        let mut table = [None; 233];
+        let mut table = [None; NEIGHBORHOODS];
         let mut i = 0;
         while i < table.len() {
             table[i] = if let Some(min) = arrays[i].min() {
@@ -71,9 +74,9 @@ impl InByte {
         table
     }
 
-    const fn max_table() -> [Option<usize>; 233] {
+    const fn max_table() -> [Option<usize>; NEIGHBORHOODS] {
         let arrays = InArray::at_most_six();
-        let mut table = [None; 233];
+        let mut table = [None; NEIGHBORHOODS];
         let mut i = 0;
         while i < table.len() {
             table[i] = if let Some(max) = arrays[i].max() {
@@ -87,14 +90,14 @@ impl InByte {
         table
     }
 
-    const fn sum_table() -> [[u8; 7]; 233] {
+    const fn sum_table() -> [[u8; WIDTH]; NEIGHBORHOODS] {
         let arrays = InArray::at_most_six();
-        let mut table = [[0; 7]; 233];
+        let mut table = [[0; WIDTH]; NEIGHBORHOODS];
         let mut i = 0;
         while i < arrays.len() {
             let array = arrays[i];
             let mut j = 0;
-            while j < 7 {
+            while j < WIDTH {
                 let sum = array.plus(j);
                 if let Some(sum) = sum {
                     let mut k = 0;
@@ -122,8 +125,8 @@ mod test_in_byte_tables {
 
     #[test]
     fn test_min_table() {
-        const ARRAYS: [InArray; 233] = InArray::at_most_six();
-        const MIN: [Option<usize>; 233] = InByte::min_table();
+        const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
+        const MIN: [Option<usize>; NEIGHBORHOODS] = InByte::min_table();
         for (byte, (array, min)) in ARRAYS.iter().zip(MIN.iter()).enumerate() {
             assert_eq!(
                 array.min().copied(),
@@ -135,8 +138,8 @@ mod test_in_byte_tables {
 
     #[test]
     fn test_max_table() {
-        const ARRAYS: [InArray; 233] = InArray::at_most_six();
-        const MAX: [Option<usize>; 233] = InByte::max_table();
+        const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
+        const MAX: [Option<usize>; NEIGHBORHOODS] = InByte::max_table();
         for (byte, (array, max)) in ARRAYS.iter().zip(MAX.iter()).enumerate() {
             assert_eq!(
                 array.max().copied(),
@@ -148,8 +151,8 @@ mod test_in_byte_tables {
 
     #[test]
     fn test_sum_table() {
-        const ARRAYS: [InArray; 233] = InArray::at_most_six();
-        const SUM: [[u8; 7]; 233] = InByte::sum_table();
+        const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
+        const SUM: [[u8; WIDTH]; NEIGHBORHOODS] = InByte::sum_table();
         for (i, (array, sums)) in ARRAYS.iter().zip(SUM.iter()).enumerate() {
             for (j, sum) in sums.iter().enumerate() {
                 if let Some((array_sum, sum_position)) = array.plus(j).and_then(|array_sum| {
@@ -184,7 +187,7 @@ mod test_in_byte_tables {
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
     use super::*;
-    const ARRAYS: [InArray; 233] = InArray::at_most_six();
+    const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
 
     #[test]
     fn test_bijection() {
@@ -218,7 +221,7 @@ mod test_invec_against_neighborhood_array {
     #[test]
     fn test_push() {
         for array in ARRAYS {
-            for position in 0..7 {
+            for position in 0..WIDTH {
                 let mut in_neighborhood = InByte::from(array);
                 in_neighborhood.push(position);
                 let array_sum: Option<InArray> = array.plus(position);
