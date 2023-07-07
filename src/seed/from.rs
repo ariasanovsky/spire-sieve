@@ -2,7 +2,11 @@ use std::str::FromStr;
 
 use super::{Seed, SeedString, ALPHABET, BASE};
 
-fn letter_index(letter: u8) -> u8 {
+/* todo!
+    lowercase letters
+*/
+
+pub(crate) const fn letter_index(letter: u8) -> u8 {
     match letter {
         _ if letter < b'A' => letter.wrapping_sub(b'0'),
         _ if letter < b'O' => letter.wrapping_sub(b'A').wrapping_add(10),
@@ -14,6 +18,12 @@ fn letter_index(letter: u8) -> u8 {
 pub enum Error {
     InvalidCharacter(u8),
     InvalidLength(usize),
+}
+
+impl From<u64> for SeedString {
+    fn from(value: u64) -> Self {
+        Seed::from(value).into()
+    }
 }
 
 impl FromStr for SeedString {

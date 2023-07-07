@@ -18,7 +18,9 @@ impl<'a> InNeighborhood<'a> for InArray {
     type Iter = std::slice::Iter<'a, (usize, usize)>;
 
     fn push(&mut self, value: usize) {
-        *self = self.plus(value).expect(&format!("{self} + {value}"))
+        *self = self
+            .plus(value)
+            .unwrap_or_else(|| panic!("{self} + {value}"))
     }
 
     fn iter(&'a self) -> Self::Iter {
@@ -132,7 +134,6 @@ impl InArray {
                     return None;
                 }
             }
-            _ => return None,
         })
     }
 
@@ -181,32 +182,8 @@ impl InArray {
     }
 }
 
-use std::fmt::Display;
-
 use crate::map::out_neighborhood::out_array::ARRAYS;
 
 use self::backend::StrongCompositionOfLengthAtMostThree;
 
 use super::{InNeighborhood, NEIGHBORHOODS};
-
-impl Display for InArray {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            InArray::Zero([]) => write!(f, "[]"),
-            InArray::One([a]) => write!(f, "{}", a.0.to_string().repeat(a.1)),
-            InArray::Two([a, b]) => write!(
-                f,
-                "{}{}",
-                a.0.to_string().repeat(a.1),
-                b.0.to_string().repeat(b.1)
-            ),
-            InArray::Three([a, b, c]) => write!(
-                f,
-                "{}{}{}",
-                a.0.to_string().repeat(a.1),
-                b.0.to_string().repeat(b.1),
-                c.0.to_string().repeat(c.1)
-            ),
-        }
-    }
-}

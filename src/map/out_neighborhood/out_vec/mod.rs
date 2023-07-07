@@ -1,6 +1,4 @@
-use std::fmt::Display;
-
-use super::{OutNeighborhood, out_array::OutArray};
+use super::{out_array::OutArray, OutNeighborhood};
 
 #[derive(Debug, Default, Clone)]
 pub struct OutVec {
@@ -18,16 +16,6 @@ impl From<OutVec> for OutArray {
             [a, b, c] => Self::Three([a, b, c]),
             _ => unreachable!(),
         }
-    }
-}
-
-impl Display for OutVec {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        {
-            let mut values = self.values.clone();
-            values.sort();
-            values
-        }.iter().try_for_each(|v| write!(f, "{v}"))
     }
 }
 

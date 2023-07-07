@@ -6,4 +6,5 @@ pub mod filter;
 pub mod map;
 pub mod neow;
 pub mod seed;
+pub mod sieve;
 pub mod unlock;

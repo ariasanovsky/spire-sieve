@@ -1,3 +1,4 @@
+pub mod display;
 pub mod in_array;
 pub mod in_byte;
 pub mod in_vec;

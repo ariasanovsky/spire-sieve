@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use crate::map::in_neighborhood::WIDTH;
 
 use super::{in_array::InArray, InNeighborhood};
@@ -22,12 +20,12 @@ impl From<InArray> for InVec {
 
 impl From<InVec> for InArray {
     fn from(value: InVec) -> InArray {
-        dbg!(&value);
+        // dbg!(&value);
         let mut counts: [usize; WIDTH] = [0; WIDTH];
         for (value, count) in value.values {
             counts[value] += count;
         }
-        dbg!(&counts);
+        // dbg!(&counts);
         let shortened_vec = counts
             .iter()
             .enumerate()
@@ -39,7 +37,7 @@ impl From<InVec> for InArray {
                 }
             })
             .collect::<Vec<_>>();
-        dbg!(&shortened_vec);
+        // dbg!(&shortened_vec);
         match &shortened_vec[..] {
             [] => InArray::Zero([]),
             [a] => InArray::One([*a]),
@@ -69,18 +67,6 @@ impl<'a> InNeighborhood<'a> for InVec {
 
 // impl<'a> TestInNeighborhood<'a, 'a> for InVec {}
 
-impl Display for InVec {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.values.iter().try_for_each(|(value, count)| {
-            write!(f, "{}", value)?;
-            if *count > 1 {
-                write!(f, "({})", count)?;
-            }
-            Ok(())
-        })
-    }
-}
-
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
     use crate::map::in_neighborhood::NEIGHBORHOODS;
@@ -94,7 +80,10 @@ mod test_invec_against_neighborhood_array {
             dbg!(&array);
             let in_neighborhood = InVec::from(array);
             let new_array: InArray = in_neighborhood.clone().into();
-            assert_eq!(new_array, array, "{array} -> {in_neighborhood} -> {new_array}");
+            assert_eq!(
+                new_array, array,
+                "{array} -> {in_neighborhood} -> {new_array}"
+            );
         }
     }
 

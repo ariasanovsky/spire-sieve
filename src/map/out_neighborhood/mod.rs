@@ -1,3 +1,4 @@
+pub mod display;
 pub mod out_array;
 pub mod out_byte;
 pub mod out_vec;

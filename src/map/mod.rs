@@ -2,11 +2,11 @@ use libgdx_xs128::rng::Random;
 
 pub mod assign_nodes;
 pub mod canonize;
-mod display;
-mod filters;
+pub mod display;
+pub mod filters;
 mod in_neighborhood;
 mod out_neighborhood;
-mod row;
+pub mod row;
 pub mod skeleton;
 
 #[allow(unused)]
@@ -103,8 +103,8 @@ where
     }
 }
 
-use std::fmt::Display;
 use std::fmt::Debug;
+use std::fmt::Display;
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
@@ -180,7 +180,7 @@ mod map_tests {
     }
 }
 
-static _ONE_PATH_BURNING_ELITE_BOTTLENECKS: &[&[u8; 13]] = &[
+pub const _ONE_PATH_BURNING_ELITE_BOTTLENECKS: &[&[u8; 13]] = &[
     b"     8AFF4ZZ6",
     b"     XXKBUJNS",
     b"    1J432TK4I",

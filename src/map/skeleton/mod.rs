@@ -2,9 +2,7 @@ use libgdx_xs128::{rng::Random, RandomXS128};
 
 use crate::map::LAST_POSITION;
 
-use super::{
-    in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, HEIGHT, WIDTH,
-};
+use super::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, HEIGHT, WIDTH};
 
 use super::row::Row;
 

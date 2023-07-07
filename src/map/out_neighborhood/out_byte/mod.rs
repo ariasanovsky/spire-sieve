@@ -1,23 +1,12 @@
-use std::fmt::Display;
-
 use crate::map::in_neighborhood::WIDTH;
 
-use super::{out_array::{OutArray, ARRAYS, OUT_NEIGHBORHOODS}, OutNeighborhood};
+use super::{
+    out_array::{OutArray, ARRAYS, OUT_NEIGHBORHOODS},
+    OutNeighborhood,
+};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct OutByte(u8);
-
-impl Default for OutByte {
-    fn default() -> Self {
-        Self(0)
-    }
-}
-
-impl Display for OutByte {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
-    }
-}
 
 impl From<OutByte> for OutArray {
     fn from(value: OutByte) -> Self {
@@ -143,7 +132,8 @@ impl<'a> OutNeighborhood<'a> for OutByte {
     }
 
     fn update_position_from_right(&self, value: &mut usize) {
-        const RIGHT_UPDATE_TABLE: [[usize; WIDTH]; OUT_NEIGHBORHOODS] = OutByte::right_update_table();
+        const RIGHT_UPDATE_TABLE: [[usize; WIDTH]; OUT_NEIGHBORHOODS] =
+            OutByte::right_update_table();
         *value = RIGHT_UPDATE_TABLE[self.0 as usize][*value];
     }
 

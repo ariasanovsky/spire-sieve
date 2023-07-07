@@ -1,6 +1,4 @@
-use std::fmt::Display;
-
-use crate::map::in_neighborhood::{WIDTH, NEIGHBORHOODS};
+use crate::map::in_neighborhood::{NEIGHBORHOODS, WIDTH};
 
 use super::{in_array::InArray, InNeighborhood};
 
@@ -18,12 +16,6 @@ impl From<InArray> for InByte {
         }
         // unreachable!("{array} could not be found")
         Self(0)
-    }
-}
-
-impl Display for InByte {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
     }
 }
 

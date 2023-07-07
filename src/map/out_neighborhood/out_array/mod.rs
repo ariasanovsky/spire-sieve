@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use super::OutNeighborhood;
 
 #[derive(Debug, Clone)]
@@ -42,16 +40,6 @@ pub const ARRAYS: [OutArray; OUT_NEIGHBORHOODS] = [
 impl Default for OutArray {
     fn default() -> Self {
         Self::Zero([])
-    }
-}
-
-impl Display for OutArray {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{:?}",
-            self.values()
-        )
     }
 }
 

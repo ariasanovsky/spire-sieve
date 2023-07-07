@@ -1,7 +1,8 @@
 use std::{
+    fmt::{Debug, Display},
     fs::{self, File},
     io::Write,
-    path::PathBuf, fmt::{Debug, Display},
+    path::PathBuf,
 };
 
 use libgdx_xs128::{rng::Random, RandomXS128};
