@@ -1,6 +1,7 @@
 use libgdx_xs128::rng::Random;
 use libgdx_xs128::RandomXS128;
 
+#[cfg(feature = "std")]
 use crate::map::assign_nodes::buffed_elite::EliteBuff;
 use crate::map::in_neighborhood::in_vec::InVec;
 use crate::map::out_neighborhood::out_vec::OutVec;
@@ -45,11 +46,13 @@ impl Default for Bottleneck {
     }
 }
 
+#[cfg(feature = "std")]
 pub struct BurningEliteBottleneck<'a> {
     row: usize,
     required_buffs: Option<&'a [EliteBuff]>,
 }
 
+#[cfg(feature = "std")]
 impl<'a> BurningEliteBottleneck<'a> {
     pub const fn new(floor: usize, required_buffs: Option<&'a [EliteBuff]>) -> Self {
         Self {
@@ -63,12 +66,14 @@ impl<'a> BurningEliteBottleneck<'a> {
     }
 }
 
+#[cfg(feature = "std")]
 impl<'a> Default for BurningEliteBottleneck<'a> {
     fn default() -> Self {
         Self::const_default()
     }
 }
 
+#[cfg(feature = "std")]
 impl<'a> SeedFilter for BurningEliteBottleneck<'a> {
     fn reject_rng(&self, rng: &mut Random) -> bool {
         let map = Map::<6, InVec, OutVec>::generate(rng, true);
@@ -159,6 +164,7 @@ mod bottleneck_filter_tests {
         }
     }
 
+    #[cfg(feature = "std")]
     #[test]
     fn test_burning_elite_bottleneck_filter() {
         const FILTER: BurningEliteBottleneck = BurningEliteBottleneck::const_default();

@@ -1,4 +1,6 @@
-use std::str::FromStr;
+// use std::str::FromStr;
+
+use core::str::FromStr;
 
 use super::{Seed, SeedString, ALPHABET, BASE};
 
@@ -105,6 +107,7 @@ impl From<u64> for Seed {
     }
 }
 
+#[cfg(feature = "std")]
 #[cfg(test)]
 mod test_seed_conversions {
 

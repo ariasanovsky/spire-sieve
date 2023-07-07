@@ -2,6 +2,7 @@ use libgdx_xs128::{rng::Random, RandomXS128};
 
 use crate::seed::from::letter_index;
 
+#[cfg(feature = "std")]
 pub mod display;
 pub mod from;
 

@@ -18,7 +18,7 @@ pub enum Error {
     NoDifficultyMod,
     NoSeedString,
     ParseSeed(std::num::ParseIntError),
-    ParseCharacter(crate::character::Error),
+    ParseCharacter(crate::character::try_from::Error),
     ParseDailyModifier(crate::daily::modifier::Error),
     ParseSeedString(crate::seed::from::Error),
     InconsistentSeeds(Seed, SeedString),

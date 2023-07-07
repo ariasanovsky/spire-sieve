@@ -1,6 +1,6 @@
 [package]
 name = "spire-sieve"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -12,5 +12,13 @@ strum = { version = "0.25.0", default-features = false }
 strum_macros = { version = "0.25.0", default-features = false }
 
 [features]
-default = ["std"]
-std = ["strum/std", "libgdx-xs128/std" ]
+default = [
+    "std",
+    "libgdx-xs128/reroll",
+    "libgdx-xs128/check_zero_seed"
+]
+std = [
+    "strum/std",
+    "libgdx-xs128/std"
+]
+tabulate_arithmetic = [] # todo!("tabulate d2 & d3 rolls in map gen")

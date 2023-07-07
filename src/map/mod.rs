@@ -1,5 +1,6 @@
 use libgdx_xs128::rng::Random;
 
+#[cfg(feature = "std")]
 pub mod assign_nodes;
 pub mod canonize;
 pub mod display;

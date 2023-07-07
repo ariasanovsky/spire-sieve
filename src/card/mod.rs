@@ -74,6 +74,7 @@ const fn rev_cards() -> [Card; Card::COUNT] {
 pub const CARDS: [Card; Card::COUNT] = all_cards();
 pub const REV_CARDS: [Card; Card::COUNT] = rev_cards();
 
+#[cfg(feature = "std")]
 #[test]
 fn test_card_array_initialization() {
     use std::dbg;

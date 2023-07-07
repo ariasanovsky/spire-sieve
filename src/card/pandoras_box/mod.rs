@@ -1,4 +1,4 @@
-use std::array;
+use core::array;
 
 use libgdx_xs128::{rng::Random, RandomXS128};
 
@@ -61,6 +61,7 @@ impl SeedFilter for AnonymousPandoraBox {
     }
 }
 
+#[cfg(feature = "std")]
 #[cfg(test)]
 mod tests {
     use std::dbg;
