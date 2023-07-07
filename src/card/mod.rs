@@ -76,6 +76,7 @@ pub const REV_CARDS: [Card; Card::COUNT] = rev_cards();
 
 #[test]
 fn test_card_array_initialization() {
+    use std::dbg;
     dbg!(&CARDS, CARDS.len());
     dbg!(std::mem::size_of_val(&CARDS));
     dbg!(std::mem::size_of::<Card>());

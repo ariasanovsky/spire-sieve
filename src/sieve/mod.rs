@@ -1,3 +1,5 @@
+use std::println;
+
 use crate::{filter::SeedFilter, seed::SeedString};
 
 pub struct Sieve<F: SeedFilter> {

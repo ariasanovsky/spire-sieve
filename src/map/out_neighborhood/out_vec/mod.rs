@@ -1,3 +1,5 @@
+use alloc::vec::Vec;
+
 use super::{out_array::OutArray, OutNeighborhood};
 
 #[derive(Debug, Default, Clone)]

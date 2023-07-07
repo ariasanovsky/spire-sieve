@@ -142,6 +142,8 @@ impl<'a, const REWARDS: usize> SeedFilter for CardRewardFilter<'a, REWARDS> {
 #[cfg(test)]
 mod card_reward_tests {
 
+    use std::dbg;
+
     use libgdx_xs128::{rng::Random, RandomXS128};
 
     use crate::{

@@ -1,3 +1,6 @@
+use alloc::vec::Vec;
+use alloc::vec;
+
 use crate::map::in_neighborhood::WIDTH;
 
 use super::{in_array::InArray, InNeighborhood};
@@ -69,6 +72,8 @@ impl<'a> InNeighborhood<'a> for InVec {
 
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
+    use std::dbg;
+
     use crate::map::in_neighborhood::NEIGHBORHOODS;
 
     use super::*;

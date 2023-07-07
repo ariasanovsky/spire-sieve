@@ -1,5 +1,7 @@
 use std::str::FromStr;
 
+use alloc::string::String;
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum StarterMod {
     Insanity,

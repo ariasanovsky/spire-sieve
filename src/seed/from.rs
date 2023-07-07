@@ -108,6 +108,10 @@ impl From<u64> for Seed {
 #[cfg(test)]
 mod test_seed_conversions {
 
+    use std::dbg;
+
+    use alloc::string::String;
+
     use super::super::{Seed, SeedString};
 
     #[test]

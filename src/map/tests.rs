@@ -5,6 +5,7 @@ use std::{
     path::PathBuf,
 };
 
+use alloc::{string::{ToString, String}, format};
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 use crate::{

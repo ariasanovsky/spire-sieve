@@ -63,6 +63,8 @@ impl SeedFilter for AnonymousPandoraBox {
 
 #[cfg(test)]
 mod tests {
+    use std::dbg;
+
     use crate::{card::pandoras_box::PandorasBox, seed};
 
     #[test]

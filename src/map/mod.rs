@@ -133,6 +133,8 @@ where
 
 #[cfg(test)]
 mod map_tests {
+    use std::{println, dbg};
+
     use crate::seed::Seed;
 
     use super::*;

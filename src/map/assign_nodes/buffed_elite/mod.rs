@@ -1,3 +1,4 @@
+use alloc::vec::Vec;
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 use crate::map::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map};

@@ -59,6 +59,8 @@ where
 
 #[cfg(test)]
 mod test_canonized_maps {
+    use alloc::string::{String, ToString};
+
     use crate::{
         map::{
             in_neighborhood::{in_array::InArray, in_byte::InByte, in_vec::InVec},

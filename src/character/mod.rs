@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use alloc::string::String;
 use strum_macros::EnumCount;
 use strum_macros::EnumIter;
 use strum_macros::FromRepr;

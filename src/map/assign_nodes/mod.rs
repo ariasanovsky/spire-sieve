@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use alloc::vec::Vec;
 use libgdx_xs128::{rng::Random, RandomXS128};
 
 use super::{

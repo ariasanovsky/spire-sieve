@@ -199,6 +199,8 @@ impl<'a> OutNeighborhood<'a> for OutArray {
 
 #[cfg(test)]
 mod test_out_array {
+    use std::println;
+
     use crate::map::WIDTH;
 
     use super::ARRAYS;

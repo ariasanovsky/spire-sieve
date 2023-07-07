@@ -179,6 +179,8 @@ mod test_in_byte_tables {
 
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
+    use alloc::vec::Vec;
+
     use super::*;
     const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
 
