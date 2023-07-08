@@ -1,25 +1,24 @@
 use libgdx_xs128::rng::Random;
 
-#[cfg(feature = "std")]
 pub mod assign_nodes;
 pub mod canonize;
+#[cfg(feature = "std")]
 pub mod display;
 pub mod filters;
-mod in_neighborhood;
-mod out_neighborhood;
+pub mod in_neighborhood;
+pub mod out_neighborhood;
 pub mod row;
 pub mod skeleton;
 
+#[cfg(feature = "std")]
 #[allow(unused)]
 mod tests;
 
 use in_neighborhood::InNeighborhood;
-use out_neighborhood::{out_vec::OutVec, OutNeighborhood};
+use out_neighborhood::OutNeighborhood;
 use row::Row;
 
-use self::assign_nodes::NodeKind;
-use self::in_neighborhood::in_byte::InByte;
-use self::in_neighborhood::in_vec::InVec;
+use self::assign_nodes::kind::NodeKind;
 use self::skeleton::Skeleton;
 
 pub const WIDTH: u64 = 7;
@@ -31,7 +30,7 @@ pub const REST_ROW: usize = HEIGHT - 1;
 pub const BEFORE_REST_ROW: usize = REST_ROW - 1;
 pub const TREASURE_ROW: usize = 8;
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct Map<const PATHS: usize, In, Out>
 where
     In: for<'a> InNeighborhood<'a>,
@@ -41,7 +40,7 @@ where
     kinds: [[NodeKind; WIDTH as usize]; HEIGHT],
 }
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub enum Act {
     #[default]
     One,
@@ -65,9 +64,6 @@ impl crate::seed::Seed {
         self.offset_rng(act.seed_offset())
     }
 }
-
-type _DefaultMap = Map<6, InVec, OutVec>;
-type _NewDefaultMap = Map<6, InByte, OutVec>;
 
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
@@ -104,13 +100,11 @@ where
     }
 }
 
-use std::fmt::Debug;
-use std::fmt::Display;
-
+#[cfg(feature = "std")]
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a> + Default + Debug + Display,
-    Out: for<'a> OutNeighborhood<'a> + Default + Debug + Display,
+    In: for<'a> InNeighborhood<'a> + Default,
+    Out: for<'a> OutNeighborhood<'a> + Default,
 {
     pub fn generate(rng: &mut Random, ascension: bool) -> Map<PATHS, In, Out> {
         let skeleton = Skeleton::generate(rng);
@@ -132,13 +126,17 @@ where
     }
 }
 
+#[cfg(feature = "std")]
 #[cfg(test)]
 mod map_tests {
     use std::{println, dbg};
+    use core::fmt::Debug;
+    use core::fmt::Display;
 
+    use crate::map::out_neighborhood::out_vec::OutVec;
     use crate::seed::Seed;
 
-    use super::*;
+    use super::{*, in_neighborhood::in_vec::InVec};
 
     #[test]
     fn print_first_map() {

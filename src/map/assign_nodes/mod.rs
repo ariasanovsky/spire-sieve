@@ -1,60 +1,25 @@
-use std::fmt::Debug;
-
+#[cfg(feature = "std")]
 use alloc::vec::Vec;
+
+#[cfg(feature = "std")]
 use libgdx_xs128::{rng::Random, RandomXS128};
 
+#[cfg(feature = "std")]
+use self::kind::NodeKind;
+
+#[cfg(feature = "std")]
 use super::{
     in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, BEFORE_REST_ROW,
     HEIGHT, REST_ROW, TREASURE_ROW, WIDTH,
 };
 
+#[cfg(feature = "std")]
 pub mod buffed_elite;
+#[cfg(feature = "std")]
 pub mod display;
+pub mod kind;
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-pub enum NodeKind {
-    #[default]
-    Unassigned,
-    Monster,
-    Elite,
-    Event,
-    Rest,
-    Shop,
-    Treasure,
-    Empty,
-}
-
-impl NodeKind {
-    pub(super) fn incompatible_with(&self, row: usize) -> bool {
-        match row {
-            0..=4 => [Self::Elite, Self::Rest].contains(self),
-            13.. => self.eq(&Self::Rest),
-            _ => false,
-        }
-    }
-
-    pub fn char(&self) -> char {
-        match self {
-            Self::Unassigned => '*',
-            Self::Monster => 'M',
-            Self::Elite => 'E',
-            Self::Event => '?',
-            Self::Rest => 'R',
-            Self::Shop => '$',
-            Self::Treasure => 'T',
-            Self::Empty => ' ',
-        }
-    }
-
-    pub fn is_assigned(&self) -> bool {
-        !matches!(self, Self::Unassigned)
-    }
-
-    pub fn is_empty(&self) -> bool {
-        matches!(self, Self::Empty)
-    }
-}
-
+#[cfg(feature = "std")]
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
     In: for<'a> InNeighborhood<'a>,
@@ -124,6 +89,8 @@ where
             + self.count_final_rest_sites()
     }
 }
+
+#[cfg(feature = "std")]
 impl<const HEIGHT: usize, In, Out> Map<HEIGHT, In, Out>
 where
     In: for<'a> InNeighborhood<'a>,
@@ -152,6 +119,7 @@ where
     }
 }
 
+#[cfg(feature = "std")]
 impl<const PATHS: usize, In, Out> Map<PATHS, In, Out>
 where
     In: for<'a> InNeighborhood<'a>,

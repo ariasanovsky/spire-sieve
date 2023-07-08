@@ -27,7 +27,7 @@ impl From<InByte> for InArray {
 }
 
 impl<'a> InNeighborhood<'a> for InByte {
-    type Iter = std::slice::Iter<'a, (usize, usize)>;
+    type Iter = core::slice::Iter<'a, (usize, usize)>;
 
     fn min(&self) -> Option<&usize> {
         const MIN: [Option<usize>; NEIGHBORHOODS] = InByte::min_table();
@@ -121,10 +121,17 @@ mod test_in_byte_tables {
         const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
         const MIN: [Option<usize>; NEIGHBORHOODS] = InByte::min_table();
         for (byte, (array, min)) in ARRAYS.iter().zip(MIN.iter()).enumerate() {
+            #[cfg(feature = "std")]
             assert_eq!(
                 array.min().copied(),
                 *min,
                 "byte: {byte}, array: {array}, min: {min:?}"
+            );
+
+            #[cfg(not(feature = "std"))]
+            assert_eq!(
+                array.min().copied(),
+                *min
             );
         }
     }
@@ -134,10 +141,17 @@ mod test_in_byte_tables {
         const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
         const MAX: [Option<usize>; NEIGHBORHOODS] = InByte::max_table();
         for (byte, (array, max)) in ARRAYS.iter().zip(MAX.iter()).enumerate() {
+            #[cfg(feature = "std")]
             assert_eq!(
                 array.max().copied(),
                 *max,
                 "byte: {byte}, array: {array}, max: {max:?}"
+            );
+            
+            #[cfg(not(feature = "std"))]
+            assert_eq!(
+                array.max().copied(),
+                *max
             );
         }
     }
@@ -154,6 +168,12 @@ mod test_in_byte_tables {
                         .position(|array| array.const_eq(&array_sum))
                         .map(|position| (array_sum, position))
                 }) {
+                    #[cfg(not(feature = "std"))]
+                    assert_eq!(
+                        sum.0 as usize, sum_position
+                    );
+
+                    #[cfg(feature = "std")]
                     assert_eq!(
                         sum.0 as usize, sum_position,
                         "
@@ -163,6 +183,7 @@ mod test_in_byte_tables {
 \tfoo"
                     );
                 } else {
+                    #[cfg(feature = "std")]
                     assert_eq!(
                         sum.0, 0,
                         "
@@ -170,6 +191,11 @@ mod test_in_byte_tables {
 \t{sums:?}
 \t{array} + {j} = None
 \tbar"
+                    );
+
+                    #[cfg(not(feature = "std"))]
+                    assert_eq!(
+                        sum.0, 0
                     );
                 }
             }
@@ -179,8 +205,7 @@ mod test_in_byte_tables {
 
 #[cfg(test)]
 mod test_invec_against_neighborhood_array {
-    use alloc::vec::Vec;
-
+    
     use super::*;
     const ARRAYS: [InArray; NEIGHBORHOODS] = InArray::at_most_six();
 
@@ -189,6 +214,13 @@ mod test_invec_against_neighborhood_array {
         for (i, &array) in ARRAYS.iter().enumerate() {
             let in_neighborhood = InByte::from(array);
             let new_array: InArray = in_neighborhood.try_into().unwrap();
+            #[cfg(not(feature = "std"))]
+            assert_eq!(
+                new_array,
+                array
+            );
+
+            #[cfg(feature = "std")]
             assert_eq!(
                 new_array,
                 array,
@@ -220,6 +252,7 @@ mod test_invec_against_neighborhood_array {
                 let mut in_neighborhood = InByte::from(array);
                 in_neighborhood.push(position);
                 let array_sum: Option<InArray> = array.plus(position);
+                #[cfg(feature = "std")]
                 assert_eq!(
                     in_neighborhood,
                     array_sum.map(Into::into).unwrap_or_default(),
@@ -227,12 +260,20 @@ mod test_invec_against_neighborhood_array {
 {array} + {position} = {array_sum:?}
 invec: {in_neighborhood:?}"
                 );
+
+                #[cfg(not(feature = "std"))]
+                assert_eq!(
+                    in_neighborhood,
+                    array_sum.map(Into::into).unwrap_or_default()
+                );
             }
         }
     }
 
+    #[cfg(feature = "std")]
     #[test]
     fn test_iter() {
+        use alloc::vec::Vec;
         for array in ARRAYS.iter() {
             let invec = InByte::from(*array);
             let vec: Vec<_> = invec.iter().collect();

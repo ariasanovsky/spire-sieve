@@ -1,8 +1,10 @@
 use std::fmt::Display;
 
 use crate::map::{
-    assign_nodes::NodeKind, display::EnumeratedOutNeighborhood, in_neighborhood::InNeighborhood,
+    display::EnumeratedOutNeighborhood,
+    in_neighborhood::InNeighborhood,
     out_neighborhood::OutNeighborhood,
+    assign_nodes::kind::NodeKind,
 };
 
 use super::Skeleton;

@@ -3,7 +3,7 @@ use libgdx_xs128::{rng::Random, RandomXS128};
 
 use crate::map::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map};
 
-use super::NodeKind;
+use super::kind::NodeKind;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EliteBuff {

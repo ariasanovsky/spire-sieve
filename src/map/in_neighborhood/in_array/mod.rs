@@ -15,12 +15,12 @@ impl Default for InArray {
 }
 
 impl<'a> InNeighborhood<'a> for InArray {
-    type Iter = std::slice::Iter<'a, (usize, usize)>;
+    type Iter = core::slice::Iter<'a, (usize, usize)>;
 
     fn push(&mut self, value: usize) {
         *self = self
             .plus(value)
-            .unwrap_or_else(|| panic!("{self} + {value}"))
+            .unwrap()// .unwrap_or_else(|| panic!("{self} + {value}"))
     }
 
     fn iter(&'a self) -> Self::Iter {

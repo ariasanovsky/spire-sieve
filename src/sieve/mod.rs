@@ -22,10 +22,11 @@ impl<F: SeedFilter> Sieve<F> {
     }
 }
 
+#[cfg(feature = "std")]
 #[cfg(test)]
 mod test_sieve {
     use super::*;
-    use crate::map::{filters::bottleneck::Bottleneck, _ONE_PATH_BURNING_ELITE_BOTTLENECKS};
+    use crate::map::{filters::bottleneck::Bottleneck, _ONE_PATH_BURNING_ELITE_BOTTLENECKS, in_neighborhood::in_vec::InVec, out_neighborhood::out_vec::OutVec};
 
     #[test]
     fn test_sieve_finds_bottleneck_seed() {
@@ -45,8 +46,8 @@ mod test_sieve {
 
         // const BOTTLNECK: u64
 
-        const FILTER: Bottleneck = Bottleneck::const_default();
-        const SIEVE: Sieve<Bottleneck> = Sieve::new(START, END, FILTER);
+        const FILTER: Bottleneck<InVec, OutVec> = Bottleneck::const_default();
+        const SIEVE: Sieve<Bottleneck<InVec, OutVec>> = Sieve::new(START, END, FILTER);
         SIEVE.run();
     }
 }

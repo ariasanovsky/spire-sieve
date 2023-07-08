@@ -18,7 +18,6 @@ pub mod events;
 
 pub mod filter;
 
-#[cfg(feature = "std")]
 pub mod map;
 
 pub mod neow;

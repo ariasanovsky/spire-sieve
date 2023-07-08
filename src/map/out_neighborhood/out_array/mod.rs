@@ -160,7 +160,7 @@ impl OutArray {
 }
 
 impl<'a> OutNeighborhood<'a> for OutArray {
-    type Iter = std::slice::Iter<'a, usize>;
+    type Iter = core::slice::Iter<'a, usize>;
 
     fn update_position_from_left(&self, value: &mut usize) {
         if let Some(max) = self.max().copied() {
@@ -197,6 +197,7 @@ impl<'a> OutNeighborhood<'a> for OutArray {
     }
 }
 
+#[cfg(feature = "std")]
 #[cfg(test)]
 mod test_out_array {
     use std::println;

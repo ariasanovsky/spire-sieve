@@ -20,15 +20,15 @@ Please support the developers of this excellent game by [purchasing it](https://
 
 | filter           | backend    | `SeedFilter`   | `no_std`      | no `panic` in asm/ptx |`kani` proof |
 |------------------|------------|----------------|---------------|-----------------------|-------------|
-| bottleneck map   | 🌱🔬      | 🌱🔬          | 🛣️🛣️🚧      |                       |             |
-| elite bottleneck | 🌱🔬      | 🌱🔬          | 🛣️🛣️🚧🚧    |                       |             |
-| one-path map     | 🌱🔬      | 🌱🔬          | 🛣️🛣️🚧      |                       |             |
-| speedrun map     | 🌱🔬      | 🛣️            |               |                       |             |
+| bottleneck map   | 🌱🔬      | 🌱🔬          | 🛣️🛣️🛣️      |                       |             |
+| elite bottleneck | 🌱🔬      | 🌱🔬          | 🛣️🛣️🛣️🚧    |                       |             |
+| one-path map     | 🌱🔬      | 🌱🔬          | 🛣️🛣️🛣️      |                       |             |
+| speedrun map     | 🌱🔬      | 🛣️            | 🛣️🛣️🛣️🚧    |                       |             |
 | Snecko rolls     | 🛣️        |                |               |                       |             |
-| Pandora's Box    | 🌱        | 🌱             | 🚧           |                       |             |
+| Pandora's Box    | 🌱        | 🌱             | 🌱           |                       |             |
 | relic shuffles   | 🚧🚧      |                |               |                       |             |
-| card rewards     | 🌱🔬      | 🌱            | 🚧            |                       |             |
-| Neow bonuses     | 🌱        | 🛣️             |               |                       |             |
+| card rewards     | 🌱🔬      | 🌱            | 🌱            |                       |             |
+| Neow bonuses     | 🌱        | 🛣️             | 🛣️           |                       |             |
 | shop cards       | 🚧        |                |               |                       |             |
 | shop relics      | 🚧        |                |               |                       |             |
 
@@ -36,7 +36,7 @@ Please support the developers of this excellent game by [purchasing it](https://
 |------------------------|--------------------------------------------|----------|----------------|
 | overflow toggle        | toggle RNG overflow guard                  | 🌱      | 🛣️️             |
 | parallel CPU search    | `Search` with rayon enabled                | 🌱      | 🛣️             |
-| parallel GPU search    | `Search` which emits CUDA kernels          | 🌱      | 🚧             |
+| parallel GPU search    | `Search` which emits CUDA kernels          | 🌱      | 🚧🚧🚧        |
 | filter `PhantomData`   | add optionally printable output to data    | 🚧      |                |
 | unlock levels          | adjust filters with save file `Unlocks`    | 🛣️      |                |
 | hash skip              | option to filter over `Seed0` over `Seed`  | 🛣️      |                |

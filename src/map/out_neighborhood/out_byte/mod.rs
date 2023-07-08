@@ -124,7 +124,7 @@ impl OutByte {
 }
 
 impl<'a> OutNeighborhood<'a> for OutByte {
-    type Iter = std::slice::Iter<'a, usize>;
+    type Iter = core::slice::Iter<'a, usize>;
 
     fn update_position_from_left(&self, value: &mut usize) {
         const LEFT_UPDATE_TABLE: [[usize; WIDTH]; OUT_NEIGHBORHOODS] = OutByte::left_update_table();

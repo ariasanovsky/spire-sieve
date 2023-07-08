@@ -1,6 +1,16 @@
 use std::fmt::Display;
 
-use super::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, NodeKind};
+use super::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, Map, NodeKind, Act};
+
+impl Display for Act {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", match self {
+            Act::One => "Act I",
+            Act::Two => "Act II",
+            Act::Three => "Act III",
+})
+    }
+}
 
 impl<const PATHS: usize, In, Out> Display for Map<PATHS, In, Out>
 where
@@ -60,25 +70,26 @@ where
     }
 }
 
+#[cfg(feature = "std")]
 #[cfg(test)]
 mod display_tests {
     use std::println;
 
     use libgdx_xs128::RandomXS128;
 
-    use crate::map::*;
+    use crate::map::{*, in_neighborhood::in_vec::InVec, out_neighborhood::out_vec::OutVec};
 
     #[test]
     fn test_display() {
         let mut rng = Random::new(2);
-        let map = _DefaultMap::generate(&mut rng, true);
+        let map = Map::<6, InVec, OutVec>::generate(&mut rng, true);
         println!("{map}");
     }
 
     #[test]
     fn test_display_2() {
         let mut rng = Random::new(533907583096 + 1);
-        let map = _DefaultMap::generate(&mut rng, true);
+        let map = Map::<6, InVec, OutVec>::generate(&mut rng, true);
         println!("{map}");
     }
 }

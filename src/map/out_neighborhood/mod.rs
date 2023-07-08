@@ -1,6 +1,8 @@
+#[cfg(feature = "std")]
 pub mod display;
 pub mod out_array;
 pub mod out_byte;
+#[cfg(feature = "std")]
 pub mod out_vec;
 
 pub trait OutNeighborhood<'a> {

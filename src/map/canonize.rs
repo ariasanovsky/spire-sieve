@@ -1,6 +1,12 @@
 use crate::map::{
-    in_neighborhood::{in_array::InArray, in_byte::InByte, in_vec::InVec, InNeighborhood},
-    out_neighborhood::{out_array::OutArray, out_byte::OutByte, out_vec::OutVec, OutNeighborhood},
+    in_neighborhood::{in_array::InArray, in_byte::InByte, InNeighborhood},
+    out_neighborhood::{out_array::OutArray, out_byte::OutByte, OutNeighborhood},
+};
+
+#[cfg(feature = "std")]
+use crate::map::{
+    in_neighborhood::in_vec::InVec,
+    out_neighborhood::out_vec::OutVec
 };
 
 use super::{row::Row, Map, Skeleton};
@@ -8,8 +14,10 @@ use super::{row::Row, Map, Skeleton};
 pub trait NotCanonical {}
 
 impl NotCanonical for InByte {}
+#[cfg(feature = "std")]
 impl NotCanonical for InVec {}
 impl NotCanonical for OutByte {}
+#[cfg(feature = "std")]
 impl NotCanonical for OutVec {}
 
 pub type CanonicalRow = Row<InArray, OutArray>;
@@ -57,6 +65,7 @@ where
     }
 }
 
+#[cfg(feature = "std")]
 #[cfg(test)]
 mod test_canonized_maps {
     use alloc::string::{String, ToString};

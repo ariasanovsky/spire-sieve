@@ -1,6 +1,8 @@
+#[cfg(feature = "std")]
 pub mod display;
 pub mod in_array;
 pub mod in_byte;
+#[cfg(feature = "std")]
 pub mod in_vec;
 
 pub const NEIGHBORHOODS: usize = 308;

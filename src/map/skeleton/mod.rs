@@ -6,9 +6,10 @@ use super::{in_neighborhood::InNeighborhood, out_neighborhood::OutNeighborhood, 
 
 use super::row::Row;
 
+#[cfg(feature = "std")]
 pub mod display;
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct Skeleton<const PATHS: usize, In, Out>
 where
     In: for<'a> InNeighborhood<'a>,
@@ -19,8 +20,8 @@ where
 
 impl<const PATHS: usize, In, Out> Skeleton<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a> + Default + Debug + Display,
-    Out: for<'a> OutNeighborhood<'a> + Default + Debug + Display,
+    In: for<'a> InNeighborhood<'a> + Default,
+    Out: for<'a> OutNeighborhood<'a> + Default,
 {
     pub fn generate(rng: &mut Random) -> Skeleton<PATHS, In, Out> {
         let mut skeleton = Skeleton::default();
@@ -34,7 +35,7 @@ where
     In: for<'a> InNeighborhood<'a>,
     Out: for<'a> OutNeighborhood<'a>,
 {
-    fn row(&self, row: usize) -> &Row<In, Out> {
+    pub(crate) fn row(&self, row: usize) -> &Row<In, Out> {
         &self.rows[row]
     }
 
@@ -47,12 +48,10 @@ where
     }
 }
 
-use std::fmt::{Debug, Display};
-
 impl<const PATHS: usize, In, Out> Skeleton<PATHS, In, Out>
 where
-    In: for<'a> InNeighborhood<'a> + Debug + Display,
-    Out: for<'a> OutNeighborhood<'a> + Debug + Display,
+    In: for<'a> InNeighborhood<'a>,
+    Out: for<'a> OutNeighborhood<'a>,
 {
     fn create_paths(&mut self, rng: &mut Random) {
         let first_position = self.create_first_path(rng);
@@ -140,11 +139,11 @@ where
             .sum();
         for _ in 0..rerolls {
             next_position = match next_position.cmp(&position) {
-                std::cmp::Ordering::Greater => {
+                core::cmp::Ordering::Greater => {
                     next_position = position + rng.next_capped_u64(2) as usize;
                     next_position.max(1) - 1
                 }
-                std::cmp::Ordering::Equal => {
+                core::cmp::Ordering::Equal => {
                     next_position = position + rng.next_capped_u64(3) as usize;
                     if next_position == 0 {
                         1
@@ -154,7 +153,7 @@ where
                         next_position - 1
                     }
                 }
-                std::cmp::Ordering::Less => {
+                core::cmp::Ordering::Less => {
                     next_position = position + rng.next_capped_u64(2) as usize;
                     next_position.min(LAST_POSITION)
                 }
